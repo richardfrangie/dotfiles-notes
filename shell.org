@@ -939,6 +939,10 @@ Increase sound level.
 ( ~amixer set Master 8%-~ decrease sound level )
 ( ~alsamixer~ show a text gui mixer control panel )
 
+*** notify-send "Dwell Click on"
+A program to send desktop notifications.
+libnotify-bin must be installed.
+
 * Network
 ** App layer
 *** wget URL file
@@ -997,6 +1001,10 @@ Send an email without entering the interactive mode of the mail command.
 ( ~mail -s "subject" recipient < file-body~ send mail with the body from a file )
 ( ~mail -s "subject" recipient1 recipient2~ send mail to multiple receivers )
 ( ~echo "email body" |mutt -s "subject" -a file -- recipient~ send mail with attachments. Note that need the echo part otherwise it will go into interactive mode )
+
+*** torbrowser-launcher
+Launch the browser.
+( ~torbrowser-launcher --settings~ settings browser )
 
 ** Transport layer
 *** netstat
@@ -1264,7 +1272,155 @@ List available devices, with an optional property as the filter.
 *** bluetoothctl scan on
 Scan for devices.
 
-* Tools
+* Package managers
+** pnpm
+*** pnpm
+Alias: pn is available as a short alias for pnpm.
+[ /-C <path>, --dir <path>/ run as if pnpm was started in <path> instead of the current working directory /-w, --workspace-root/ run as if pnpm was started in the root of the workspace instead of the current working directory ]
+( ~pnpm init~ create a package.json file (initialize a project) )
+( ~pnpm init --bare~ creates a package.json with only the required fields )
+( ~pnpm init --init-type <type>~ set the module system for the package )
+( ~pnpm init --init-package-manager~ pin the project to the current pnpm version )
+
+*** pnpm install
+Is used to install all dependencies for a project.
+Alias: i.
+[ /-P/ if true, pnpm will not install any package listed in devDependencies and will remove those insofar they were already installed /-D/ only devDependencies are installed and dependencies are removed insofar they were already installed /--no-optional/ optionalDependencies are not installed /--force/
+force reinstall dependencies: refetch packages modified in store /--offline/ if true, pnpm will use only packages already available in the store /--no-lockfile/ don't read or generate a pnpm-lock.yaml file /--lockfile-only/ when used, only updates pnpm-lock.yaml and package.json ]
+
+*** pnpm add <pkg>
+Installs a package (e.g. version: ^4.x.x) and any packages that it depends on. By default, any new package is installed as a production dependency.
+[ /-D/ save to devDependencies /-O/ save to optionalDependencies /-g/ install package globally /-E/ saved dependencies will be configured with an exact version rather than using pnpm's default semver range operator ]
+( ~pnpm add sax~ save to dependencies )
+( ~pnpm add -D sax~ save to devDependencies )
+( ~pnpm add -O sax~ save to optionalDependencies )
+( ~pnpm add -g sax~  install package globally )
+( ~pnpm add -g eslint prettier~ installing multiple packages in a single command groups them into *one isolated install* (CAUTION) )
+( ~pnpm add sax@next~ install from the next tag )
+( ~pnpm add sax@3.0.0~ specify version 3.0.0 )
+( ~pnpm add ./some-directory~ install from the local file system )
+
+*** pnpm update
+Updates packages to their latest version based on the specified range.
+Aliases: up, upgrade.
+( ~pnpm up~ updates all dependencies, adhering to ranges specified in package.json )
+( ~pnpm up --latest~ updates all dependencies to their latest versions )
+( ~pnpm up foo@2~ updates foo to the latest version on v2 )
+( ~pnpm up "@babel/*"~ updates all dependencies under the @babel scope )
+( ~pnpm outdated~ checks for outdated packages )
+( ~pnpm update -g [pkg]~ update global packages (re-installs into new isolated directories) )
+
+*** pnpm remove
+Removes packages from node_modules and from the project's package.json.
+Aliases: rm, uninstall, un
+[ /-g/ remove a global package /-D/ only remove the dependency from devDependencies /-O/ only remove the dependency from optionalDependencies /-P/ Only remove the dependency from dependencies ]
+( ~pnpm rm -g sax~  remove a globally installed package (removes the entire installation group) )
+( ~pnpm prune~ removes unnecessary packages )
+( ~pnpm clean~ safely remove node_modules contents from all workspace projects (Alias: clean) )
+
+*** pnpm list
+Output all the versions of packages that are installed, as well as their dependencies, in a tree-structure.
+Alias: ls
+[ /-g/ list packages in the global install directory /--depth <number>/ max display depth of the dependency tree /--long/ show extended information /-P/ display only the dependency graph for packages in dependencies and optionalDependencies /-D/ display only the dependency graph for packages in devDependencies /--recursive, -r/ perform command on every package in subdirectories ]
+( ~pnpm list -g~ list all globally installed packages )
+( ~pnpm list -g --depth=<n>~ shows the full dependency tree )
+( ~pnpm search <keyword>~ search the registry for packages matching the given keywords (Aliases: s, se, find) )
+( ~pnpm view <pkg>~ view package metadata from the registry (Aliases: info, show) )
+( ~pnpm repo lodash~ open the repo of a package on the registry )
+( ~pnpm audit~ checks for known security issues with the installed packages )
+( ~pnpm why <pkg>~ shows all packages that depend on the specified package )
+( ~pnpm docs [<pkg> ...]~ open a package's documentation (or homepage) in the browser (Alias: home) )
+
+*** pnpm run <script>
+*Runs a script* defined in the package's manifest file.
+In addition to the shell’s pre-existing PATH, pnpm run includes node_modules/.bin in the PATH provided to scripts. This means that so long as you have a package installed, you can use it in a script like a regular command. Even though the package is not installed globally in your shell, it will run.
+( ~pnpm <script>~ shorthand (ONLY for scripts that do not share the same name as already existing pnpm commands) )
+( ~pnpm run~ shows available scripts )
+( ~pnpm set-script <name> <command>~ adds or updates an entry in the scripts field of the project manifest (Alias: ss) )
+( ~pnpm set-script lint "eslint ."~ set the linter script )
+( ~pnpm test~ runs an arbitrary command specified in the package's test property of its scripts object )
+( ~pnpm start~ runs an arbitrary command specified in the package's start property of its scripts object. If no start property is specified on the scripts object, it will attempt to run node server.js as a default, failing if neither are present )
+( ~pnpm run "/<regex>/"~ run multiple scripts at the same time by using a regex instead of the script name (note that regex is between slashes) )
+( ~pnpm run "/^watch:.*/"~ run all scripts that start with watch: )
+
+*** pnpm exec <cmd>
+*Execute a shell command in scope of a project*.
+node_modules/.bin is added to the PATH, so pnpm exec allows executing commands of dependencies.
+Any options for the exec command should be listed before the exec keyword. Options listed after the exec keyword are passed to the executed command.
+*Gemeni*: run tools that are already sitting inside your local node_modules.
+( ~pnpm <cmd>~ shorthand (ONLY when the command is not in conflict with a builtin pnpm command ) )
+( ~pnpm exec jest~ execute jest in scope of the project. If Jest is a dependency of the project, there is no need to install Jest globally )
+( ~pnpm pm <cmd>~ always runs the built-in pnpm command, bypassing any same-named script in package.json. For example, if your project defines a "clean" script in package.json, then pnpm clean runs that script instead of the built-in pnpm clean )
+
+*** pnx
+*Fetches* a package from the registry without installing it as a dependency, hotloads it, and *runs* whatever default command binary it exposes.
+Aliases: pnpm dlx, pnpx. (dlx = download execute)
+*Gemeni*: check your local directory first, and downloads from the web second if it can't find it. It sandboxes execution and isolates the command. Because it lives up in that global vault, it operates inside its own little bubble, which is why it cannot see the local plugins.
+[ /--package <name>/ the package to install before running the command ]
+( ~pnx create-vue my-app~ use create-vue anywhere without needing to install it under another project. This will fetch create-vue from the registry and run it with the given arguments )
+( ~pnx create-vue@next my-app~ create a project. Specify which exact version of the package )
+( ~pnpx npkill~ size of each of all packages in the current directory )
+( ~pnpx npm-check -u~ show updates of packages )
+
+*** pnpm runtime <cmd>
+Manage runtimes.
+Alias: rt
+[ /--global, -g/ globally ]
+( ~pnpm runtime set <name> <version> [-g]~ install the specified version of a runtime )
+( ~pnpm runtime set node 22 -g~ install Node.js v22 globally )
+( ~pnpm runtime set node lts -g~ install the LTS version of Node.js )
+( ~pnpm runtime set node latest -g~ install the latest version of Node.js )
+( ~pnpm runtime set node argon -g~ pnpm runtime set node argon -g )
+
+*** pnpm self-update [<version>]
+Updates pnpm to the latest version or the one specified.
+*Warning*: the behavior of pnpm self-update depends on the project context.
+*In a project that pins pnpm*: When the project's package.json has a packageManager field set to pnpm (or a devEngines.packageManager entry for pnpm), self-update only updates the pinned version in package.json to the resolved one. It does not install pnpm globally. The next time you run a pnpm command, pnpm will automatically download and switch to the specified version.
+*Outside a project (or when the pnpm pin is ignored)*: If the project does not pin pnpm, or the pin is being ignored via pmOnFail: ignore, self-update installs the resolved pnpm version globally and links it to PNPM_HOME so it becomes the active pnpm binary on your system.
+*Warning*: depending on where it's run, it can cause version conflicts and lead to errors. If that happens, you'll have to reinstall it.
+( ~pnpm self-update~ in the HOME directory updates globally )
+( ~pnpm self-update 10~ update )
+( ~pnpm self-update next-10~ update )
+( ~pnpm self-update 10.6.5~ update )
+( ~pnpm with <version|current> <args...>~ run pnpm at a specific version (or the currently running one) for a single invocation, ignoring the packageManager and devEngines.packageManager fields of the project's manifest )
+( ~pnpm with current install~ run the globally installed pnpm, ignoring the version pinned in the manifest )
+( ~pnpm with 11.0.0-rc.1 install~ run a specific version )
+( ~pnpm version <newversion>~ bump the package version )
+
+*** pnpm pkg
+Manages the contents of package.json from the command line.
+Nested fields are addressed with dot-separated paths (e.g. scripts.test, repository.url).
+[ /--json/ when setting, parses each value as JSON before writing. When getting a single key, returns the JSON-encoded form instead of the raw value ]
+( ~pnpm pkg get~ prints the full manifest (package.json) )
+( ~pnpm pkg get name version~ retrieves these values from package.json )
+( ~pnpm pkg set name=my-package~ sets one or more values in package.json )
+( ~pnpm pkg get scripts.test~ retrieves this value from package.json )
+( ~pnpm pkg set scripts.build="tsc -p ."~ sets one or more values in package.json )
+( ~pnpm pkg set 'keywords[0]'=cli~ sets one or more values in package.json )
+( ~pnpm pkg set private=true --json~  by default the value is stored as a string. Pass --json to parse the value as JSON before storing it (useful for booleans, numbers, arrays, and objects) )
+( ~pnpm pkg delete scripts.test~  removes one or more keys from package.json )
+( ~pnpm pkg fix~  auto-corrects common errors in package.json (e.g. removes a non-string name or version, drops dependency / scripts blocks whose values aren't objects, drops a bin field that's neither a string nor an object) )
+
+*** pnpm config
+Manage the configuration files.
+Alias: c.
+The global YAML configuration file (config.yaml) is located at: ~/.config/pnpm/config.yaml.
+[ /-g/ set the configuration in the global config file /--json/ make get and list show all the config settings in JSON format and make set parse the value as JSON ]
+( ~pn c list~ show all the config settings. Output is a JSON object. Auth-related settings are hidden from the output; use pnpm config get <key> to read them explicitly )
+( ~pn c set <key> <value>~ set the config key to the value provided )
+( ~pn c set --location=project nodeVersion 22.0.0~ set config )
+( ~pn c get <key>~ print the config value for the provided key )
+( ~pn c get nodeVersion~ print the node version )
+( ~pn c get --json nodeVersion~ print the node version in json )
+( ~pn c delete <key>~ remove the config key from the config file )
+( ~pn c set fetch-timeout 300000~ temporarily increase the network timeout. This is useful when problems arise during node version installation )
+
+*** pnpm doctor
+Checks for known common issues with pnpm configuration.
+( ~pnpm help -a~ print all the available commands )
+( ~pnpm help <cmd>~ display help information about pnpm )
+( ~pnpm ping~ ping the configured registry to verify connectivity. This is useful for quickly confirming that the current machine can reach the registry without installing or publishing anything )
+
 ** apt
 *** apt list
 Display a list of packages satisfying certain criteria. It supports glob(7) patterns for matching package names.
@@ -1379,6 +1535,7 @@ List locally installed packages present in the node_modules folder of a project.
 ( ~npm ls -g~ list globally installed packages )
 ( ~npm list --depth 0~ list installed packages and dependencies no dependencies of dependency )
 ( ~npm config get prefix~ show the folder where the global packages are installed )
+( ~npm outdated --global~ check for outdated global packages )
 
 *** npm list name
 Search dependencies of this package.
@@ -1469,40 +1626,180 @@ List of currently installed Node versions.
 ( ~nvm use 18~ temporarily use Node version 18 )
 ( ~nvm alias default 18~ use version 18 by default )
 
-** flatpak
-*** flatpak remotes
-List the remotes that you have configured on your system.
-( ~flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo~ add a remote. flathub is the local name that is given to the remote. The URL points to the remote’s .flatpakrepo file. --if-not-exists stops the command from producing an error if the remote already exists )
-( ~flatpak remote-delete flathub~ remove a remote )
+* Frontend toolchain
+** Oxlint
+*** oxlint [OPTIONS] [PATH]
+Run the linter. If PATH is omitted, Oxlint lints the current working directory.
+[ /-c/ oxlint configuration file /--fix/ fix as many issues as possible /--fix-suggestions/ apply auto-fixable suggestions (may change program behavior) /--fix-dangerously/ apply dangerous fixes and suggestions ]
+( ~oxlint -c ./oxlintrc.json~ pass a config explicitly )
 
-*** flatpak search gimp
-Return any applications matching the search terms.
+*** oxlint ---fix
+Apply safe fixes.
+( ~oxlint --fix-suggestions~ apply suggestions (may change program behavior) )
+( ~oxlint --fix-dangerously~ apply dangerous fixes and suggestions )
 
-*** flatpak install flathub org.gimp.GIMP
-Install an application.
-flathub is the name of the remote the application is to be installed from, and org.gimp.GIMP is the ID of the application.
-( ~flatpak install gimp~ install method since Flatpak 1.2 )
-( ~flatpak install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref~ specify a .flatpakref instead of manually providing the remote and application ID )
+*** oxlint --init
+Initialize the .oxlintrc.json config with default values.
 
-*** flatpak run org.gimp.GIMP
-Run application.
+*** oxlint --rules
+List registered rules, including those enabled by the config.
 
-*** flatpak update
-Update all your installed applications and runtimes to the latest version.
+*** oxlint --ignore-path .oxlintignore
+Use an explicit ignore file.
+( ~oxlint --ignore-pattern "dist/**" --ignore-pattern "*.min.js"~ add ignore patterns from the command line )
+( ~oxlint --no-ignore~ disable ignore handling )
 
-*** flatpak list
-List the applications and runtimes you have installed.
-( ~flatpak list --app~ just list installed applications )
+*** oxlint -D no-alert
+Override severity from the CLI.
+Arguments are applied from left to right.
+[ /-A/ allow /-W/ warn /-D/ deny ]
+( ~oxlint -D no-alert -W oxc/approx-constant -A no-plusplus~ several severities )
+( ~oxlint -D correctness -D suspicious~ change categories )
 
-*** flatpak uninstall org.gimp.GIMP
-Remove an application.
+** Stylelint
+*** stylelint "**/*.css"
+Run Stylelint on all the CSS files in your project (note the **/*asterisks).
+[ /--fix/ automatically fix as many problems as possible /--cache/ option to improve performance /--formatter/ option to customize the output ]
+( ~stylelint "**/*.css" --fix~ fix as many problems as possible )
+( ~stylelint "foo/**/*.css"~ recursively linting all .css files in the foo directory )
+( ~stylelint "**/*.{css,scss,sass}"~ linting all .css, .scss, and .sass files )
+( ~echo "a { color: pink; }" | stylelint~ linting stdin )
+( ~stylelint "**/*.css" "!**/docker/**"~ linting all .css files except those within docker subfolders, using negation in the input glob )
 
-*** flatpak uninstall --unused
-Remove runtimes and extensions that are not used by installed applications.
-( ~flatpak repair~ fix inconsistencies with your local installation )
-( ~flatpak permission-reset org.gimp.GIMP~ reset all portal permissions for an app )
-( ~flatpak history~ find out what changes have been made to your Flatpak installation over time, you can take a look at the logs (since 1.2) )
+*** stylelint "foo/*.css" --output-file myTestReport.txt
+Linting all .css files in the foo directory, then writing the output to myTestReport.txt.
+( ~stylelint "foo/**/*.scss" --cache --cache-location "/Users/user/.stylelintcache/"~ caching processed .scss files foo directory )
 
+*** stylelint "foo/**/*.css" --config bar/mySpecialConfig.json
+Using bar/mySpecialConfig.json as config to lint all .css files in the foo directory and any of its subdirectories.
+( ~stylelint "foo/**/*.css" --custom-syntax path/to/my-custom-syntax.js~ recursively linting all .css files in the foo directory using a custom syntax )
+( ~stylelint -f json "*.css" 2>&1 | jq '[.[] | .warnings | length] | add'~ use a report as input for another command through piping )
+
+*** stylelint -f verbose "foo/**/*.css"
+Ensure output on successful runs.
+
+*** stylelint test.css --print-config
+Print a configuration used for the given input file.
+
+*** pnpm create stylelint
+Setup Stylelint and extend our standard config.
+( ~pnpm create stylelint@latest~ the latest version )
+
+** Oxfmt
+*** oxfmt [OPTIONS] [PATH]
+Running oxfmt without arguments formats the current directory.
+To use glob patterns in positional paths, be sure to quote them. Otherwise, they may or may not be expanded depending on your environment.
+[ /-c/ path to the configuration file /-init/ initialize /--check/ check if files are formatted, also show statistics /--list-different/ list files that would be changed /-V/ version ]
+( ~oxfmt '!**/fixtures/*.js'~ exclude patterns with ! prefix )
+
+*** oxfmt --check
+Check if files are formatted, also show statistics.
+
+*** oxfmt --init
+Initialize/create .oxfmtrc.json config file with defaults.
+
+*** oxfmt --list-different
+Lists all files that need formatting, without actually changing them.
+
+** Servers
+*** vite
+Start Vite dev server in the current directory.
+The index.html will be served on http://localhost:5173.
+( ~vite src/ --port 1234~ start the server )
+
+*** servor <root> <fallback> <port>
+Run as a terminal command without adding it as a dependency.
+The index.html will be served on http://127.0.0.1:8080.
+[ /---reload/ causes the browser to reload when files change /--browse/ causes the browser to open when the server starts ]
+( ~servor . main.html 8383 --reload~ start the server )
+
+*** live-server <path-to-content>
+Start the live server.
+The index.html will be served on http://127.0.0.1:8080.
+
+** Vite
+*** vite
+Start Vite dev server in the current directory.
+The index.html will be served on http://localhost:5173.
+Aliases: vite dev, vite serve.
+[ /-c/ use specified config file /--host [host]/ specify hostname /--port <port>/ specify port /--force/ force the optimizer to ignore the cache and re-bundle ]
+( ~vite src/ --port 1234~ start the server )
+
+*** vite build
+Build for production.
+
+*** vite preview
+Locally preview the production build. Do not use this as a production server as it's not designed for it.
+This command starts a server in the build directory (by default dist).
+
+*** vite --help
+Full list of CLI options.
+
+*** pnpm create vite
+Scaffolding your first vite project.
+( ~pnpm create vite@latest~ scaffold a vite project )
+( ~pnpm create vite my-app -- --template vanilla~ scaffold a Vite + Vanilla project )
+( ~pnpm create vite my-vue-app --template vue --no-interactive~ create a project without interactive prompts )
+
+** Images
+*** convert input.png output.jpg
+Convert the image format.
+[ /-resize 30%/ resize /-quality 20%/ quality ]
+
+*** mogrify -format png * .jpg
+Convert and compress all /jpg/ images in the current directory to /png/.
+
+*** jpegoptim -d dir -m 75 image.jpg
+Reduce JPG image to a quality of /75/ (suggested scale 60-80) and send to other directory /dir/.
+*Overwrites the original image* if the /-d dir/ option is not set. Interesting feature is that it accepts the exact size of the target file.
+[ /-n/ simulate compression and see what will be the size /-d/ save in other directory  /-S 100k/ try to optimize file to given size (percentage can also be used *-S 30%*) /-m 60/ sets  the  maximum  image quality factor (60 high quality-low size 10 low quality-high size) (disables lossless optimization mode, which is by default enabled) ]
+( ~jpegoptim -S 20k -d dir image.jpg~ reduce to specif size )
+( ~jpegoptim -n image.jpg~ only shows possible results )
+( ~convert input.jpeg -quality 80 output.jpeg~ compress JPEG images )
+( ~optipng file.png~ compress and optimization )
+( ~optipng *.png~ optimize the all .png files in a folder )
+
+*** pngquant -Q 70-95 image.png
+Converter and lossy PNG image.
+*Overwrites the original image* if these /-f --ext .png/ options are set.
+[ /-f/ overwrite existing output files /--ext .png/ file extension to use for output files instead of the default 'fs8.png' /-o file/ output to *file* name /-Q min-man/ will use the least amount of colors required to meet or exceed the max quality 0 worst to 100 perfect ]
+( ~pngquant -f --ext .png -Q 65-80 image.png~ overwrites the original images )
+( ~pngquant 64 image.png~ resulting image will have /64/ colors )
+
+*** gifsicle -b --colors 256 file.gif
+To optimize (compress) /file.gif/. Reduce  the number of distinct colors in each output GIF to /256/.
+( ~gifsicle -e file.gif~ to explode /file.gif/ into its component frames )
+( ~gifsicle -I file.gif~  to print information )
+( ~ffmpeg -i input.gif -vf "scale=iw/2:ih/2" -loop 0 output.gif~ compress a GIF file )
+
+*** optipng -out output.png   input.png
+Reduce the PNG image to what thinks it's probably the most effective and rename it in a new /output/ file. *Overwrites the original image* if the /-out/ option is not set.
+[ /-out/  write  output  file to file /-dir/  write the output files to directory /-o/ select the optimization level (0 minimal effort 1 probably the most effective 2 higher enable) ]
+( ~optipng -out output -o1 input~ equivalent command )
+( ~pngquant -f --ext .png image.png; opting image.png~ a little more compression )
+
+*** magick xx.png -quality 90% xx.jpg
+Convert png to jpg.
+When /quality/ is omitted, default is 92.
+( ~magick xx.png -flatten yy.png~ remove transparency with white )
+( ~for ff in *.png; do magick $ff $ff.jpg; done~ convert all png in a dir to jpg )
+
+** Fonts
+*** woff2_compress input-font.ttf
+Convert a TrueType font (.ttf) to WOFF2. Need to install the woff2 package.
+( ~libwoff1~ converting fonts to WOFF 2.0 )
+
+*** sfnt2woff-zopfli input-font.ttf
+Create WOFF files with Zopfli compression.
+( ~ttf2woff input-font.ttf output-font.woff~ convert a TrueType font (.ttf) to WOFF )
+
+*** fontforge
+For converting from ttf to svg.
+
+*** batik ttf2svf
+For converting from ttf to svg.
+
+* Programs
 ** rsync
 *** rsync -b file dir/
 Transfer /file/ from the current directory to the directory /dir/.
@@ -1608,44 +1905,6 @@ The destination path is used without the initial forward slash. It is always the
 *** rclone command --help
 For more information about a command.
 
-** Image
-*** mogrify -format png * .jpg
-Convert and compress all /jpg/ images in the current directory to /png/.
-( ~convert input.png output.jpg~ convert the image format [ /-resize 30%/ resize /-quality 20%/ quality ] )
-
-*** jpegoptim -d dir -m 75 image.jpg
-Reduce JPG image to a quality of /75/ (suggested scale 60-80) and send to other directory /dir/.
-*Overwrites the original image* if the /-d dir/ option is not set. Interesting feature is that it accepts the exact size of the target file.
-[ /-n/ simulate compression and see what will be the size /-d/ save in other directory  /-S 100k/ try to optimize file to given size (percentage can also be used *-S 30%*) /-m 60/ sets  the  maximum  image quality factor (60 high quality-low size 10 low quality-high size) (disables lossless optimization mode, which is by default enabled) ]
-( ~jpegoptim -S 20k -d dir image.jpg~ reduce to specif size )
-( ~jpegoptim -n image.jpg~ only shows possible results )
-( ~convert input.jpeg -quality 80 output.jpeg~ compress JPEG images )
-
-*** pngquant -Q 70-95 image.png
-Converter and lossy PNG image.
-*Overwrites the original image* if these /-f --ext .png/ options are set.
-[ /-f/ overwrite existing output files /--ext .png/ file extension to use for output files instead of the default 'fs8.png' /-o file/ output to *file* name /-Q min-man/ will use the least amount of colors required to meet or exceed the max quality 0 worst to 100 perfect ]
-( ~pngquant -f --ext .png -Q 70-95 image.png~ overwrites the original images )
-( ~pngquant 64 image.png~ resulting image will have /64/ colors )
-
-*** gifsicle -b --colors 256 file.gif
-To optimize (compress) /file.gif/. Reduce  the number of distinct colors in each output GIF to /256/.
-( ~gifsicle -e file.gif~ to explode /file.gif/ into its component frames )
-( ~gifsicle -I file.gif~  to print information )
-( ~ffmpeg -i input.gif -vf "scale=iw/2:ih/2" -loop 0 output.gif~ compress a GIF file )
-
-*** optipng -out output.png   input.png
-Reduce the PNG image to what thinks it's probably the most effective and rename it in a new /output/ file. *Overwrites the original image* if the /-out/ option is not set.
-[ /-out/  write  output  file to file /-dir/  write the output files to directory /-o/ select the optimization level (0 minimal effort 1 probably the most effective 2 higher enable) ]
-( ~optipng -out output -o1 input~ equivalent command )
-( ~pngquant -f --ext .png image.png; opting image.png~ a little more compression )
-
-*** magick xx.png -quality 90% xx.jpg
-Convert png to jpg.
-When /quality/ is omitted, default is 92.
-( ~magick xx.png -flatten yy.png~ remove transparency with white )
-( ~for ff in *.png; do magick $ff $ff.jpg; done~ convert all png in a dir to jpg )
-
 ** yt-dlp
 *** # yt-dlp -U
 Update yt-dlp program to the latest stable version.
@@ -1664,33 +1923,6 @@ Download only the write *automatically* generate subtitle file in english origin
 
 *** yt-dlp URL --downloader ffmpeg --downloader-args "ffmpeg_i:-ss 12 -to 123"
 Download only the portion from /12/ seconds to /123/ seconds.
-
-** OpenSSH
-*** ssh remote_username@remote_host
-Log in to a remote host.
-You may omit /remote_username@/ if your local username is the same as on /remote_host/.
-[ /-port 123/ port to connect ot on the remote host ]
-( ~ssh remote_host~ if the local username is the same as on remote_host )
-( ~ssh remote_host 'ls *' > file~ perform an ls on the remote system and redirect the output to a file on the local system )
-( ~ssh remote_host 'ls * > file'~ perform an ls on the remote system and redirect the output to a file on the remote machine )
-( ~ssh -X remote_host~ launch and run an X client program (a graphical application) on a remote system )
-( ~exit~ exit ssh connection )
-
-*** ssh remote_host 'tar cf - dir' | tar xf -
-Copy a directory /dir/ from a remote system to the local system.
-( ~tar zcvf - dir | ssh remote_host tar zxvf -~  copies a directory dir to another host )
-
-*** scp user@host:file .
-Copy a /file/ from a remote host to the current directory.
-~SCP~ can only be used for transferring files, and it is non-interactive. ~SFTP~ is more elaborate, and allows interactive commands to do things like creating directories, deleting directories and files.
-( ~scp host:file .~ if the local username is the same as on remote host )
-( ~scp file user@host:dir~ copy a file from the local machine to a remote host )
-( ~scp user1@host1:file user2@host2:dir~ copy a file from one remote host to a second remote host )
-( ~sftp host~ conect to FTP-like server )
-
-*** # ssh-keygen -t rsa -N '' -f /etc/ssh/ssh_host_rsa_key
-Create SSH protocol version 2 key.
-( ~# ssh-keygen -t dsa -N '' -f /etc/ssh/ssh_host_dsa_key~ )
 
 ** ffmpeg
 *** ffmpeg -i name
@@ -1737,74 +1969,130 @@ Convert an input media file to a different video encoder /libx264/, which is a H
 *** ffmpeg -txt_format text -i input.mp4 out.srt
 Read and/or extract subtitles from embedded subtitles tracks.
 
-** font-tools
-*** woff2_compress input-font.ttf
-Convert a TrueType font (.ttf) to WOFF2. Need to install the woff2 package.
-( ~libwoff1~ converting fonts to WOFF 2.0 )
+** keyd
+*** keyd.rvaiya list-keys
+List valid key names.
 
-*** sfnt2woff-zopfli input-font.ttf
-Create WOFF files with Zopfli compression.
-( ~ttf2woff input-font.ttf output-font.woff~ convert a TrueType font (.ttf) to WOFF )
+*** keyd.rvaiya monitor
+Get key names/device ids.
 
-*** fontforge
-For converting from ttf to svg.
+*** sudo keyd.rvaiya reload
+Reload config files.
 
-*** batik ttf2svf
-For converting from ttf to svg.
-
-** docker
-*** docker build -t hlw_test .
-Build the image (reads the Dockerfile in the current directory and applies the identifier /hlw_test/ to the image).
-
-*** docker images
-Verify image.
-
-*** docker run -it hlw_test
-Start container with the /hlw_test/ image.
-
-*** docker ps
-Show the currently running containers.
-[ /-a/ see all ]
-
-*** rm
-Remove a terminated container.
-( ~rmi~ remove an image )
-
-** Misc
 *** sudo systemctl status keyd
 Show keyd status.
-( ~sudo keyd.rvaiya reload~ reload config files )
-( ~keyd.rvaiya monitor~ get key names/device ids )
-( ~sudo systemctl enable keyd --now~ start keyd )
-( ~keyd.rvaiya list-keys~ list valid key names )
-( ~keyd bind '- = C=c'~ apply the supplied binding )
-( ~man keyd~ man page )
 
-*** logkeys --start --output file
-Start logging to a custom log file.
-( ~logkeys --start~ start logging to default log file )
-( ~logkeys --start --device event11~ use a custom event device, e. g. wireless keyboard )
-( ~logkeys --start --keymap=file.map --device event11~ use file.map as input keymap for processing pressed keys )
-( ~logkeys --kill~ end running logkeys process )
-( ~logkeys --no-timestamps~ doesn't prepend timestamp to each line of log file )
+*** sudo systemctl enable keyd --now
+Start keyd.
 
+*** keyd bind '- = C=c'
+Apply the supplied binding.
+
+*** man keyd.rvaiya
+Man page.
+
+** input-remapper
 *** input-remapper-gtk
 Start input-remapper.
-( ~input-remapper-control --symbol-names~ list of possibilities key values )
-( ~input-remapper-control --list-devices~ list available device names )
-( ~systemctl status input-remapper~ status of service )
+
+*** input-remapper-control --symbol-names
+List of possibilities key values.
+
+*** input-remapper-control --list-devices
+List available device names.
+
+*** input-remapper-control --command stop --device "Razer Razer Naga Trinity"
+Stop injecting.
+
+*** input-remapper-gtk -d
+Check the output of if stuff doesn't work.
+
+*** systemctl status input-remapper
+Status of service.
 ( ~systemctl stop input-remapper~ stop the service will stop all ongoing injections )
-( ~input-remapper-control --command stop --device "Razer Razer Naga Trinity"~ stop injecting )
-( ~input-remapper-gtk -d~ check the output of if stuff doesn't work )
-( ~sudo input-remapper-service & input-remapper-control --command hello~ make sure it works )
 
-*** torbrowser-launcher
-Launch the browser.
-( ~torbrowser-launcher --settings~ settings browser )
+*** sudo input-remapper-service & input-remapper-control --command hello
+Make sure it works.
 
-*** notify-send "Dwell Click on"
-A program to send desktop notifications.
-libnotify-bin must be installed.
+** logkeys
+*** logkeys --start --output file
+Start logging to a custom log file.
+
+*** logkeys --start
+Start logging to default log file.
+
+*** logkeys --start --device event11
+Use a custom event device, e. g. wireless keyboard.
+
+*** logkeys --start --keymap=file.map --device event11
+Use file.map as input keymap for processing pressed keys.
+
+*** logkeys --kill
+End running logkeys process.
+
+*** logkeys --no-timestamps
+Doesn't prepend timestamp to each line of log file.
+
+** ssh
+*** ssh remote_username@remote_host
+Log in to a remote host.
+You may omit /remote_username@/ if your local username is the same as on /remote_host/.
+[ /-port 123/ port to connect ot on the remote host ]
+( ~ssh remote_host~ if the local username is the same as on remote_host )
+( ~ssh remote_host 'ls *' > file~ perform an ls on the remote system and redirect the output to a file on the local system )
+( ~ssh remote_host 'ls * > file'~ perform an ls on the remote system and redirect the output to a file on the remote machine )
+( ~ssh -X remote_host~ launch and run an X client program (a graphical application) on a remote system )
+( ~exit~ exit ssh connection )
+
+*** ssh remote_host 'tar cf - dir' | tar xf -
+Copy a directory /dir/ from a remote system to the local system.
+( ~tar zcvf - dir | ssh remote_host tar zxvf -~  copies a directory dir to another host )
+
+*** scp user@host:file .
+Copy a /file/ from a remote host to the current directory.
+~SCP~ can only be used for transferring files, and it is non-interactive. ~SFTP~ is more elaborate, and allows interactive commands to do things like creating directories, deleting directories and files.
+( ~scp host:file .~ if the local username is the same as on remote host )
+( ~scp file user@host:dir~ copy a file from the local machine to a remote host )
+( ~scp user1@host1:file user2@host2:dir~ copy a file from one remote host to a second remote host )
+( ~sftp host~ conect to FTP-like server )
+
+*** # ssh-keygen -t rsa -N '' -f /etc/ssh/ssh_host_rsa_key
+Create SSH protocol version 2 key.
+( ~# ssh-keygen -t dsa -N '' -f /etc/ssh/ssh_host_dsa_key~ )
+
+** flatpak
+*** flatpak remotes
+List the remotes that you have configured on your system.
+( ~flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo~ add a remote. flathub is the local name that is given to the remote. The URL points to the remote’s .flatpakrepo file. --if-not-exists stops the command from producing an error if the remote already exists )
+( ~flatpak remote-delete flathub~ remove a remote )
+
+*** flatpak search gimp
+Return any applications matching the search terms.
+
+*** flatpak install flathub org.gimp.GIMP
+Install an application.
+flathub is the name of the remote the application is to be installed from, and org.gimp.GIMP is the ID of the application.
+( ~flatpak install gimp~ install method since Flatpak 1.2 )
+( ~flatpak install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref~ specify a .flatpakref instead of manually providing the remote and application ID )
+
+*** flatpak run org.gimp.GIMP
+Run application.
+
+*** flatpak update
+Update all your installed applications and runtimes to the latest version.
+
+*** flatpak list
+List the applications and runtimes you have installed.
+( ~flatpak list --app~ just list installed applications )
+
+*** flatpak uninstall org.gimp.GIMP
+Remove an application.
+
+*** flatpak uninstall --unused
+Remove runtimes and extensions that are not used by installed applications.
+( ~flatpak repair~ fix inconsistencies with your local installation )
+( ~flatpak permission-reset org.gimp.GIMP~ reset all portal permissions for an app )
+( ~flatpak history~ find out what changes have been made to your Flatpak installation over time, you can take a look at the logs (since 1.2) )
 
 * Git
 ** Basics
@@ -1828,16 +2116,16 @@ Lists the commits made in that repository in reverse chronological order.
 ( ~git shortlog~ Is used to summarize the output of git log )
 
 *** git clone <url>
-Get a copy of an existing Git repository.
+Get a copy (create a local copy) of an existing Git repository.
 It creates a new directory, goes into it and runs ~git init~ to make it an empty Git repository, adds a remote (~git remote add~) to the URL that you pass it (by default named ~origin~), runs a ~git fetch~ from that remote repository and then checks out the latest commit into your working directory with ~git checkout~.
 [ /-o <name>/ rename default remote branch ]
 ( ~git clone <url> <dir>~ clone the repository into another directory name )
 
 *** git add <file>
 Specify the file /file/ to be tracked or staged or merge-conflicted.
-( ~git add .~ stage all (new, modified, deleted) files in current folder (not higher directories) )
-( ~git add -u~ stage modified and deleted files only (*not new files*) )
+( ~git add .~ stage all (new, modified, but NOT deleted) files in current dir and subdirs (not higher directories) )
 ( ~git add -A~ stage *all* (new, modified, deleted) files )
+( ~git add -u~ (update) stage modified and deleted  of *already-tracked* files only (*not new files*) )
 ( ~git add --ignore-removal .~ stage new and modified files only (*not delete files*) )
 
 *** git commit -m "message"
@@ -1867,6 +2155,121 @@ Fetches data from the server you originally cloned from and automatically tries 
 Switch branches and check content out into your working directory.
 When run it without any additional arguments, it typically checks out the current branch, updating your working directory to match that branch's latest commit.
 
+** Branching
+*** git branch
+List of current branchs.
+[ /-v/ last commit on each branch /--merged/ show which branches are already merged into the branch /--no-merged/ filter no merge branch /--all/ all branches /-vv/ see what tracking branches you have set up. List out your local branches with more information including what each branch is tracking and if your local branch is ahead, behind or both ]
+( ~git branch -vv~ shows all your local branches with their upstream tracking info and commit status )
+
+*** git branch name
+Create a new branch called /name/ .
+[ /-D/ force remove /-f/ Reset <branchname> to <start-point>, *even if <branchname> exists already*. Without -f, git branch refuses to change an existing branch /-m/ Move/rename a branch, together with its config and reflog /-M/ shortcut for -m -f allow renaming the branch even if the new branch name already exists ]
+( ~git branch -d namebranch~ delete the branch /namebranch/ )
+( ~git branch --move bad-name corrected-name~ replaces /bad-name/ branch with /corrected-name/ branch, but this change is only local for now )
+( ~git push --set-upstream origin corrected-name~  corrected branch name on the remote )
+( ~git push origin --delete bad-branch-name~ delete bad name from remote )
+( ~git checkout -b <branch> <remote>/<branch>~ to set up a local branch with a different name than the remote branch. Then, local branch /<branch>/ will automatically pull from /<remote>/<branch>/ )
+
+*** git branch -f main HEAD~3
+Moves (by force) the main branch to three parents behind HEAD (reassign a branch to a commit).
+
+*** git switch -c <newbranch>
+Create a new branch and switch to it.
+[ /-c/ create ]
+( ~git branch newbranch ; git switch newbranch~ equivalent command )
+( ~git switch <name>~ to switch to an existing branch )
+( ~git switch -~ return to previously checked out branch )
+
+*** git checkout
+Switch branches and check content out into your working directory.
+When run it without any additional arguments, it typically checks out the current branch, updating your working directory to match that branch's latest commit.
+
+*** git checkout -b <name>
+Create a new branch AND check it out at the same time.
+
+*** git checkout main^
+Moving upwards one commit from /main/.
+Each time you append that to a ref name, you are telling Git to find the parent of the specified commit.
+So saying main^ is equivalent to "the first parent of main".
+main^^ is the grandparent (second-generation ancestor) of main.
+( ~git checkout HEAD~3~ moving upwards three times )
+( ~git checkout main^^~ moving upwards to the grandparent )
+
+*** git checkout --track origin/serverfix
+To start tracking branches .
+
+*** git branch -u origin/serverfix
+If you already have a local branch and want to set it to a remote branch you just pulled down, or want to change the upstream branch you’re tracking.
+[ /-u/ upstream to ]
+
+** Merging & Rebasing
+*** git merge namebranch
+Merge the /namebranch/ with the current branch.
+[ /--squash/  takes all the work on the merged branch and squashes it into one changeset producing the repository state as if a real merge happened, without actually making a merge commit. This means your future commit will have one parent only and allows you to introduce all the changes from another branch and then make more changes before recording the new commit /--verify-signatures/  inspect and reject when merging a commit that does not carry a trusted GPG signature /-S/ sign the resulting merge commit itself ]
+( ~git merge origin/serverfix~ merge work into current working branch )
+( ~git merge --verify-signatures -S signed-branch~ verifies that every commit in the branch to be merged is signed and furthermore signs the resulting merge commit )
+
+*** git cherry-pick <Commit1> <Commit2> <...>
+It takes the change (patch) that was introduced in a commit and tries to reapply (re-introduce) it on the branch you’re currently on. This is useful to only take one or two commits from a branch individually rather than merging in the branch which takes all the changes or if you only have one commit on a topic branch and you’d prefer to cherry-pick it rather than run rebase.
+
+It's a very straightforward way of saying that you would like to copy a series of commits below your current location (HEAD).
+
+*** git rebase main
+Take all the changes that were committed on one branch and replay them on a different branch.
+(is basically an automated ~cherry-pick~. It determines a series of commits and then ~cherry-picks~ them one by one in the same order somewhere else)
+[ /-i/ interactive ]
+( ~git rebase <basebranch> <topicbranch>~ equivalent command whitout switch )
+
+*** git rebase --onto main server client
+Take the /client/ branch, figure out the patches since it diverged from the /server/ branch, and replay these patches in the /client/ branch as if it was based directly off the master branch instead.
+
+*** git mergetool
+A graphical tool to resolve merge conflicts.
+
+** Undoing Things
+*** git restore --staged <file>
+To unstage the file /file/.
+( ~git reset HEAD <file>~ to unstage the file /file/. It moves around the HEAD pointer and optionally changes the index or staging area )
+( ~git restore --staged .~ revert the git add . command )
+
+*** git restore <file>
+Discard changes in working directory of the file /file/. *Careful* any local changes made to that file are gone. Git just replaced that file with the last staged or committed version. (modify -> unmodify)
+
+*** git commit --amend
+Redo last commit (if commit and then realize forgot to stage the changes in a file wanted to add to this commit). This command takes staging area and uses it for the commit. (*Is used to modify the most recent commit. It combines changes in the staging environment with the latest commit, and creates a new commit. This new commit replaces the latest commit entirely*)
+[ /--no-edit/ will allow you to make the amendment to your commit without changing its commit message /--all/ automatically stage files that have been modified and deleted, but new files you have not told Git about are not affected ]
+( ~git commit --amend -m "an updated commit message"~ adding the /-m/ option allows you to pass in a new message from the command line without being prompted to open an editor )
+( ~git push --force~ force push the amended commit to overwrite the previous one (if you've already pushed a commit to the remote repository and then realized it was a mistake, you can amend the commit and push the changes) )
+
+*** git reset
+We use when we want to move the repository back to a previous commit, discarding any changes made after that commit. "*rewriting history*;" git reset will move a branch backwards as if the commit had never been made in the first place.
+[ /--hard/ change the working directory, this option makes it possible for this command to lose your work ]
+( ~git reset HEAD~1~ reset to the last commit and preserve changes done (move the HEAD pointer back one commit) )
+( ~git reset --soft HEAD~1~ reset to the last commit and preserve changes done and index(stage area) )
+( ~git reset --hard HEAD~1~ reset to the last commit and also remove all unstaged changes (files are reset to their state at last commit) )
+( ~git reflog~ reset (if destroy a commit, but then discover you needed it after all) )
+
+*** git revert
+Is essentially a reverse ~git cherry-pick~. It creates a new commit that applies the exact opposite of the change introduced in the commit you’re targeting, essentially undoing or reverting it. (we use when we want to take a previous commit and add it as a new commit, keeping the log intact.)
+(/reset/ if the commit being reset only exists *locally*. /revert/ creates a new commit that undoes the changes, so if the commit to revert *has already been pushed to a shared repository*, it is best to use revert as it doesn't overwrite commit history)
+(While resetting works great for local branches on your own machine, its method of "rewriting history" doesn't work for remote branches that others are using. In order to reverse changes and share those reversed changes with others, we need to use git revert.)
+( ~git revert -m 1 HEAD~ the /-m 1/ flag indicates which parent is the “mainline” and should be kept )
+
+*** git merge --abort
+Back out of the merge. (tries to revert back to your state before you ran the merge. The only cases where it may not be able to do this perfectly would be if you had unstashed, uncommitted changes in your working directory when you ran it)
+( ~git merge -Xignore-all-space whitespace~ if you see that you have a lot of whitespace issues in a merge, you can simply abort it and do it again (ignores whitespace *completely* when comparing lines) )
+
+*** git rm <file>
+Removes a file from Git (remove it from tracked files (remove it from staging area and also removes the file from working directory)).
+[ /-f/ force the removal (if modified the file or had already added it to the staging area) /--cached/ keep the file in working tree but remove it from staging area ]
+( ~git rm log/\*.log~ removes all files that have the /.log/ extension in the /log// directory (backslash (/\/) in front of the (/*/) is necessary because Git does its own filename expansion in addition to shell’s filename expansion) )
+( ~git rm \*~~ removes all files whose names end with a /~/ )
+( ~git rm --cached <file>~ only remove file from the staging area but leaving it in the working directory )
+
+*** git mv <from> <to>
+Rename a file. (Git doesn’t explicitly track file movement. If rename a file in Git, no metadata is stored in Git that tells it renamed the file)
+( ~mv file_from file_to ;git rm file_from ;git add file_to~ equivalent command )
+
 ** Remotes
 *** git remote -v
 Shows a list of existing remotes.
@@ -1885,6 +2288,7 @@ Add a new remote Git repository as a shortname (link to a repository). Is a mana
 
 *** git fetch <remote>
 Fetches any new work that has been pushed to that server since you cloned (or last fetched from) it. (only downloads the data to your local repository — it doesn’t automatically merge it with any of your work or modify what you’re currently working on).
+git fetch performs two main steps, and two main steps only. It: downloads the commits that the remote has but are missing from our local repository, and... updates where our remote branches point (for instance, origin/main) (you can think of running git fetch as a *download* step)
 After [[git remote add][git remote add <shortname> <url>]], /git fetch <remote>/ can then be used to create and update remote-tracking branches <remote>/<branch>.
 [ /--all/ totally up to date ahead and behind numbers ]
 ( ~git fetch origin refs/pull/958/head~ fetching the reference directly (connect to the /origin/ remote, and download the ref named /refs/pull/958/head/) )
@@ -1893,9 +2297,11 @@ After [[git remote add][git remote add <shortname> <url>]], /git fetch <remote>/
 Fetches data from the server you originally cloned from and automatically tries to merge it into the code you’re currently working on. (automatically sets up local master branch to track the remote master branch on the server you cloned from)
 [ /--verify-signatures/  inspect and reject when merging a commit that does not carry a trusted GPG signature ]
 ( ~git fetch ; git merge FETCH_HEAD~ equivalent command )
+( ~git pull --rebase~ shorthand for a fetch and a rebase )
 
 *** git push <remote> <branch>
 Push /branch/ to origin server /remote/ . Push any commits you’ve done back up to the server. Calculate what your local database has that the remote one does not, and then pushes the difference into the other repository.
+You can think of git push as a command to "*publish*" your work.
 [ /-u/ configures the branches for easier pushing and pulling later /-f/ when rebased the branch to your push command in order to be able to replace the branch on the server with a commit that isn’t a descendant of it ]
 ( ~git push origin name:othername~ this format push a local branch into a remote branch that is named differently (rename) )
 ( ~git push origin --delete serverfix~ delete /serverfix/ branch from the server )
@@ -1933,103 +2339,6 @@ Filter out whitespace differences.
 
 *** git difftool
 Launches an external tool to show difference between two trees.
-
-** Branching
-*** git branch
-List of current branchs.
-[ /-v/ last commit on each branch /--merged/ show which branches are already merged into the branch /--no-merged/ filter no merge branch /--all/ all branches /-vv/ see what tracking branches you have set up. List out your local branches with more information including what each branch is tracking and if your local branch is ahead, behind or both ]
-
-*** git branch name
-Create a new branch called /name/ .
-[ /-D/ force remove /-f/ Reset <branchname> to <start-point>, *even if <branchname> exists already*. Without -f, git branch refuses to change an existing branch /-m/ Move/rename a branch, together with its config and reflog /-M/ shortcut for -m -f allow renaming the branch even if the new branch name already exists ]
-( ~git branch -d namebranch~ delete the branch /namebranch/ )
-( ~git branch --move bad-name corrected-name~ replaces /bad-name/ branch with /corrected-name/ branch, but this change is only local for now )
-( ~git push --set-upstream origin corrected-name~  corrected branch name on the remote )
-( ~git push origin --delete bad-branch-name~ delete bad name from remote )
-( ~git checkout -b <branch> <remote>/<branch>~ to set up a local branch with a different name than the remote branch. Then, local branch /<branch>/ will automatically pull from /<remote>/<branch>/ )
-
-*** git switch -c <newbranch>
-Create a new branch and switch to it.
-[ /-c/ create ]
-( ~git branch newbranch ; git switch newbranch~ equivalent command )
-( ~git switch <name>~ to switch to an existing branch )
-( ~git switch -~ return to previously checked out branch )
-
-*** git checkout
-Switch branches and check content out into your working directory.
-When run it without any additional arguments, it typically checks out the current branch, updating your working directory to match that branch's latest commit.
-
-*** git checkout --track origin/serverfix
-To start tracking branches .
-
-*** git branch -u origin/serverfix
-If you already have a local branch and want to set it to a remote branch you just pulled down, or want to change the upstream branch you’re tracking.
-[ /-u/ upstream to ]
-
-** Merging & Rebasing
-*** git merge namebranch
-Merge the /namebranch/ with the current branch.
-[ /--squash/  takes all the work on the merged branch and squashes it into one changeset producing the repository state as if a real merge happened, without actually making a merge commit. This means your future commit will have one parent only and allows you to introduce all the changes from another branch and then make more changes before recording the new commit /--verify-signatures/  inspect and reject when merging a commit that does not carry a trusted GPG signature /-S/ sign the resulting merge commit itself ]
-( ~git merge origin/serverfix~ merge work into current working branch )
-( ~git merge --verify-signatures -S signed-branch~ verifies that every commit in the branch to be merged is signed and furthermore signs the resulting merge commit )
-
-*** git cherry-pick e43a6
-It takes the change (patch) that was introduced in a commit and tries to reapply (re-introduce) it on the branch you’re currently on. This is useful to only take one or two commits from a branch individually rather than merging in the branch which takes all the changes or if you only have one commit on a topic branch and you’d prefer to cherry-pick it rather than run rebase.
-
-*** git rebase main
-Take all the changes that were committed on one branch and replay them on a different branch.
-(is basically an automated ~cherry-pick~. It determines a series of commits and then ~cherry-picks~ them one by one in the same order somewhere else)
-[ /-i/ interactive ]
-( ~git rebase <basebranch> <topicbranch>~ equivalent command whitout switch )
-
-*** git rebase --onto main server client
-Take the /client/ branch, figure out the patches since it diverged from the /server/ branch, and replay these patches in the /client/ branch as if it was based directly off the master branch instead.
-
-*** git mergetool
-A graphical tool to resolve merge conflicts.
-
-** Undoing Things
-*** git restore --staged <file>
-To unstage the file /file/.
-( ~git reset HEAD <file>~ to unstage the file /file/. It moves around the HEAD pointer and optionally changes the index or staging area )
-( ~git restore --staged .~ revert the git add . command )
-
-*** git restore <file>
-Discard changes in working directory of the file /file/. *Careful* any local changes made to that file are gone. Git just replaced that file with the last staged or committed version. (modify -> unmodify)
-
-*** git commit --amend
-Redo last commit (if commit and then realize forgot to stage the changes in a file wanted to add to this commit). This command takes staging area and uses it for the commit. (*Is used to modify the most recent commit. It combines changes in the staging environment with the latest commit, and creates a new commit. This new commit replaces the latest commit entirely*)
-[ /--no-edit/ will allow you to make the amendment to your commit without changing its commit message /--all/ automatically stage files that have been modified and deleted, but new files you have not told Git about are not affected ]
-( ~git commit --amend -m "an updated commit message"~ adding the /-m/ option allows you to pass in a new message from the command line without being prompted to open an editor )
-( ~git push --force~ force push the amended commit to overwrite the previous one (if you've already pushed a commit to the remote repository and then realized it was a mistake, you can amend the commit and push the changes) )
-
-*** git reset
-We use when we want to move the repository back to a previous commit, discarding any changes made after that commit.
-[ /--hard/ change the working directory, this option makes it possible for this command to lose your work ]
-( ~git reset HEAD~1~ reset to the last commit and preserve changes done (move the HEAD pointer back one commit) )
-( ~git reset --soft HEAD~1~ reset to the last commit and preserve changes done and index(stage area) )
-( ~git reset --hard HEAD~1~ reset to the last commit and also remove all unstaged changes (files are reset to their state at last commit) )
-( ~git reflog~ reset (if destroy a commit, but then discover you needed it after all) )
-
-*** git revert
-Is essentially a reverse ~git cherry-pick~. It creates a new commit that applies the exact opposite of the change introduced in the commit you’re targeting, essentially undoing or reverting it. (we use when we want to take a previous commit and add it as a new commit, keeping the log intact.)
-(/reset/ if the commit being reset only exists *locally*. /revert/ creates a new commit that undoes the changes, so if the commit to revert has already been pushed to a shared repository, it is best to use revert as it doesn't overwrite commit history)
-( ~git revert -m 1 HEAD~ the /-m 1/ flag indicates which parent is the “mainline” and should be kept )
-
-*** git merge --abort
-Back out of the merge. (tries to revert back to your state before you ran the merge. The only cases where it may not be able to do this perfectly would be if you had unstashed, uncommitted changes in your working directory when you ran it)
-( ~git merge -Xignore-all-space whitespace~ if you see that you have a lot of whitespace issues in a merge, you can simply abort it and do it again (ignores whitespace *completely* when comparing lines) )
-
-*** git rm <file>
-Removes a file from Git (remove it from tracked files (remove it from staging area and also removes the file from working directory)).
-[ /-f/ force the removal (if modified the file or had already added it to the staging area) /--cached/ keep the file in working tree but remove it from staging area ]
-( ~git rm log/\*.log~ removes all files that have the /.log/ extension in the /log// directory (backslash (/\/) in front of the (/*/) is necessary because Git does its own filename expansion in addition to shell’s filename expansion) )
-( ~git rm \*~~ removes all files whose names end with a /~/ )
-( ~git rm --cached <file>~ only remove file from the staging area but leaving it in the working directory )
-
-*** git mv <from> <to>
-Rename a file. (Git doesn’t explicitly track file movement. If rename a file in Git, no metadata is stored in Git that tells it renamed the file)
-( ~mv file_from file_to ;git rm file_from ;git add file_to~ equivalent command )
 
 ** Commit History
 *** git log
@@ -2204,7 +2513,7 @@ Starts up an HTTPD server on port 1234 and then automatically starts a web brows
 ( ~git instaweb --httpd=webrick --stop~ shut down the server )
 
 ** Github CLI
-*** gh repo create --public <name-project>
+*** gh repo create --public <project-name>
 Create a new public repository on github.
 
 * Miscellaneous
@@ -2311,6 +2620,24 @@ Show input device configuration on the machine (work on X11).
 *** xlogo
 Program displays the X Window System logo. Useful for testing windows.
 ( ~xeyes~ a follow the mouse X demo )
+
+** Docker
+*** docker build -t hlw_test .
+Build the image (reads the Dockerfile in the current directory and applies the identifier /hlw_test/ to the image).
+
+*** docker images
+Verify image.
+
+*** docker run -it hlw_test
+Start container with the /hlw_test/ image.
+
+*** docker ps
+Show the currently running containers.
+[ /-a/ see all ]
+
+*** rm
+Remove a terminated container.
+( ~rmi~ remove an image )
 
 * Shell
 ** Assignment

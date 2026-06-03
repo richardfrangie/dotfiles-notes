@@ -717,7 +717,7 @@ When that works, extend it to style the button for the currently selected tab di
 #+end_src
 
 *** Nullish coalescing operator (??)
-Is a logical operator that returns its right-hand side operand when its left-hand side operand is ~null~ or ~undefined~, and otherwise returns its left-hand side operand.
+The nullish (~null~ or ~undefined~) operator is a logical operator that returns its right-hand side operand when its left-hand side operand is ~null~ or ~undefined~, and otherwise returns its left-hand side operand.
 
 *Note*: that behavior is often useful. When you want to test whether a value has a real value instead of ~null~ or ~undefined~.
 
@@ -729,6 +729,49 @@ Is a logical operator that returns its right-hand side operand when its left-han
   const baz = 0 ?? 42;
   console.log(baz); // 0
 
+#+end_src
+
+*** Optional chaining (?.)
+The optional chaining (~?.~) operator accesses an object's property or calls a function. If the object accessed or function called using this operator is ~undefined~ or ~null~, the expression short circuits and evaluates to ~undefined~ instead of throwing an error.
+
+The ~?.~ operator is like the ~.~ chaining operator, except that instead of causing an error if a reference is nullish (~null~ or ~undefined~), the expression short-circuits with a return value of undefined. When used with function calls, it returns ~undefined~ if the given function does not exist.
+
+This results in shorter and simpler expressions when accessing chained properties when the possibility exists that a reference may be missing. It can also be helpful while exploring the content of an object when there's no known guarantee as to which properties are required.
+
+#+begin_src javascript
+
+  // Syntax
+  obj?.prop
+  obj?.[expr]
+  func?.(args)
+
+
+  const adventurer = {
+    name: "Alice",
+    cat: {
+      name: "Dinah",
+    },
+  };
+
+  const dogName = adventurer.dog?.name;
+  console.log(dogName);
+  // Expected output: undefined
+
+  const horseName = adventurer.horse.name;
+  console.log(horseName);
+  // TypeError: Cannot read properties of undefined (reading 'name')
+
+  console.log(adventurer.someNonExistentMethod?.());
+  // Expected output: undefined
+
+
+  static symbol(suit) {
+    const suitSymbols = {
+      diamond: '♦', club: '♣', spade: '♠', heart: '♥'
+    };
+    const normalized = suit?.toLowerCase();
+    return suitSymbols[normalized] ?? '♦'; // Default diamond
+  }
 #+end_src
 
 ** Compound assignment operators
@@ -6565,6 +6608,66 @@ A checkbox's value is only included in the submitted data upon form submission i
 
 #+end_src
 
+*** ShadowRoots
+**** adoptedStyleSheets
+The ~adoptedStyleSheets~ property of the [[ShadowRoot]] interface sets an array of constructed stylesheets to be used by the shadow DOM subtree.
+
+*Note*: A constructed stylesheet is a stylesheet created programmatically using the [[CSSStyleSheet()]] constructor (as compared to one created by a user-agent when importing a stylesheet from a script, imported using ~<style>~ and ~@import~, or linked to via ~<link>~).
+
+The same constructed stylesheet can be adopted by multiple ~ShadowRoot~ instances, and by the parent document (using the ~Document.adoptedStyleSheets property~). Changing an adopted stylesheet will affect all the adopting objects.
+
+Stylesheets in the ~adoptedStyleSheets~ property are considered along with the shadow DOM's other stylesheets. For the purpose of determining the final computed CSS of any element, they are considered to have been added after the other stylesheets in the shadow DOM (~ShadowRoot.styleSheets~).
+
+Only stylesheets created using the ~CSSStyleSheet()~ constructor, and from within the same parent [[Document]] as the shadow root, may be adopted.
+
+*Value*:
+The value is an array of ~CSSStyleSheet~ instances that must have been created using the ~CSSStyleSheet()~ constructor within the context of the shadow root's parent ~Document~.
+
+If the array needs to be modified, use in-place mutations like ~push()~. The ~CSSStyleSheet~ instances themselves can also be modified, and these changes will apply wherever the stylesheet is adopted.
+
+In an earlier version of the specification, the array was not modifiable, so the only way to add new stylesheets was to assign a new array to ~adoptedStyleSheets~.
+
+#+begin_src javascript
+
+  // The code below shows the sheet being constructed and then
+  // CSSStyleSheet.replaceSync() is called to add a rule to the sheet.
+
+  // Create an empty "constructed" stylesheet
+  const sheet = new CSSStyleSheet();
+  // Apply a rule to the sheet
+  sheet.replaceSync("a { color: red; }");
+
+  // We then create a ShadowRoot and pass the sheet object to the
+  // ShadowRoot.adoptedStyleSheets property inside an array.
+
+  // Create an element in the document and then create a shadow root:
+  const node = document.createElement("div");
+  const shadow = node.attachShadow({ mode: "open" });
+
+  // Adopt the sheet into the shadow DOM
+  shadow.adoptedStyleSheets = [sheet];
+
+  // We can modify the stylesheets after they have been added to the
+  // array. Below we append a new rule to the same sheet using
+  // CSSStyleSheet.insertRule().
+
+  sheet.insertRule("* { background-color: blue; }");
+  // The document will now have blue background.
+
+  // The same sheet can be shared with multiple shadow subtrees in the
+  // same document. For more examples see ShadowRoot.adoptedStyleSheets.
+
+  // Append a new stylesheet
+  // New stylesheets can be appended to the document or shadow root by
+  // using adoptedStyleSheets.push():
+  const extraSheet = new CSSStyleSheet();
+  extraSheet.replaceSync("p { color: green; }");
+
+  // Concat the new sheet.
+  shadow.adoptedStyleSheets.push(extraSheet);
+
+#+end_src
+
 *** CustomElementRegistrys
 **** CustomElements.define()
 The ~define()~ method of the ~CustomElementRegistry~ interface adds a definition for a custom element to the custom element registry, mapping its name to the constructor which will be used to create it.
@@ -6644,7 +6747,7 @@ Defining a customized built-in element
 
 #+end_src
 
-*** CSSStyleDeclarations
+*** CSSStyle...
 **** setProperty()
 The ~CSSStyleDeclaration.setProperty()~ method interface sets a new value for a property on a CSS style declaration object.
 
@@ -6665,6 +6768,56 @@ If priority can be omitted, JavaScript has a special simpler syntax for setting 
 #+begin_src javascript
 
   style.cssPropertyName = "value";
+
+#+end_src
+
+**** CSSStyleSheet()
+The ~CSSStyleSheet()~ constructor creates a new ~CSSStyleSheet~ object which represents a single Stylesheet.
+
+After constructing a stylesheet the ~CSSStyleSheet.replace()~, ~CSSStyleSheet.replaceSync()~, ~CSSStyleSheet.insertRule()~, and ~CSSStyleSheet.deleteRule()~ methods can be used to modify the rules of the new stylesheet.
+
+A stylesheet created using this method is referred to as a "constructed stylesheet". A constructed stylesheet can be shared between a document and its shadow DOM subtrees using [[adoptedStyleSheets][ShadowRoot.adoptedStyleSheets]] and ~Document.adoptedStyleSheets~.
+
+*Parameters*:
+- options Optional ::  An object containing the following:
+  - baseURL Optional :: A string containing the baseURL used to resolve relative URLs in the stylesheet.
+  - media Optional :: A MediaList containing a list of media rules, or a string containing a single rule.
+  - disabled Optional :: A Boolean indicating whether the stylesheet is disabled. False by default.
+
+#+begin_src javascript
+
+  // Syntax
+  new CSSStyleSheet()
+  new CSSStyleSheet(options)
+
+
+  // The code below shows the sheet being constructed and then
+  // CSSStyleSheet.replaceSync() is called to add a rule to the sheet.
+
+  // Create an empty "constructed" stylesheet
+  const sheet = new CSSStyleSheet();
+  // Apply a rule to the sheet
+  sheet.replaceSync("a { color: red; }");
+
+  // We then create a ShadowRoot and pass the sheet object to the
+  // ShadowRoot.adoptedStyleSheets property inside an array.
+
+  // Create an element in the document and then create a shadow root:
+  const node = document.createElement("div");
+  const shadow = node.attachShadow({ mode: "open" });
+
+  // Adopt the sheet into the shadow DOM
+  shadow.adoptedStyleSheets = [sheet];
+
+  // We can modify the stylesheets after they have been added to the
+  // array. Below we append a new rule to the same sheet using
+  // CSSStyleSheet.insertRule().
+
+  sheet.insertRule("* { background-color: blue; }");
+  // The document will now have blue background.
+
+  // The same sheet can be shared with multiple shadow subtrees in the
+  // same document. For more examples see ShadowRoot.adoptedStyleSheets.
 
 #+end_src
 
@@ -6763,6 +6916,22 @@ To determine how much time has elapsed since a particular point in your code, yo
   doSomething();
   const t1 = performance.now();
   console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+
+#+end_src
+
+**** setData()
+The ~DataTransfer.setData()~ method sets the drag operation's drag data to the specified data and type. If data for the given type does not exist, it is added at the end of the drag data store, such that the last item in the types list will be the new type. If data for the given type already exists, the existing data is replaced in the same position. That is, the order of the types list is not changed when replacing data of the same type.
+
+Example data types are ~text/plain~ and ~text/uri-list~.
+
+*Parameters*:
+- format :: A string representing the type of the drag data to add to the DataTransfer.
+- data :: A string representing the data to add to the DataTransfer.
+
+#+begin_src javascript
+
+  // Syntax
+  setData(format, data)
 
 #+end_src
 
@@ -8050,6 +8219,27 @@ Always rounds down and returns the *largest integer less than or equal* to a giv
 
 #+end_src
 
+*** Math.trunc()
+Static method returns the integer part of a number by removing any fractional digits.
+
+#+begin_src javascript
+
+  // Syntax
+  Math.trunc(x)
+
+
+  Math.trunc(-Infinity); // -Infinity
+  Math.trunc("-1.123"); // -1
+  Math.trunc(-0.123); // -0
+  Math.trunc(-0); // -0
+  Math.trunc(0); // 0
+  Math.trunc(0.123); // 0
+  Math.trunc(13.37); // 13
+  Math.trunc(42.84); // 42
+  Math.trunc(Infinity); // Infinity
+
+#+end_src
+
 *** Math.ceil
 Always rounds up and returns the *smallest integer greater than or equal* to a given number.
 
@@ -8144,6 +8334,39 @@ As opposed to the global ~isNaN()~ function, the ~Number.isNaN()~ method doesn't
   Number.isNaN(Number.NaN); // true
   Number.isNaN(0 / 0); // true
   Number.isNaN(37); // false
+
+#+end_src
+
+*** Number.isFinite()
+Static method determines whether the passed value is a finite number — that is, it checks that a given value is a number, and the number is neither positive ~Infinity~, negative ~Infinity~, nor ~NaN~.
+
+#+begin_src javascript
+
+  // Syntax
+  Number.isFinite(value)
+
+
+  Number.isFinite(0); // true
+  Number.isFinite(Infinity); // false
+  Number.isFinite(NaN); // false
+
+
+  function normalizeRank(value) {
+    const num = Number(value);
+    if (Number.isFinite(num) && num >= 1 && num <= 13) return Math.trunc(num);
+    return 1;
+  }
+
+#+end_src
+
+Difference between ~Number.isFinite()~ and global [[isFinite()]]
+
+#+begin_src javascript
+
+  isFinite("0"); // true; coerced to number 0
+  Number.isFinite("0"); // false
+  isFinite(null); // true; coerced to number 0
+  Number.isFinite(null); // false
 
 #+end_src
 
@@ -9128,6 +9351,28 @@ Of course, it won’t parse an argument as parseInt does:
 #+begin_src javascript
 
   Number("08Gb"); // NaN
+
+#+end_src
+
+*** isFinite()
+Determines whether a value is finite, first converting the value to a number if necessary. A finite number is one that's not ~NaN~ or ~±Infinity~. Because coercion inside the ~isFinite()~ function can be surprising, you may prefer to use ~Number.isFinite()~.
+
+[[Number.isFinite()]] is a more reliable way to test whether a value is a finite number value, because it returns false for any non-number input.
+
+#+begin_src javascript
+
+  // Syntax
+  isFinite(value)
+
+
+  isFinite(Infinity); // false
+  isFinite(NaN); // false
+
+  isFinite(0); // true
+
+  // Would've been false with the more robust Number.isFinite():
+  isFinite(null); // true
+  isFinite("0"); // true
 
 #+end_src
 
@@ -20149,7 +20394,8 @@ The browser automatically fetches and evaluates the imported module (and its imp
 *Warning (Modules work only via HTTP(s), not locally)*
 If you try to open a web-page locally, via ~file://~ protocol, you’ll find that ~import/export~ directives don’t work.
 
-*** Improvised modules
+*** Evolution of the modules
+**** Improvised modules
 You can use JavaScript functions to create local scopes and objects to represent module interfaces.
 
 This is a module for going between day names and numbers (as returned by ~Date~ ’s ~getDay~ method). Its interface consists of ~weekDay.name~ and ~weekDay.number~, and it hides its local binding ~names~ inside the scope of a function expression that is immediately invoked.
@@ -20172,7 +20418,7 @@ This is a module for going between day names and numbers (as returned by ~Date~ 
 
 This style of modules provides isolation, to a certain degree, but it does not declare dependencies. Instead, it just puts its interface into the global scope and expects its dependencies, if any, to do the same. For a long time this was the main approach used in web programming, but it is mostly obsolete now.
 
-*** Evaluating data as code
+**** Evaluating data as code
 There are several ways to take data (a string of code) and run it as part of the current program.
 
 The most obvious way is the special operator ~eval~, which will execute a string in the *current* scope. This is usually a bad idea because it breaks some of the properties that scopes normally have, such as it being easily predictable which binding a given name refers to.
@@ -20201,7 +20447,7 @@ A less scary way of interpreting data as code is to use the ~Function~ construct
 
 This is precisely what we need for a module system. We can wrap the module’s code in a function and use that function’s scope as module scope.
 
-*** CommonJS
+**** CommonJS
 The most widely used approach to bolted-on JavaScript modules is called CommonJS modules. Node.js uses it and is the system used by most packages on NPM.
 
 The main concept in CommonJS modules is a function called ~require~. When you call this with the module name of a dependency, it makes sure the module is loaded and returns its interface.
@@ -20247,7 +20493,7 @@ The module adds its interface function to ~exports~ so that modules that depend 
 
 *Note*: The interface of the ~ordinal~ package we saw before is not an object but a function. A quirk of the CommonJS modules is that, though the module system will create an empty interface object for you (bound to ~exports~), you can replace that with any value by overwriting ~module.exports~. This is done by many modules to export a single value instead of an interface object.
 
-*** ECMAScript modules
+**** ECMAScript modules
 ES modules, where ES stands for ECMAScript, are a different module system from CommonJS. The main concepts of dependencies and interfaces remain the same, but the details differ. For one thing, the notation is now integrated into the language. Instead of calling a function to access a dependency, you use a special ~import~ keyword.
 
 #+begin_src javascript
@@ -23129,7 +23375,34 @@ En el contexto de WebComponents, las Variables CSS son capaces de penetrar y fil
 
 #+end_src
 
-***** Pseudoelement ::part()
+***** ::part() CSS pseudo-element
+Represents any element within a shadow tree that has a matching part attribute.
+
+The global ~part~ attribute makes a shadow tree element visible to its parent DOM. The ~part~ names declared using the part attribute are used as the parameter of the ~::part()~ pseudo-element. In this way, you can apply CSS styles to elements in the shadow tree from outside of it.
+
+Part names are *similar to CSS classes*: multiple elements can have the same part name, and a single element can have multiple part names. All part names used in ~::part()~ pseudo-element must be present in the ~part~ value declared on the shadow tree element but the order of the part names doesn't matter, i.e., the selectors ~::part(tab active)~ and ~::part(active tab)~ are the same.
+
+The ~::part()~ pseudo-element is only visible to the parent DOM. This means that when a shadow tree is nested, the parts are not visible to any ancestors other than the direct parent. The exportparts attribute solves this limitation by explicitly exporting already defined ~part~ names, making them globally stylable.
+
+Pseudo-classes (such as ~::part(label):hover~) can be appended to the ~::part()~ selector, but structural pseudo-classes that match based on tree information, such as ~:empty~ and ~:last-child~, cannot be appended.
+
+Additional pseudo-elements, such as ~::before~, can be appended to the ~::part()~ selector, but additional ~::part()~ element can't be appended. For example, ~::part(confirm-button)::part(active)~ never matches anything, i.e, it is not the same as ~::part(confirm-button active)~. This is because doing so would expose more structural information than is intended.
+
+#+begin_src css
+
+  /* Syntax */
+  ::part(<ident>+) {
+    /* ... */
+  }
+
+
+  custom-element::part(foo) {
+    /* Styles to apply to the `foo` part */
+  }
+
+#+end_src
+
+*ManzDev*
 En el contexto de componentes, también tenemos un mecanismo para organizar y simplificar la forma en la que creamos partes de un componente que queremos que se le de estilo desde el exterior. La idea clave de este sistema, es identificar y exponer las partes de un componente, utilizando el atributo HTML part con el nombre que deseemos.
 
 Además, esta especificación también brinda una API Javascript, para poder manejar las partes desde la lógica de nuestro componente, permitiendo añadir, eliminar, reemplazar o conmutar a través de métodos como ~.add()~ , ~remove()~ , ~replace()~ o ~toggle()~ , o comprobar si existe mediante ~.contains()~ , similar a como se hace con la API [[classList]] de Javascript.
@@ -23556,6 +23829,33 @@ In our example, ~::slotted(div)~ selects exactly ~<div slot="username">~, but no
 
 #+end_src
 
+**** Import styles
+*ManzDev*
+
+#+begin_src javascript
+
+  import styles from "./UserCard.css" with { type: "css" }
+
+  class UserCard extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this.shadowRoot.adoptedStyleSheets.push(styles);
+    }
+
+    connectedCallback() {
+      const html = /* html */`
+      <div class="container">
+      ManzDev
+      </div>`
+      this.shadowRoot.setHTMLUnsafe(html);
+    }
+  }
+
+  customElements.define("user-card", UserCard);
+
+#+end_src
+
 *** Events Shadow DOM
 **** Brief
 *ManzDev*
@@ -23946,8 +24246,58 @@ The basic approach for implementing a web component generally looks something li
 
 #+end_src
 
-* Miscellaneous
-** Node package manager
+** Miscellaneous
+*** Static functions vs method functions in web components
+*Perplexity*
+Use /static/ for pure utility functions, /instance methods/ for component-specific logic.
+- Pure math/logic → static
+- Touches ~this~.* → instance method
+
+*DeepSeek*
+- 90% instance methods (especially if they touch ~this~)
+- 10% static (only templates, observedAttributes, registry metadata)
+
+*GPT-5 mini*
+/Static methods/
+- Pure helpers that take inputs and return outputs (e.g., parse/normalize, mapping)
+- Reusable from outside the class
+- Do not access ~this~ or instance state
+
+/Instance methods/
+- Lifecycle and rendering (connectedCallback, render, attributeChangedCallback)
+- Anything that reads or mutates instance properties, shadow DOM, event handlers, or caches
+- Helpers that rely on per-instance defaults or configuration
+
+Practical pattern:
+- Keep pure helpers static
+- Keep render/update logic and attribute handling as instance methods
+- If a static helper later needs instance data, convert it to an instance method
+*** Web components modules
+*ManzDev*
+
+#+begin_src javascript
+
+  <head>
+
+    // Script inline
+    <script type="module">
+      import "/components/UseCard.js";
+    </script>
+
+    // Mediante src
+    <script type="module"
+      src="/components/UseCard.js";
+    </script>
+
+  </head>
+
+  // Cargado desde main
+  import "./components/UseCard.js";
+
+#+end_src
+
+* Development toolchain
+** Node package managers
 *** NPM
 Is a package manager for the JavaScript programming language. npm is the default package manager for the JavaScript runtime environment Node.js and is included as a recommended feature in the Node.js installer.
 
@@ -23955,26 +24305,25 @@ It consists of a command line client, also called npm, and an online database of
 
 Although "npm" is commonly understood to be an abbreviation of "Node Package Manager", it is officially a recursive backronym for "npm is not an acronym".
 
+*** PNPM
+pnpm, or *P* erformant *npm*, is one of the main JavaScript package managers, originally developed in 2016 by Rico Sta. Cruz for the Node.js JavaScript runtime environment. It focuses on being a disk space-efficient alternative to npm.
+
+Save time. Save disk space. Supercharge your monorepos. Get lightning-fast installation speeds and a smarter, safer way to manage dependencies.
+
 *** Create new project
-**** Initialize the project
+Initialize the project:
 
 #+begin_src sh
 
   # Accedemos a la carpeta de todos nuestros proyectos
   cd /home/manz/workspace
-
-  # Creamos la carpeta de nuestro proyecto
   mkdir frontend-project
-
-  # Accedemos a su carpeta raíz (carpeta inicial)
   cd frontend-project
 
   # Inicializamos el control de versiones
   git init
-
   # Añadimos la URL de GitHub (u otro servicio) como repositorio remoto
   git remote add origin https://github.com/ManzDev/frontend-project.git
-
   # Crear .gitignore, indiqua carpetas a ignorar con git (node_modules/)
   touch .gitignore
 
@@ -23985,50 +24334,6 @@ Although "npm" is commonly understood to be an abbreviation of "Node Package Man
 
 #+end_src
 
-**** Create the folder structure
-Scaffolding.
-
-#+begin_src sh
-
-- frontend-project/    # raíz del proyecto
-  - .git/              # datos de git
-  - node_modules/      # paquetes de Node/NPM
-  - dist/              # código generado (si se usan preprocesadores)
-  - src/               # código fuente (código editable)
-    - assets/          # estáticos (imágenes, audio, video, fuentes...)
-    - js/              # Javascript
-      - index.js
-    - css/             # CSS
-      - index.css
-    - index.html
-  - package.json       # archivo del proyecto NPM
-  - package-lock.json  # histórico de versiones de dependencias
-  - .gitignore         # ficheros y carpetas a ignorar por git
-
-#+end_src
-
-**** Simple local server
-Instalar ~live-server~ de forma *global*. Se utilizará para montar un servidor local y ver todo el contenido de la carpeta ~src~ en un navegador, con cambios en tiempo real.
-
-Pulsando en la URL http://127.0.0.1:8080, debería aparecer la página que se tiene en ~index.html~.
-
-#+begin_src sh
-
-  npm install -g live-server
-
-  live-server src
-  # Serving "src" at http://127.0.0.1:8080
-  # Ready for changes
-
-#+end_src
-
-**** Advanced local server
-Los siguientes servidores locales de desarrollo están preparados para tareas más complejas y se adaptarán mejor a nuestros casos si comenzamos a utilizar herramientas complejas como *build tools*, tanto en la parte de *CSS* (LESS, Sass, PostCSS...) como en la parte de *Javascript* (Babel, TypeScript...).
-
-- Vite :: Probablemente, uno de los mejores y más rápidos automatizadores actuales.
-- Parcel :: Automatizador moderno, orientado a build tools y preprocesamiento.
-- Webpack DevServer :: El más popular, extendido y utilizado, pero también el más complejo.
-
 *** package.json
 Is a key component in any Node.js project. It is used to define the metadata of a Node.js project, including its name, version, dependencies, scripts, and other configuration settings. This file is crucial for managing Node.js projects and their dependencies.
 
@@ -24037,7 +24342,7 @@ Here are some of the key elements typically found in a ~package.json~ file:
 - name :: name of the package
 - version :: version of the package
 - dependencies/devdependencies :: list the dependencies required by the project. *Dependencies* are packages that the project needs to run, while *devDependencies* are packages needed during development but not in production.
-- scripts :: set of scripts that can be run using ~npm~ or ~yarn~. For example, you can define scripts for running tests, building the project, starting the application, etc.
+- scripts :: set of scripts that can be run using ~npm~, ~pnpm~, or ~yarn~. For example, you can define scripts for running tests, building the project, starting the application, etc.
 - main :: entry point of the package. When the package is imported, this file will be loaded (~index.js~ (node) or ~index.html~ (browser)).
 - module :: same as above, but with respect to ES Modules instead of CommonJS.
 - author :: author of the package.
@@ -24047,7 +24352,34 @@ Here are some of the key elements typically found in a ~package.json~ file:
 - repository :: url of the repository. Type (git, svn...) and url (path) must be specified.
 - bugs :: url field containing the url of the project's issues page.
 
-The ~package.json~ file is typically located at the root of a Node.js project and is used by package managers like ~npm~ or ~yarn~ to install dependencies, run scripts, and manage the project. It helps in ensuring that the project is set up correctly and that all dependencies are installed properly.
+The ~package.json~ file is typically located at the root of a Node.js project and is used by package managers like ~npm~, ~pnpm~, or ~yarn~ to install dependencies, run scripts, and manage the project. It helps in ensuring that the project is set up correctly and that all dependencies are installed properly.
+
+*** package.json scripts
+
+| /COMANDO/           | /DESCRIPCIÓN/                                |
+|-------------------+--------------------------------------------|
+| /npm run start/     | tareas de inicio del proyecto              |
+| /npm run dev/serve/ | levantar servidores de desarrollo locales  |
+| /npm run test/      | suele iniciar una batería de tests         |
+| /npm run build/     | construye ficheros finales para producción |
+| /npm run deploy/    | desplegar en la web de producción          |
+|                   | la webapp construída con build             |
+
+#+begin_src js
+
+  // Proyecto utilizando el automatizador parcel para desplegar en GitHub Pages
+  "scripts": {
+      "start": "parcel src/index.html",
+      "build": "parcel build src/index.html -d build
+               --public-url /frontend-project/",
+      "deploy": "gh-pages -d build"
+  }
+
+#+end_src
+
+A medida que vamos creando scripts, es posible que queramos realizar tareas concretas *antes* o *después* de ejecutar un script determinado. Esto es posible simplemente creando una tarea con el prefijo ~pre~ o el prefijo ~post~ respectivamente.
+
+El script ~deploy~ del ejemplo sube a GitHub Pages el contenido de la carpeta ~build~. Como queremos que esté actualizada, creamos un script ~predeploy~ (que se ejecutará antes) y que ejecutará ~parcel~ para generar el contenido de esa carpeta ~build~ antes de subirlo, y de este modo esté todo actualizado. De la misma forma se podría hacer con el prefijo ~post~ para tareas posteriores de finalización.
 
 *** Semantic versioning (semver)
 
@@ -24085,234 +24417,8 @@ For example, to specify acceptable version ranges up to ~1.0.4~, use the followi
 
 *Nota*: para evitar depedencias rotas, ~npm~ incluye un ~^~ (circunflejo) antes del número de versión de la dependencia (default cuando se instala un paquete). De esta forma, sabemos que versión se instaló por primera vez, pero ~npm~ buscará la versión más alta disponible, teniendo en cuenta sólo parches y actualizaciones menores, pero nunca instalando actualizaciones mayores.
 
-*** NPM scripts
-
-| /COMANDO/        | /DESCRIPCIÓN/                                |
-|----------------+--------------------------------------------|
-| /npm run start/  | tareas de inicio del proyecto              |
-| /npm run dev/    | levantar servidores de desarrollo locales  |
-| /npm run serve/  | idem al anterior                           |
-| /npm run test/   | suele iniciar una batería de tests         |
-| /npm run build/  | construye ficheros finales para producción |
-| /npm run deploy/ | desplegar en la web de producción          |
-|                | la webapp construída con build             |
-
-#+begin_src js
-
-  // Proyecto utilizando el automatizador parcel para desplegar en GitHub Pages
-  "scripts": {
-      "start": "parcel src/index.html",
-      "build": "parcel build src/index.html -d build
-               --public-url /frontend-project/",
-      "deploy": "gh-pages -d build"
-  }
-
-#+end_src
-
-A medida que vamos creando scripts, es posible que queramos realizar tareas concretas *antes* o *después* de ejecutar un script determinado. Esto es posible simplemente creando una tarea con el prefijo ~pre~ o el prefijo ~post~ respectivamente.
-
-El script ~deploy~ del ejemplo sube a GitHub Pages el contenido de la carpeta ~build~. Como queremos que esté actualizada, creamos un script ~predeploy~ (que se ejecutará antes) y que ejecutará ~parcel~ para generar el contenido de esa carpeta ~build~ antes de subirlo, y de este modo esté todo actualizado. De la misma forma se podría hacer con el prefijo ~post~ para tareas posteriores de finalización.
-
-** Automatizadores
+** Linters
 *** Brief
-Un automatizador es un sistema que permite organizar y estructurar una aplicación web, agilizando tareas repetitivas y facilitando su creación.
-
-Antiguamente, cuando teníamos que crear un nuevo sitio web, debíamos crear manualmente una *carpeta para el proyecto*, las diferentes subcarpetas de las secciones de la web (imágenes, css, js, etc...), configurar un servidor web (se solía usar XAMPP o similares), colocar y enlazar las diferentes librerías CSS y/o Javascript que queríamos utilizar, etc...
-
-Con la evolución del desarrollo web, hemos pasado a crear webs que *transpilan código*. Esto es, tenemos una carpeta ~src/~ donde tenemos nuestro código fuente y ese código debe preprocesarse y traducirse a otro código (en la carpeta ~dist/~) que es el que finalmente leerá nuestro navegador. Mantener actualizado el código fuente que escribimos con el que lee el navegador sin automatizarlo, es una tarea muy tediosa. De ahí surgen los automatizadores.
-
-Algunas de esas tareas podrían ser las siguientes:
-
-- Creación del *proyecto* y su gestión (gestionado con NPM)
-- Actualización y mantenimiento de *dependencias* (gestionado con NPM)
-- *Servidor web local* de desarrollo
-- *Minificación* de código
-- *Optimización* de imágenes
-- *Preprocesar* o transpilar código fuente
-- *Despliegue* o subida del código final al servidor
-
-*** Bundle
-Un bundle sirve para agrupar todos los ficheros de JavaScript en uno solo. Así el navegador no necesita hacer varias peticiones HTTP.
-
-Herramientas como Webpack, Parcel, Rollup, Babel o similar, buscan los ~require()~ (función que importa módulos CommonJS que se exportaron con un ~module.exports~ desde otros archivos) y los sustituyen por el código del fichero correspondiente, uniendo y empatando todos los archivos Javascript necesarios de nuestra aplicación web en un sólo archivo Javascript llamado bundle.
-
-/Esbuild/ es un automatizador y bundler de Javascript extremadamente rápido, que permite hacer traducciones y transpilado de código a una velocidad asombrosa. Podremos utilizarlo desde ~web-dev-server~ para convertir nuestro código Javascript /ES2021/ en código Javascript /ES2017/ o similar, y conseguir un mejor soporte en navegadores más antiguos.
-
-*** Rollup
-Rollup is a module bundler for JavaScript which compiles small pieces of code into something larger and more complex, such as a library or application. It uses the new standardized format for code modules included in the ES6 revision of JavaScript, instead of previous idiosyncratic solutions such as CommonJS and AMD. ES modules let you freely and seamlessly combine the most useful individual functions from your favorite libraries. This will eventually be possible natively everywhere, but Rollup lets you do it today.
-
-Developing software is usually easier if you break your project into smaller separate pieces, since that often removes unexpected interactions and dramatically reduces the complexity of the problems you'll need to solve, and simply writing smaller projects in the first place isn't necessarily the answer. Unfortunately, JavaScript has not historically included this capability as a core feature in the language.
-
-This finally changed with the ES6 revision of JavaScript, which includes a syntax for importing and exporting functions and data so they can be shared between separate scripts. The specification is now fixed, but it is only implemented in modern browsers and not finalised in Node.js. Rollup allows you to write your code using the new module system, and will then compile it back down to existing supported formats such as CommonJS modules, AMD modules, and IIFE-style scripts. This means that you get to write future-proof code, and you also get the tremendous benefits of…
-
-*** esbuild
-Is an extremely fast bundler for the web. esbuild is used in [[Vite]], a front-end build-tool and development server.
-
-esbuild is a module bundler and minifier for JavaScript. Written in Go instead of JavaScript, esbuild claims to be "10 to 100 times" faster than other bundlers by using parallelism and shared memory usage. It supports TypeScript, JSX, tree-shaking and is extensible through plugins.
-
-*Major features*:
-
-- Extreme speed without needing a cache
-- JavaScript, CSS, TypeScript, and JSX built-in
-- A straightforward API for CLI, JS, and Go
-- Bundles ESM and CommonJS modules
-- Bundles CSS including CSS modules
-- Tree shaking, minification, and source maps
-- Local server, watch mode, and plugins
-
-*** Vite
-**** Brief
-*Wikipedia*:
-Vite is a local development server. It has support for TypeScript and JSX. It uses [[Rollup]] and [[esbuild]] internally for bundling.
-
-It monitors files as they're being edited and upon file save the web browser reloads the code being edited through a process called Hot Module Replacement (HMR) which works by just reloading the specific file being changed using ES6 modules (ESM) instead of recompiling the entire application.
-
-Vite provides built-in support for server-side rendering (SSR). By default, it listens on TCP port 5173. It is possible to configure Vite to serve content over HTTPS and proxy requests (including WebSocket) to a back-end web server (such as Apache HTTP Server or lighttpd).
-
-*Vite*:
-Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
-
-- A *dev server* that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
-
-- A *build command that bundles* your code with Rollup, pre-configured to output highly optimized static assets for production.
-
-**** Why Vite
-*The Problems*:
-Before ES modules were available in browsers, developers had no native mechanism for authoring JavaScript in a modularized fashion. This is why we are all familiar with the concept of "bundling": using tools that crawl, process and concatenate our source modules into files that can run in the browser.
-
-Over time we have seen tools like webpack, [[Rollup]] and Parcel, which greatly improved the development experience for frontend developers.
-
-However, as we build more and more ambitious applications, the amount of JavaScript we are dealing with is also increasing dramatically. It is not uncommon for large scale projects to contain thousands of modules. We are starting to hit a performance bottleneck for JavaScript based tooling: it can often take an unreasonably long wait (sometimes up to minutes!) to spin up a dev server, and even with Hot Module Replacement (HMR), file edits can take a couple of seconds to be reflected in the browser. The slow feedback loop can greatly affect developers' productivity and happiness.
-
-Vite aims to address these issues by leveraging new advancements in the ecosystem: the availability of native ES modules in the browser, and the rise of JavaScript tools written in compile-to-native languages.
-
-**** Slow Server Start
-When cold-starting the dev server, a bundler-based build setup has to eagerly crawl and build your entire application before it can be served.
-
-Vite improves the dev server start time by first dividing the modules in an application into two categories: *dependencies* and *source code*.
-
--  dependencies :: are mostly plain JavaScript that do not change often during development. Some large dependencies (e.g. component libraries with hundreds of modules) are also quite expensive to process. Dependencies may also be shipped in various module formats (e.g. ESM or CommonJS). Vite pre-bundles dependencies using [[esbuild]].
-
-- source code ::  often contains non-plain JavaScript that needs transforming (e.g. JSX, CSS or Vue/Svelte components), and will be edited very often. Also, not all source code needs to be loaded at the same time (e.g. with route-based code-splitting).
-
-Vite serves source code over native ESM. This is essentially letting the browser take over part of the job of a bundler: Vite only needs to transform and serve source code on demand, as the browser requests it. Code behind conditional dynamic imports is only processed if actually used on the current screen.
-
-**** Scaffolding for Vite's first project
-
-#+begin_src sh
-
-  npm create vite@latest
-
-#+end_src
-
-Then follow the prompts!
-
-You can also directly specify the project name and the template you want to use via additional command line options. For example, to scaffold a Vite + Vue project, run:
-
-#+begin_src sh
-
-  # npm 7+, extra double-dash is needed:
-  npm create vite@latest my-vue-app -- --template vue
-
-#+end_src
-
-You can use ( ~.~ ) for the project name to scaffold in the current directory.
-
-**** Crear un proyecto con Vite
-
-#+begin_src sh
-
-  # Crea un prorecto con una plantilla de vite (similar a npm init)
-  npm create vite name-project
-  # Need to install the following packages:
-  #   create-vite
-  # Ok to proceed? (y) y
-
-#+end_src
-
-Se nos advertirá que es necesario instalar el paquete ~create-vite~ de no tenerlo instalado, que es el asistente encargado de crear la aplicación web.
-
-**** Manual Installation
-In your project, you can install the *vite* CLI using:
-
-#+begin_src sh
-
-  npm install -D vite
-
-#+end_src
-
-And create an ~index.html~ file like this:
-
-#+begin_src html
-
-  <p>Hello Vite!</p>
-
-#+end_src
-
-Then run the appropriate CLI command in your terminal:
-
-#+begin_src sh
-
-  npx vite
-
-#+end_src
-
-The ~index.html~ will be served on http://localhost:5173.
-
-**** Plantillas de Vite
-
-#+begin_src sh
-
-  # Ejemplo, para montar un proyecto de Vite + Vue
-  # npm 7+, se requiere guión doble extra:
-  npm create vite name-project -- --template vue
-  # npm create vite@latest name-project -- --template vue
-
-#+end_src
-
-| /PLANTILLA/ | /DESCRIPCIÓN/                      |
-|-----------+----------------------------------|
-| /vanilla/   | proyecto vanilla, sin frameworks |
-| /vue/       | proyecto con el framework Vue    |
-| /react/     | proyecto con la librería React   |
-| /preact/    | proyecto con la librería Preact  |
-| /lit/       | proyecto con la librería Lit     |
-| /svelte/    | proyecto con la librería Svelte  |
-
-Una vez hecho el proceso, comprobaremos que la tarea de creación del proyecto es prácticamente instantánea. Esto ocurre así porque Vite no realiza el proceso de instalación de paquetes automáticamente, por lo que tendremos que hacerlos nosotros manualmente de forma posterior:
-
-#+begin_src sh
-
-  cd name-project
-  npm install
-
-#+end_src
-
-Con esto ya tendremos el proyecto listo para arrancarlo con el script ~npm run dev~ y comenzar a desarrollar. Ten en cuenta que en todos los proyectos que generes tendrás un script ~dev~ que lanza el *modo de desarrollo de Vite* y, por otro lado, tendrás un script ~build~ que lanza el *modo de producción de Vite*, que es el que genera la subida en la carpeta ~dist~, que es la que irá a producción.
-
-**** El fichero vite.config.js
-Es un fichero de configuración donde puedes establecer algunos detalles del funcionamiento del empaquetador en el proyecto actual. La estructura general de este fichero es la siguiente:
-
-#+begin_src javascript
-
-  import { defineConfig } from "vite";
-
-  export default defineConfig({
-      root: "./",
-      base: "/",
-      publicDir: "public",
-      build: {
-          outDir: "dist",
-          assetsDir: "assets"
-      },
-      plugins: []
-  });
-#+end_src
-
-Dependiendo de la plantilla utilizada, este fichero de configuración puede ser diferente o incluso no existir (como es en el caso de los proyectos de Javascript vanilla).
-
-*** Linters
-**** Brief
 Linter (looking for problematic patterns) is a static code analysis tool used to flag programming errors, bugs, stylistic errors and suspicious constructs.
 
 *Types of Checks Linters Provide*:
@@ -24321,7 +24427,1282 @@ Linter (looking for problematic patterns) is a static code analysis tool used to
 - *Potential* Problems (a.k.a. Code Smells)
 - *Security* Checks
 
-**** ESLint
+*** Oxlint
+**** Brief
+Oxlint (/oʊ-ɛks-lɪnt/) is a high-performance linter for JavaScript and TypeScript built on the Oxc compiler stack.
+
+**** Getting started
+The recommended setup is to install Oxlint as a dev dependency and add scripts.
+
+#+begin_src sh
+
+  pnpm add -D oxlint
+
+#+end_src
+
+Add lint commands to ~package.json~:
+
+#+begin_src javascript
+
+  {
+    "scripts": {
+      "lint": "oxlint",
+      "lint:fix": "oxlint --fix"
+    }
+  }
+
+
+#+end_src
+
+Run it:
+
+#+begin_src sh
+
+  pnpm run lint
+
+  # Apply fixes:
+  pnpm run lint:fix
+
+#+end_src
+
+**** CLI
+***** Usage
+If PATH is omitted, ~Oxlint~ lints the current working directory.
+
+#+begin_src sh
+
+  oxlint [OPTIONS] [PATH]...
+
+#+end_src
+
+***** Fix problems
+Apply safe fixes:
+
+#+begin_src javascript
+
+  oxlint --fix
+
+#+end_src
+
+Apply suggestions (may change program behavior):
+
+#+begin_src javascript
+
+  oxlint --fix-suggestions
+
+#+end_src
+
+Apply dangerous fixes and suggestions:
+
+#+begin_src javascript
+
+  oxlint --fix-dangerously
+
+#+end_src
+
+***** Ignore files
+Use an explicit ignore file:
+
+#+begin_src sh
+
+  oxlint --ignore-path .oxlintignore
+
+#+end_src
+
+Add ignore patterns from the command line:
+
+#+begin_src sh
+
+  oxlint --ignore-pattern "dist/**" --ignore-pattern "*.min.js"
+
+#+end_src
+
+Disable ignore handling:
+
+#+begin_src sh
+
+  oxlint --no-ignore
+
+#+end_src
+
+**** Configuration
+***** Brief
+Oxlint works out of the box, but most teams commit a configuration file (~.oxlintrc.json~ or ~oxlint.config.ts~) to keep linting consistent across local runs, editors, and CI.
+
+***** Create a config file
+Initialize the ~.oxlintrc.json~ config with default values in the currrent directory:
+
+#+begin_src sh
+
+  oxlint --init
+
+#+end_src
+
+Then customize ~.oxlintrc.json~ as needed.
+
+Oxlint automatically looks for a ~.oxlintrc.json~ or ~oxlint.config.ts~ in the current working directory. You can also pass a config explicitly (note that this will disable nested config lookup):
+
+#+begin_src sh
+
+  oxlint -c ./oxlintrc.json
+  # or
+  oxlint --config ./oxlintrc.json
+
+#+end_src
+
+***** List available rules
+List registered rules, including those enabled by your current Oxlint config:
+
+#+begin_src sh
+
+  oxlint --rules
+
+#+end_src
+
+***** Configuration file format
+A configuration file is either a JSON object (~.oxlintrc.json~) or a TypeScript module that default-exports a config object (~oxlint.config.ts~). The most common top-level fields are:
+
+- rules :: Enable or disable rules, set severity, and configure rule options.
+- categories :: Enable groups of rules with similar intent.
+- plugins :: Enable built-in plugins that provide additional rules.
+- jsPlugins :: Configure JavaScript plugins (alpha).
+- overrides :: Apply different configuration to different file patterns.
+- extends :: Inherit configuration from other files.
+- ignorePatterns :: Ignore additional files from the config file.
+- env :: Enable predefined globals for common environments.
+- globals :: Declare custom globals as read-only or writable.
+- settings :: Plugin-wide configuration shared by multiple rules.
+- options :: Linter-level options (for example, options.typeAware and options.typeCheck).
+
+***** Rules
+Rules are configured under ~rules~.
+
+A rule value is either:
+- a severity ( ~"off"~ or ~"allow"~ , ~"warn"~ , ~"error"~ or ~"deny"~ ), or
+- an array of ~[severity, options]~
+
+*Severity values*: Oxlint accepts ESLint-style severities
+- Disable rule :: ~"off"~ or ~"allow"~
+- Warning on rule :: ~"warn"~
+- Error on rule :: ~"error"~ or ~"deny"~
+
+If a rule is from ESLint core and its name is unique, you can configure it without a plugin prefix. For example, ~no-console~ is the same as ~eslint/no-console~.
+
+#+begin_src js
+
+  {
+    "rules": {
+      "no-alert": "error",
+      "oxc/approx-constant": "warn",
+      "no-plusplus": "off", // disable
+      // To configure rule options, use an array:
+      "eslint/prefer-const": ["error", { "destructuring": "any" }]
+    }
+  }
+
+#+end_src
+
+*Override severity from the CLI*
+For quick experiments, you can adjust severity from the command line using:
+
+- ~-A~ / ~--allow~
+- ~-W~ / ~--warn~
+- ~-D~ / ~--deny~
+
+Arguments are applied from left to right:
+
+#+begin_src sh
+
+  oxlint -D no-alert -W oxc/approx-constant -A no-plusplus
+
+#+end_src
+
+***** Enable groups of rules with categories
+Categories let you enable or disable sets of rules with similar intent. By default, Oxlint enables rules in the ~correctness~ category.
+
+Rules enabled or disabled this way will be overwritten by individual rules in the rules field.
+
+Configure categories using ~categories~:
+
+#+begin_src sh
+
+  {
+    "categories": {
+      "correctness": "error",
+      "suspicious": "warn",
+      "pedantic": "off"
+    }
+  }
+
+#+end_src
+
+Available categories include:
+- correctness :: Code that is definitely wrong or useless
+- suspicious :: Code that is likely to be wrong or useless
+- pedantic :: Extra strict rules that may have false positives
+- perf :: Rules that aim to improve runtime performance
+- style :: Idiomatic and consistent style rules
+- restriction :: Rules that ban specific patterns or features
+- nursery :: Rules under development that may change
+
+You can also change categories from the CLI with the same ~-A~, ~-W~, and ~-D~ options:
+
+#+begin_src sh
+
+  oxlint -D correctness -D suspicious
+
+#+end_src
+
+***** Configure plugins
+Plugins extend the set of available rules.
+
+Oxlint supports many popular plugins natively in Rust. This provides broad rule coverage without a large JavaScript dependency tree.
+
+Configure plugins using ~plugins~. Setting ~plugins~ overwrites the default plugin set, so the array should include everything you want enabled:
+
+#+begin_src javascript
+
+  {
+    "plugins": ["unicorn", "typescript", "oxc"]
+  }
+
+#+end_src
+
+To disable all default plugins:
+
+#+begin_src javascript
+
+  {
+    "plugins": []
+  }
+
+#+end_src
+
+***** Miscellaneous
+****** Apply configuration by file pattern
+Use ~overrides~ to apply different configuration to different files, such as tests, scripts, or TypeScript-only paths.
+
+~overrides~ is an array of objects. Each override can include:
+
+- files :: glob patterns
+- rules :: rule configuration (same shape as top-level rules)
+- env :: environment configuration (same shape as top-level env)
+- globals :: globals configuration (same shape as top-level globals)
+- plugins :: optionally change what plugins are enabled for this override
+- jsPlugins :: JS plugins for this override (alpha)
+
+Example:
+
+#+begin_src js
+
+  {
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "rules": {
+      "no-console": "error"
+    },
+    "overrides": [
+      {
+        "files": ["scripts/*.js"],
+        "rules": {
+          "no-console": "off"
+        }
+      },
+      {
+        "files": ["**/*.{ts,tsx}"],
+        "plugins": ["typescript"],
+        "rules": {
+          "typescript/no-explicit-any": "error"
+        }
+      },
+      {
+        "files": ["**/test/**"],
+        "plugins": ["jest"],
+        "env": {
+          "jest": true
+        },
+        "rules": {
+          "jest/no-disabled-tests": "off"
+        }
+      }
+    ]
+  }
+
+#+end_src
+
+****** Configure linter options
+Use ~options~ for linter-level behavior.
+
+#+begin_src javascript
+
+  {
+    "options": {
+      "typeAware": true,
+      "typeCheck": true,
+      "maxWarnings": 10
+    }
+  }
+
+#+end_src
+
+- options.typeAware :: is equivalent to passing ~--type-aware~ on the CLI (enable rules that require type information)
+- options.typeCheck (experimental) :: is equivalent to passing ~--type-check~ on the CLI (enable experimental type checking)
+- options.maxWarnings :: is equivalent to passing ~--max-warnings~ on the CLI (specify a warning threshold, which can be used to force exit with an error status if there are too many warning-level rule violations in your project)
+
+CLI flags take precedence when both CLI and config values are present.
+
+~options.typeAware~ and ~options.typeCheck~ are only supported in the root config file.
+
+****** Configure environments and globals
+Use ~env~ to enable predefined globals for common environments such as browser or node.
+
+Use ~globals~ to declare project-specific globals, mark them writable or readonly, or disable a global that would otherwise be present.
+
+#+begin_src javascript
+
+  {
+    "env": {
+      "es6": true
+    },
+    "globals": {
+      "MY_GLOBAL": "readonly",
+      "Promise": "off"
+    }
+  }
+
+#+end_src
+
+~globals~ accepts:
+
+- ~"readonly"~ or ~"readable"~ or false
+- ~"writable"~ or ~"writeable"~ or true
+- ~"off"~ to disable a global
+
+**** Config files
+***** Minimal configuration
+
+#+begin_src javascript
+
+  {
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "categories": {
+      "correctness": "warn"
+    },
+    "rules": {
+      "eslint/no-unused-vars": "error"
+    }
+  }
+
+  // Oxlint also supports a TypeScript configuration 'oxlint.config.ts' file
+  import { defineConfig } from "oxlint";
+
+  export default defineConfig({
+    categories: {
+      correctness: "warn",
+    },
+    rules: {
+      "eslint/no-unused-vars": "error",
+    },
+  });
+
+#+end_src
+
+***** Default configuration
+Output after run: ~oxlint --init~
+
+#+begin_src javascript
+
+  {
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": [
+      "typescript",
+      "unicorn",
+      "oxc"
+    ],
+    "categories": {
+      "correctness": "error"
+    },
+    "rules": {},
+    "env": {
+      "builtin": true
+    }
+  }
+
+#+end_src
+
+***** Documented example
+
+#+begin_src javascript
+
+  {
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    // Enable a set of rules by source:
+    "plugins": [
+      "unicorn",
+      "oxc"
+    ],
+    // Enable a set of rules by category based on the plugins (source)
+    "categories": {
+      // Enable a set of 'correctness' rules for 'unicorn' and 'oxc'
+      "correctness": "error",
+      // Enable a set of 'suspicous' rules for 'unicorn' and 'oxc'
+      "suspicious": "warn"
+    },
+    // Enable/disable rules one by one:
+    "rules": {
+      "constructor-super": "off",
+      "no-async-promise-executor": "off"
+    },
+    "env": {
+      "builtin": true
+    }
+  }
+
+#+end_src
+
+*** Stylelint
+**** Brief
+A mighty CSS linter that helps you avoid errors and enforce conventions.
+
+*Features*
+- has over 100 built-in rules for modern CSS syntax and features
+- supports plugins so you can create your own custom rules
+- automatically fixes problems where possible
+- supports shareable configs that you can create or extend
+- can be customized to your exact needs
+- has 15k unit tests making it robust
+- is trusted by companies worldwide like Google and GitHub
+
+*It'll help you avoid errors*
+- invalid things, e.g. malformed grid areas
+- valid things that are problematic, e.g. duplicate selectors
+- unknown things, e.g. misspelled property names
+
+*And enforce conventions*
+   - disallow things, e.g. specific units
+   - enforce naming patterns, e.g. for custom properties
+   - set limits, e.g. the number of ID selectors
+   - specify notations, e.g. for modern color functions
+
+**** Getting started
+***** Setup
+You can quickly get started by extending an appropriate shared config.
+
+Use ~pnpm~ and our create tool to automatically setup Stylelint and extend our standard config:
+
+#+begin_src sh
+
+  pnpm create stylelint@latest
+  # or
+  pnpm create stylelint
+
+#+end_src
+
+***** Manual setup
+Alternatively, you can manually setup Stylelint to lint CSS.
+
+1. Create a ~stylelint.config.mjs~ configuration file in the root of your project with the following content:
+
+#+begin_src javascript
+
+  /** @type {import("stylelint").Config} */
+  export default {
+    extends: ["stylelint-config-standard"]
+  };
+
+#+end_src
+
+2. Use ~pnpm~ to add the related dependencies:
+
+#+begin_src sh
+
+  pnpm add -D stylelint stylelint-config-standard
+
+#+end_src
+
+***** Usage
+Run Stylelint on all the CSS files in your project:
+
+#+begin_src sh
+
+  pnx stylelint "**/*.css"
+  # or
+  pnpm dlx stylelint "**/*.css"
+
+#+end_src
+
+If you are using npm scripts, you'll need to escape the quotes:
+
+#+begin_src javascript
+
+  {
+    "scripts": {
+      "lint": "stylelint \"**/*.css\""
+    }
+  }
+
+#+end_src
+
+**** CLI
+***** Brief
+You can use Stylelint on the command line. You should include quotation marks around file globs. Use stylelint ~--help~ to print the CLI documentation. For example:
+
+#+begin_src sh
+
+  stylelint "**/*.css"
+
+#+end_src
+
+There are many options in Stylelint that you can use to customize how Stylelint works. For example, you'll likely want to use the ~--fix~ option to automatically fix as many problems as possible:
+
+#+begin_src sh
+
+  stylelint "**/*.css" --fix
+
+#+end_src
+
+You may also want to look into the:
+
+- ~--cache~ option to improve performance
+- ~--formatter~ option to customize the output
+
+***** Examples
+The CLI expects input as either a file glob or ~process.stdin~. It outputs formatted results into ~process.stderr~.
+
+#+begin_src sh
+
+  # Recursively linting all .css files in the foo directory:
+  stylelint "foo/**/*.css"
+
+  # Linting all .css, .scss, and .sass files:
+  stylelint "**/*.{css,scss,sass}"
+
+  # Linting stdin:
+  echo "a { color: pink; }" | stylelint
+
+  # Linting all .css files except those within docker
+  # subfolders, using negation in the input glob:
+  stylelint "**/*.css" "!**/docker/**"
+
+  # Caching processed .scss files foo directory:
+  stylelint "foo/**/*.scss" --cache
+  --cache-location "/Users/user/.stylelintcache/"
+
+  # Linting all .css files in the foo directory, then writing
+  # the output to myTestReport.txt:
+  stylelint "foo/*.css" --output-file myTestReport.txt
+
+  # Using bar/mySpecialConfig.json as config to lint all .css
+  # files in the foo directory and any of its subdirectories:
+  stylelint "foo/**/*.css" --config bar/mySpecialConfig.json
+
+  # Recursively linting all .css files in the foo directory
+  # using a custom syntax:
+  stylelint "foo/**/*.css" --custom-syntax path/to/my-custom-syntax.js
+
+  # Ensure output on successful runs:
+  stylelint -f verbose "foo/**/*.css"
+
+  # Print a configuration used for the given input file:
+  stylelint test.css --print-config
+
+  # Use a report as input for another command through piping:
+  stylelint -f json "*.css" 2>&1 | jq '[.[] | .warnings | length] | add'
+
+#+end_src
+
+**** Configuring
+***** Configuration object
+Stylelint expects a configuration object.
+
+Starting from the current working directory, Stylelint searches upwards until it finds a ~stylelint.config.js~ file that exports one. You can use the ~--config~ or ~configFile~ options to short-circuit the search.
+
+The style of export depends on your default module system configuration for Node.js, e.g., ~"type": "module"~ in your ~package.json~ file. You can use the ~stylelint.config.mjs~ or ~stylelint.config.cjs~ filename to be explicit.
+
+Example ~stylelint.config.js~ file:
+
+#+begin_src javascript
+
+  //** @type {import('stylelint').Config} */
+  export default {
+    rules: {
+      "block-no-empty": true
+    }
+  };
+
+#+end_src
+
+***** rules (configuration)
+Rules determine what the linter looks for and complains about. There are over 100 rules built into Stylelint. /No rules are turned on by default/.
+
+The ~rules~ property is an object whose keys are rule names and values are rule configurations. For example:
+
+#+begin_src javascript
+
+  {
+    "rules": {
+      "color-no-invalid-hex": true
+    }
+  }
+
+#+end_src
+
+Each ~rule~ configuration fits one of the following formats:
+
+- ~null~ (to turn the rule off)
+- a single value (the primary option)
+- an array with two values (~[primary option, secondary options]~)
+
+Specifying a primary option turns on a rule.
+
+Many rules provide secondary options for further customization. To set secondary options, use a two-member array. For example:
+
+#+begin_src javascript
+
+  {
+    "rules": {
+      "selector-pseudo-class-no-unknown": [
+        true,
+        {
+          "ignorePseudoClasses": ["global"]
+        }
+      ]
+    }
+  }
+
+#+end_src
+
+You can add any number of keys to the object. For example, you can:
+
+- turn off ~block-no-empty~
+- turn on ~unit-allowed-list~ with a primary option
+- turn on ~alpha-value-notation~ with a primary and secondary option
+
+#+begin_src javascript
+
+  {
+    "rules": {
+      "block-no-empty": null,
+      "unit-allowed-list": ["em", "rem", "%", "s"],
+      "alpha-value-notation": ["percentage", { "exceptProperties": ["opacity"] }]
+    }
+
+  }
+#+end_src
+
+***** extends (configuration)
+You can extend an existing configuration (whether your own or a third-party one). Configurations can bundle plugins, custom syntaxes, options, and configure rules. They can also extend other configurations.
+
+For example, stylelint-config-standard is one of our official configs that you can extend.
+
+When one configuration extends another, it starts with the other's properties and then adds to and overrides what's there.
+
+For example, to extend the ~stylelint-config-standard~ and then change the alpha values to numbers and turn off the ~selector-class-pattern~ rule:
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "alpha-value-notation": "number",
+      "selector-class-pattern": null
+    }
+  }
+
+#+end_src
+
+You can extend an array of existing configurations, with each item in the array taking precedence over the previous item (so the second item overrides rules in the first, the third item overrides rules in the first and the second, and so on, the last item overrides everything else).
+
+For example, with ~stylelint-config-standard~, then layer ~myExtendableConfig~ on top of that, and then override the ~alpha-value-notation~ rule:
+
+#+begin_src javascript
+
+  {
+    "extends": ["stylelint-config-standard", "./myExtendableConfig"],
+    "rules": {
+      "alpha-value-notation": "number"
+    }
+  }
+
+#+end_src
+
+The value of ~"extends"~ is a "locater" (or an array of "locaters") that is ultimately ~require()~ d. It can fit whatever format works with Node's ~require.resolve()~ algorithm. That means a "locater" can be:
+
+- the name of a module in ~node_modules~ (e.g. ~stylelint-config-standard~; that module's ~main~ file must be a valid JSON configuration)
+- an absolute path to a file (which makes sense if you're creating a JS object in a Node.js context and passing it in) with a ~.js~ or ~.json~ extension.
+- a relative path to a file with a ~.js~ or ~.json~ extension, relative to the referencing configuration (e.g. if configA has ~extends: "../configB"~, we'll look for ~configB~ relative to configA).
+
+***** plugins
+Plugins are custom rules or sets of custom rules built to support methodologies, toolsets, non-standard CSS features, or very specific use cases.
+
+To use a plugin directly, add a ~"plugins"~ array to your config, containing either plugin objects or "locaters" identifying the plugins you want to use. As with ~extends~, above, a "locater" can be either a:
+
+- npm module name
+- absolute path
+- path relative to the invoking configuration file
+
+Once the plugin is declared, within your ~"rules"~ object /you'll need to add options/ for the plugin's rule(s), just like any standard rule. Look at the plugin's documentation to know what the rule name should be.
+
+#+begin_src javascript
+
+  {
+    "plugins": ["../special-rule.js"],
+    "rules": {
+      "plugin-namespace/special-rule": "everything"
+    }
+  }
+
+#+end_src
+
+A "plugin" can provide a single rule or a set of rules. If the plugin you use provides a set, invoke the module in your ~"plugins"~ configuration value, and use the rules it provides in ~"rules"~. For example:
+
+#+begin_src javascript
+
+  {
+    "plugins": ["../some-rule-set.js"],
+    "rules": {
+      "some-rule-set/first-rule": "everything",
+      "some-rule-set/second-rule": "nothing",
+      "some-rule-set/third-rule": "everything"
+    }
+  }
+
+#+end_src
+
+***** customSyntax
+There are many styling languages, ranging from CSS language extensions like SCSS to entirely different notations, e.g. CSS-in-JS objects.
+
+These styling languages can be embedded within other languages too. For example:
+
+- HTML <style> tags
+- markdown fences
+- JavaScript template literals
+
+This option allows Stylelint to transform these into something that resembles CSS, which is the language that:
+
+- underpins all the other styling languages
+- is best understood by rules built into Stylelint
+
+This option should be a string that resolves to a JS module that exports a ~PostCSS-compatible~ syntax. The string can be a module name (like ~my-module~) or a path to a JS file (like ~path/to/my-module.js~).
+
+If you want to lint two or more different languages, you can combine ~customSyntax~ with the [[overrides]] configuration property.
+
+Using the Node.js API, the ~customSyntax~ option can also accept a Syntax object. Stylelint treats the ~parse~ property as a required value. Also, Stylelint supports syntax modules written in ESM.
+
+*Note*: Stylelint can provide no guarantee that core rules work with custom syntaxes.
+
+***** overrides
+Using the ~overrides~ property, you can specify what subset of files to apply a configuration to.
+
+For example, to use the:
+
+- ~postcss-scss~ syntax for all ~.scss~ files
+- ~percentage~ notation for all alpha values in all ~.css~ files in the ~components~ and ~pages directories~
+
+#+begin_src javascript
+
+  {
+    "rules": {
+      "alpha-value-notation": "number"
+    },
+    "overrides": [
+      {
+        "files": ["*.scss", "**/*.scss"],
+        "customSyntax": "postcss-scss"
+      },
+      {
+        "files": ["components/**/*.css", "pages/**/*.css"],
+        "rules": {
+          "alpha-value-notation": "percentage"
+        }
+      }
+    ]
+  }
+
+#+end_src
+
+The value of the ~overrides~ property is an array of objects. Each object:
+
+- must contain a ~files~ property, which is an array of glob patterns that specify which files the configuration should be applied to
+- should contain at least one other regular configuration property, such as [[customSyntax]], [[rules (configuration)][rules]], [[extends (configuration)][extends]], etc.
+- may contain a ~name~ property to provide a description of the override's purpose
+
+The ~customSyntax~ property will be replaced, whereas ~plugins~, ~extends~, ~rules~, etc. will be appended.
+
+*Patterns are applied against the file path relative to the directory of the config file*. For example, if your config file has the path ~/project-foo/.stylelintrc.js~ and the file you want to lint has the path ~/project-foo/components/bar.css~, then the pattern provided in ~.stylelintrc.js~ will be executed against the relative path ~components/bar.css~.
+
+Overrides have higher precedence than regular configurations. Multiple overrides within the same config are applied in order. That is, the last override block in a config file always has the highest precedence.
+
+***** defaultSeverity
+You can set the default severity level for all rules that do not have a severity specified in their secondary options. For example, you can set the default severity to ~"warning"~:
+
+#+begin_src javascript
+
+  {
+    "defaultSeverity": "warning"
+  }
+
+#+end_src
+
+***** ignoreFiles
+You can provide a glob or array of globs to ignore specific files.
+
+For example, you can ignore all JavaScript files:
+
+#+begin_src javascript
+
+  {
+    "ignoreFiles": ["**/*.js"]
+  }
+
+#+end_src
+
+Stylelint ignores the ~node_modules~ directory by default. However, this is overridden if ~ignoreFiles~ is set.
+
+If the globs are absolute paths, they are used as is. If they are relative, they are analyzed relative to
+
+- ~configBasedir~, if it's provided;
+- the config's filepath, if the config is a file that Stylelint found and loaded;
+- or ~process.cwd()~.
+
+*Note*: This is not an efficient method for ignoring lots of files. If you want to ignore a lot of files efficiently, use ~.stylelintignore~ or adjust your files globs.
+
+***** fix
+Automatically fix, where possible, problems reported by rules.
+
+For example:
+
+#+begin_src javascript
+
+  {
+    "fix": true
+  }
+
+#+end_src
+
+*Note*: This config option should not be overridden on a per-file basis.
+
+**** Customizing
+***** Brief
+The [[stylelint-config-standard][standard config]] turns on about half of the built-in rules. Stylelint is capable of so much more.
+
+For example, if you only want to allow:
+
+- ~%~, ~deg~, ~px~, ~rem~, ~ms~ units generally
+- ~px~ for borders
+- ~rem~ for paddings and gaps
+
+You can use the ~unit-allowed-list~ and ~declaration-property-unit-allowed-list~ rules:
+
+#+begin_src javascript
+
+  {
+    "extends": ["stylelint-config-standard"],
+    "rules": {
+      "declaration-property-unit-allowed-list": {
+        "/^border/": ["px"],
+        "/^padding|^gap/": ["rem"]
+      },
+      "unit-allowed-list": ["%", "deg", "px", "rem", "ms"]
+    }
+  }
+
+#+end_src
+
+Or you can catch unknown identifiers across files, such as animation names, custom properties, or custom media queries, by combining the referenceFiles configuration property with the ~no-unknown-animations~, ~no-unknown-custom-properties~, and ~no-unknown-custom-media~ rules:
+
+#+begin_src javascript
+
+  {
+    "extends": ["stylelint-config-standard"],
+   "referenceFiles": [
+     "tokens.css"
+   ],
+   "rules": {
+     "no-unknown-animations": true,
+     "no-unknown-custom-properties": true,
+     "no-unknown-custom-media": true
+   }
+  }
+
+#+end_src
+
+***** Custom rules
+In addition to the built-in rules, there are custom rules that you can plug into Stylelint.
+
+Custom rules are typically written by communities to support methodologies, toolsets, non-standard CSS features, or very specific use cases.
+
+You can add custom rules to your config by extending a shared config that includes them or by using a plugin directly. For example, you can order your properties into groups by extending the recess order config:
+
+#+begin_src javascript
+
+  {
+    "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-recess-order"
+    ]
+  }
+
+#+end_src
+
+Or you can use the order plugin directly if, for example, you want to specify your own order:
+
+#+begin_src javascript
+
+  {
+    "extends": ["stylelint-config-standard"],
+    "plugins": ["stylelint-order"],
+    "rules": {
+      "order/properties-order": [
+        "transform",
+        "top",
+        "color"
+      ]
+    }
+  }
+
+#+end_src
+
+**** Config
+***** Config files
+****** Default configuration
+
+#+begin_src javascript
+
+  /** @type {import("stylelint").Config} */
+  export default {
+    extends: ["stylelint-config-standard"]
+  };
+
+#+end_src
+
+****** Documented example
+
+#+begin_src javascript
+
+  /** @type {import('stylelint').Config} */
+  export default {
+    // extends: Inherit Shared Configurations
+    // Loads complete configurations from npm packages. These can include
+    // rules, settings, plugins, and more (includes plugins too)
+    extends: ["stylelint-config-standard-scss"],
+
+    // plugins: Add extra custom rules not in the preset
+    // Loads individual custom rules that aren't built into Stylelint
+    plugins: ["stylelint-order"],
+
+    // customSyntax: Parse Non-Standard CSS
+    // Tells Stylelint how to understand non-standard CSS
+    // syntax (like SCSS, Less, or template literals).
+    customSyntax: "postcss-scss",
+
+    // rules: Enable/disable specific rules
+    rules: {
+      // From stylelint-config-standard-scss (already configured)
+      "scss/dollar-variable-pattern": null,  // Override to disable
+
+      // From stylelint-order plugin
+      "order/properties-alphabetical-order": true,
+
+      // Built-in Stylelint rule
+      "block-no-empty": true
+    }
+  }
+
+#+end_src
+
+****** HTML-like and Lit elements
+~stylelint.config.mjs~.
+
+#+begin_src javascript
+
+  /** @type {import('stylelint').Config} */
+  export default {
+    extends: ["stylelint-config-standard",
+              // HTML (and HTML-like):
+              "stylelint-config-html/html"],
+    // Lit elements:
+    overrides: [
+      {
+        files: ["*.js"],
+        customSyntax: "postcss-lit"
+      }
+    ]
+  };
+
+#+end_src
+
+Then install:
+
+#+begin_src sh
+
+  pnpm add -D stylelint stylelint-config-standard postcss-html stylelint-config-html
+
+#+end_src
+
+Usage:
+
+#+begin_src sh
+
+  pnpm exec stylelint "**/*.{css,html}"
+  # or
+  pnpm lint:style
+  # Where 'scripts' in package.json is:
+  # "lint:style": "stylelint \"**/*.{css,html}\""
+
+  pnx stylelint "**/*.{css,html}"
+  # It doesn't work because it requires the 'postcss-html'
+  # plugin for '.html' files (pnx cannot access local plugins)
+
+#+end_src
+
+***** stylelint-config-standard
+****** Brief
+The standard shareable config for Stylelint.
+
+It extends [[stylelint-config-recommended]] and turns on additional rules to enforce modern conventions found in the CSS specifications and within Baseline Widely Available.
+
+****** Installation
+
+#+begin_src sh
+
+  pnpm add -D stylelint-config-standard
+
+#+end_src
+
+****** Usage
+Set your Stylelint config ~.stylelintrc~ to:
+
+#+begin_src js
+
+  {
+    "extends": "stylelint-config-standard"
+  }
+
+#+end_src
+
+****** Extending the config
+Add a ~"rules"~ key to your config, then add your overrides and additions there.
+
+You can turn off rules by setting its value to ~null~. For example:
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "selector-class-pattern": null
+    }
+  }
+
+#+end_src
+
+Or lower the severity of a rule to a warning using the ~severity~ secondary option.
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "property-no-vendor-prefix": [
+        true,
+        {
+          "severity": "warning"
+        }
+      ]
+    }
+  }
+
+#+end_src
+
+Or to add a rule, For example, the ~unit-allowed-list~ one:
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "unit-allowed-list": ["em", "rem", "s"]
+    }
+  }
+
+#+end_src
+
+***** stylelint-config-recommended
+****** Brief
+The recommended shareable config for Stylelint.
+
+It turns on most of the Stylelint rules that help you avoid errors.
+
+You can use this as a foundation for your own config, but we suggest most people use our [[stylelint-config-standard]] standard config instead which extends this config and adds a few more rules to enforce common conventions.
+
+****** Installation
+
+#+begin_src sh
+
+  pnpm add -D stylelint-config-recommended
+
+#+end_src
+
+****** Usage
+Set your ~stylelint~ config to:
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-recommended"
+  }
+
+#+end_src
+
+****** Extending the config
+Add a ~"rules"~ key to your config, then add your overrides and additions there.
+
+For example, to change the ~at-rule-no-unknown~ rule to use its ~ignoreAtRules~ option, turn off the ~block-no-empty~ rule, and add the ~unit-allowed-list~ rule:
+
+#+begin_src javascript
+
+  {
+    "extends": "stylelint-config-recommended",
+    "rules": {
+      "at-rule-no-unknown": [
+        true,
+        {
+          "ignoreAtRules": ["extends"]
+        }
+      ],
+      "block-no-empty": null,
+      "unit-allowed-list": ["em", "rem", "s"]
+    }
+  }
+
+#+end_src
+
+***** stylelint-config-html
+https://github.com/ota-meshi/stylelint-config-html
+
+The shareable HTML (and HTML-like) config for Stylelint.
+
+This config bundles the postcss-html custom syntax and configures it.
+
+***** stylelint-plugin-defensive-css
+https://www.npmjs.com/package/stylelint-plugin-defensive-css
+
+A Stylelint plugin to help you write more defensive, accessible, and maintainable CSS. Catch layout and accessibility bugs before they ship, enforce team-wide best practices, and guard against the subtle CSS pitfalls that break real-world experiences.
+
+***** stylelint-plugin-use-baseline
+https://www.npmjs.com/package/stylelint-plugin-use-baseline
+
+Disallow CSS features not in Baseline.
+
+***** stylelint-order
+https://www.npmjs.com/package/stylelint-order
+
+A plugin pack of order-related linting rules for Stylelint. Every rule supports autofixing (stylelint --fix).
+
+**** Linting CSS-like languages and CSS within containers
+***** Using extends
+You can extend a community config to lint:
+
+- CSS-like languages, e.g. SCSS, Sass and Less
+- CSS within containers, e.g. in HTML, CSS-in-JS and Vue SFCs
+
+For example, to lint SCSS you can extend the SCSS community config:
+
+1. Create a ~stylelint.config.mjs~ configuration file in the root of your project with the following content:
+
+#+begin_src javascript
+
+  /** @type {import('stylelint').Config} */
+  export default {
+    extends: ["stylelint-config-standard-scss"]
+  };
+
+#+end_src
+
+2. Use ~pnpm~ to add the related dependencies:
+
+#+begin_src sh
+
+  pnpm add -D stylelint stylelint-config-standard-scss
+
+#+end_src
+
+3. Run Stylelint on all the SCSS files in your project:
+
+#+begin_src sh
+
+  stylelint "**/*.scss"
+
+#+end_src
+
+The config includes the:
+
+- SCSS syntax :: a custom syntax to parse SCSS
+- SCSS plugin :: a set of custom rules for SCSS
+
+***** Using a custom syntax directly
+If a shared config isn't available for your preferred language or container, you can install the appropriate custom syntax and use the customSyntax option yourself.
+
+For example, to lint CSS inside of Lit elements using the Lit custom syntax:
+
+1. Create a ~stylelint.config.mjs~ configuration file in the root of your project with the following content:
+
+#+begin_src javascript
+
+  /** @type {import('stylelint').Config} */
+  export default {
+    extends: "stylelint-config-standard",
+    customSyntax: "postcss-lit"
+  };
+
+#+end_src
+
+2. Use ~pnpm~ to add the related dependencies:
+
+#+begin_src sh
+
+  pnpm add -D stylelint stylelint-config-standard postcss-lit
+
+#+end_src
+
+3. Run Stylelint on all the JavaScript files in your project:
+
+#+begin_src sh
+
+  stylelint "**/*.js"
+
+#+end_src
+
+***** Using more than one custom syntax (overrides)
+If you want to lint more than one language or container, you can use the ~overrides~ property.
+
+For example, to lint CSS files and the CSS within Lit Elements you can update your configuration to:
+
+#+begin_src javascript
+
+  /** @type {import('stylelint').Config} */
+  export default {
+    extends: ["stylelint-config-standard"],
+    overrides: [
+      {
+        files: ["*.js"],
+        customSyntax: "postcss-lit"
+      }
+    ]
+  };
+
+#+end_src
+
+And then run Stylelint on both your CSS and JavaScript files:
+
+#+begin_src sh
+
+  stylelint "**/*.{css,js}"
+
+#+end_src
+
+*** ESLint
+**** Brief
 ESLint statically analyzes your code to quickly find problems. It is built into most text editors and you can run ESLint as part of your continuous integration pipeline.
 
 ESLint is an open source project that helps you find and fix problems with your JavaScript code. It doesn't matter if you're writing JavaScript in the browser or on the server, with or without a framework, ESLint can help your code live its best life.
@@ -24368,39 +25749,512 @@ After that, you can run ESLint on any file or directory like this:
 
 #+end_src
 
-**** Stylelint
-A mighty CSS linter that helps you avoid errors and enforce conventions.
+** Formatters
+*** Oxfmt
+**** Brief
+Oxfmt (/oʊ-ɛks-fɔːr-mæt/) is a high-performance formatter for the JavaScript ecosystem.
 
-Avoid errors:
-- invalid things, e.g. malformed grid areas
-- valid things that are problematic, e.g. duplicate selectors
-- unknown things, e.g. misspelled property names
-
-Enforce conventions:
-   - disallow things, e.g. specific units
-   - enforce naming patterns, e.g. for custom properties
-   - set limits, e.g. the number of ID selectors
-   - specify notations, e.g. for modern color functions
-
-   1. Use npm and our ~init~ tool to install Stylelint and the config:
+**** Getting started
+Install ~oxfmt~ as a dev dependency:
 
 #+begin_src sh
 
-  npm init stylelint
+  pnpm add -D oxfmt
 
 #+end_src
 
-   2. Run Stylelint on all the CSS files in your project:
+Add scripts to ~package.json~:
+
+#+begin_src js
+
+  {
+    "scripts": {
+      "fmt": "oxfmt",
+      "fmt:check": "oxfmt --check"
+    }
+  }
+
+#+end_src
+
+Format files:
 
 #+begin_src sh
 
-  npx stylelint "**/*.css"
+  pnpm run fmt
+
+  # Check formatting without writing files:
+  pnpm run fmt:check
 
 #+end_src
 
-   Once you're up and running, you can customize Stylelint.
+**** CLI
+Running ~oxfmt~ without arguments formats the current directory.
 
-*** Mkweb script
+#+begin_src sh
+
+  oxfmt [OPTIONS] [PATH]...
+
+  oxfmt [-c=PATH] [PATH]...
+
+#+end_src
+
+To use glob patterns in positional paths, be sure to quote them. Otherwise, they may or may not be expanded depending on your environment.
+
+#+begin_src sh
+
+  # Initialize .oxfmtrc.json with default values
+  oxfmt --init
+
+  # Formats the current directory
+  oxfmt
+
+  # Check if files are formatted, also show statistics
+  oxfmt --check
+
+  # Lists all files that need formatting, without actually changing them
+  oxfmt --list-different
+
+  # Exclude patterns with ! prefix
+  oxfmt '!**/fixtures/*.js'
+
+#+end_src
+
+**** Create a config file
+Initialize ~.oxfmtrc.json~ with defaults:
+
+#+begin_src sh
+
+  oxfmt --init
+
+#+end_src
+
+A minimal JSON configuration looks like this:
+
+#+begin_src javascript
+
+  {
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 80
+  }
+
+#+end_src
+
+#+begin_src javascript
+
+  {
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 80,
+    "singleQuote": true,
+    "trailingComma": "none"
+  }
+
+#+end_src
+
+** Bundlers
+*** Brief
+Un bundle sirve para agrupar todos los ficheros de JavaScript en uno solo. Así el navegador no necesita hacer varias peticiones HTTP.
+
+Herramientas como Webpack, Parcel, Rollup, Babel o similar, buscan los ~require()~ (función que importa módulos CommonJS que se exportaron con un ~module.exports~ desde otros archivos) y los sustituyen por el código del fichero correspondiente, uniendo y empatando todos los archivos Javascript necesarios de nuestra aplicación web en un sólo archivo Javascript llamado bundle.
+
+/Esbuild/ es un automatizador y bundler de Javascript extremadamente rápido, que permite hacer traducciones y transpilado de código a una velocidad asombrosa. Podremos utilizarlo desde ~web-dev-server~ para convertir nuestro código Javascript /ES2021/ en código Javascript /ES2017/ o similar, y conseguir un mejor soporte en navegadores más antiguos.
+
+*** Rollup
+Rollup is a module bundler for JavaScript which compiles small pieces of code into something larger and more complex, such as a library or application. It uses the new standardized format for code modules included in the ES6 revision of JavaScript, instead of previous idiosyncratic solutions such as CommonJS and AMD. ES modules let you freely and seamlessly combine the most useful individual functions from your favorite libraries. This will eventually be possible natively everywhere, but Rollup lets you do it today.
+
+Developing software is usually easier if you break your project into smaller separate pieces, since that often removes unexpected interactions and dramatically reduces the complexity of the problems you'll need to solve, and simply writing smaller projects in the first place isn't necessarily the answer. Unfortunately, JavaScript has not historically included this capability as a core feature in the language.
+
+This finally changed with the ES6 revision of JavaScript, which includes a syntax for importing and exporting functions and data so they can be shared between separate scripts. The specification is now fixed, but it is only implemented in modern browsers and not finalised in Node.js. Rollup allows you to write your code using the new module system, and will then compile it back down to existing supported formats such as CommonJS modules, AMD modules, and IIFE-style scripts. This means that you get to write future-proof code, and you also get the tremendous benefits of…
+
+*** esbuild
+Is an extremely fast bundler for the web. esbuild is used in [[Vite]], a front-end build-tool and development server.
+
+esbuild is a module bundler and minifier for JavaScript. Written in Go instead of JavaScript, esbuild claims to be "10 to 100 times" faster than other bundlers by using parallelism and shared memory usage. It supports TypeScript, JSX, tree-shaking and is extensible through plugins.
+
+*Major features*:
+
+- Extreme speed without needing a cache
+- JavaScript, CSS, TypeScript, and JSX built-in
+- A straightforward API for CLI, JS, and Go
+- Bundles ESM and CommonJS modules
+- Bundles CSS including CSS modules
+- Tree shaking, minification, and source maps
+- Local server, watch mode, and plugins
+
+** Local servers
+*** servor
+A dependency free dev server for modern web application development
+
+Rápido, ligero, sin dependencias. Simular un entorno local. Actualización al hacer cambios. Accesible desde http://localhost:1234 (a veces 127.0.0.1)
+
+You can pass a GitHub repo as ~<root>~ using the syntax ~gh:<user>/<repository>~
+- <root> :: path to serve static files from (defaults to current directory ~.~)
+- <fallback> :: the file served for all non-file requests (defaults to ~index.html~)
+- <port> :: what port you want to serve the files from (defaults to ~8080~)
+
+Optional flags passed as non-positional arguments:
+- --reload :: causes the browser to reload when files change
+- --browse :: causes the browser to open when the server starts
+
+#+begin_src sh
+
+  # Run as a terminal command without adding it as a dependency:
+  pnx servor <root> <fallback> <port>
+
+  # Examples:
+  pnx servor
+  pnx servor . main.html 8383 --reload
+
+#+end_src
+
+Example usage with npm scripts in a ~package.json~ file after running:
+
+#+begin_src sh
+
+  npm i servor -D
+
+#+end_src
+#+begin_src javascript
+
+  {
+    "devDependencies": {
+      "servor": "4.0.0"
+    },
+    "scripts": {
+      "start": "servor www index.html 8080 --reload --browse"
+    }
+  }
+
+#+end_src
+
+*** live-server
+This is a little development server with live reload capability. Use it for hacking your HTML/JavaScript/CSS files, but not for deploying the final site.
+
+Pulsando en la URL http://127.0.0.1:8080, debería aparecer la página que se tiene en ~index.html~.
+
+#+begin_src sh
+
+  # Install live-server:
+  pnpm add -g live-server
+  # Move your terminal to where your pages live:
+  cd <path-to-content>
+  # Start the server:
+  live-server .
+  # Open localhost:8080 (http://127.0.0.1:8080) in a browser.
+  # Ready for changes
+
+  # or
+  pnpm add -g live-server
+  live-server <path-to-content>
+
+#+end_src
+
+*** vite
+Powerful dev server that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
+
+The ~index.html~ will be served on http://localhost:5173.
+
+#+begin_src sh
+
+  pnpm add -D vite
+
+  pnx vite  # pnx vite src/ --port 1234
+
+#+end_src
+
+** Build tools
+*** Brief
+Un automatizador es un sistema que permite organizar y estructurar una aplicación web, agilizando tareas repetitivas y facilitando su creación.
+
+Antiguamente, cuando teníamos que crear un nuevo sitio web, debíamos crear manualmente una *carpeta para el proyecto*, las diferentes subcarpetas de las secciones de la web (imágenes, css, js, etc...), configurar un servidor web (se solía usar XAMPP o similares), colocar y enlazar las diferentes librerías CSS y/o Javascript que queríamos utilizar, etc...
+
+Con la evolución del desarrollo web, hemos pasado a crear webs que *transpilan código*. Esto es, tenemos una carpeta ~src/~ donde tenemos nuestro código fuente y ese código debe preprocesarse y traducirse a otro código (en la carpeta ~dist/~) que es el que finalmente leerá nuestro navegador. Mantener actualizado el código fuente que escribimos con el que lee el navegador sin automatizarlo, es una tarea muy tediosa. De ahí surgen los automatizadores.
+
+Algunas de esas tareas podrían ser las siguientes:
+
+- Creación del *proyecto* y su gestión (gestionado con NPM)
+- Actualización y mantenimiento de *dependencias* (gestionado con NPM)
+- *Servidor web local* de desarrollo
+- *Minificación* de código
+- *Optimización* de imágenes
+- *Preprocesar* o transpilar código fuente
+- *Despliegue* o subida del código final al servidor
+
+*** Vite
+**** Brief
+***** Overview
+Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
+
+- A dev server :: that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
+
+- A build command that bundles :: your code with Rolldown, pre-configured to output highly optimized static assets for production.
+
+Vite is opinionated and comes with sensible defaults out of the box. The Config Section explains how to adapt Vite to your project /if needed/.
+
+***** Browser Support
+During development, Vite /assumes that a modern browser is used/. This means the browser supports most of the latest JavaScript and CSS features. For that reason, Vite sets esnext as the transform target. This prevents syntax lowering, letting Vite serve modules as close as possible to the original source code. Vite injects some runtime code to make the development server work. This code uses features included in Baseline Newly Available at the time of each major release (2026-01-01 for this major).
+
+***** Slow Server Start
+When cold-starting the dev server, a bundler-based build setup has to eagerly crawl and build your entire application before it can be served.
+
+Vite improves the dev server start time by first dividing the modules in an application into two categories: *dependencies* and *source code*.
+
+-  dependencies :: are mostly plain JavaScript that do not change often during development. Some large dependencies (e.g. component libraries with hundreds of modules) are also quite expensive to process. Dependencies may also be shipped in various module formats (e.g. ESM or CommonJS). Vite pre-bundles dependencies using [[esbuild]].
+
+- source code ::  often contains non-plain JavaScript that needs transforming (e.g. JSX, CSS or Vue/Svelte components), and will be edited very often. Also, not all source code needs to be loaded at the same time (e.g. with route-based code-splitting).
+
+Vite serves source code over native ESM. This is essentially letting the browser take over part of the job of a bundler: Vite only needs to transform and serve source code on demand, as the browser requests it. Code behind conditional dynamic imports is only processed if actually used on the current screen.
+
+***** The public Directory
+If you have assets that are:
+
+- Never referenced in source code (e.g. ~robots.txt~)
+- Must retain the exact same file name (without hashing)
+- ...or you simply don't want to have to import an asset first just to get its URL
+
+Then you can place the asset in a special public directory under your project root. Assets in this directory will be served at root path / during dev, and copied to the root of the dist directory as-is.
+
+The directory defaults to <root>/public, but can be configured via the publicDir option.
+
+Note that you should always reference public assets using root absolute path - for example, public/icon.png should be referenced in source code as /icon.png.
+
+**** Scaffolding for Vite's first project
+
+#+begin_src sh
+
+  npm create vite@latest
+  # or
+  pnpm create vite
+
+#+end_src
+
+Then follow the prompts!
+
+You can also directly specify the project name and the template you want to use via additional command line options. For example, to scaffold a Vite + Vue project, run:
+
+#+begin_src sh
+
+  # npm 7+, extra double-dash is needed:
+  npm create vite@latest my-vue-app -- --template vue
+  # or
+  pnpm create vite my-vue-app --template vue
+
+  # To create a project without interactive prompts
+  pnpm create vite my-vue-app --template vue --no-interactive
+
+#+end_src
+
+You can use ( ~.~ ) for the project name to scaffold in the current directory.
+
+*ManzDev*
+
+#+begin_src sh
+
+  # Crea un prorecto con una plantilla de vite (similar a npm init)
+  npm create vite name-project
+  # Need to install the following packages:
+  #   create-vite
+  # Ok to proceed? (y) y
+
+#+end_src
+
+Se nos advertirá que es necesario instalar el paquete ~create-vite~ de no tenerlo instalado, que es el asistente encargado de crear la aplicación web.
+
+**** Manual Installation
+In your project, you can install the *vite* CLI using:
+
+#+begin_src sh
+
+  npm install -D vite
+  # or
+  pnpm add -D vite
+
+#+end_src
+
+**** Usage
+Then run the appropriate CLI command in your terminal:
+
+#+begin_src sh
+
+  npx vite
+
+#+end_src
+
+The ~index.html~ will be served on http://localhost:5173.
+
+**** Configuring Vite
+***** Brief
+When running ~vite~ from the command line, Vite will automatically try to resolve a config file named ~vite.config.js~ inside project root (other JS and TS extensions are also supported).
+
+The most basic config file looks like this:
+
+#+begin_src javascript
+
+  export default {
+  // config options
+}
+
+#+end_src
+
+You can also explicitly specify a config file to use with the ~--config~ CLI option (resolved relative to ~cwd~):
+
+#+begin_src sh
+
+  vite --config my-config.js
+
+#+end_src
+
+***** Examples
+****** Config Vite
+
+#+begin_src javascript
+
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+
+  // https://vite.dev/config/
+  export default defineConfig({
+    plugins: [react()],
+    server: {
+      port: 3000
+    },
+    build: {
+      outDir: "out"
+    }
+  })
+
+#+end_src
+
+****** Conditional Config Vite
+
+#+begin_src javascript
+
+  export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
+    if (command === 'serve') {
+      return {
+        // dev specific config
+      }
+    } else {
+      // command === 'build'
+      return {
+        // build specific config
+      }
+    }
+  })
+
+#+end_src
+
+****** Config for using GitHub Pages
+
+#+begin_src javascript
+
+  import { defineConfig } from 'vite';
+
+  export default defineConfig({
+    // Production build prepends your GitHub subfolder path!
+    base: '/${FOLDER_NAME}/'
+  });
+
+#+end_src
+
+****** Config ManzDev
+~vite.config.js~ es un fichero de configuración donde puedes establecer algunos detalles del funcionamiento del empaquetador en el proyecto actual. La estructura general de este fichero es la siguiente:
+
+#+begin_src javascript
+
+  import { defineConfig } from "vite";
+
+  export default defineConfig({
+      root: "./",
+      base: "/",
+      publicDir: "public",
+      build: {
+          outDir: "dist",
+          assetsDir: "assets"
+      },
+      plugins: []
+  });
+
+#+end_src
+
+Dependiendo de la plantilla utilizada, este fichero de configuración puede ser diferente o incluso no existir (como es en el caso de los proyectos de Javascript vanilla).
+
+**** How to use a Vite plugin
+1. install the plugin as a dev dependency in ~package.json~
+2. import and add it to the plugins array in ~vite.config.js~
+3. check the plugin docs for any additional configurations
+
+   Example of install ~vite-plugin-qrcode~ plugin:
+
+#+begin_src sh
+
+  npm install -D vite-plugin-qrcode
+
+#+end_src
+
+#+begin_src javascript
+
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+  import { qrcode } from 'vite-plugin-qrcode'
+
+  // https://vite.dev/config/
+  export default defineConfig({
+    plugins: [react(), qrcode()],
+  })
+
+#+end_src
+
+** Scaffoldings
+*** Brief
+*Project structure*: is the organized layout of files, folders, and configuration that defines how a codebase is arranged, built, tested, and deployed. A clear structure improves maintainability, onboarding, discoverability, and scalability.
+
+*Scaffolding*: tool that automatically generates the initial file structure, boilerplate code, and configuration settings for a new project or feature.
+
+#+begin_src sh
+
+  📂project-name            # Project root
+  ├─── 📁node_modules       # Node.js dependencies for the project (*)
+  ├─── 📁dist               # Generated code (using preprocessors) (*)
+  │                         # SCAFFOLDING:
+  ├─── 📁public             # Public assets and resources
+  ├─── 📂src                # Editable source code
+  │    ├───📂assets         # General assets for your project
+  │    │   ├───📁fonts      # Fonts
+  │    │   └───📁images     # Images
+  │    ├───📁css            # CSS styles
+  │    │   └───📄global.css # Global CSS
+  │    ├───📂modules        # Javascript modules/components
+  │    └───📄main.js        # Javascript main
+  ├─── 📄index.html         # The HTML file for the project
+  ├─── 📄.gitignore         # Files and folders to be ignored by Git
+  ├─── 📄README.md          # Project instructions and comments
+  ├─── 📄LICENSE            # The license for your project
+  │
+  ├─── 📁.git               # Git data (*)
+  ├─── 📄package.json       # Defines your project and its dependencies (*)
+  └─── 📄pnpm-lock.yalm     # Lockfile for your project's dependencies (*)
+
+  # (*) Created automatically using development tools
+
+#+end_src
+
+*Note*: possible names for the additional stylesheets
+
+- theme :: if the file is meant to control the look and feel
+- tokens :: if the file mostly defines reusable values like ~--card-width~, ~--card-border-color~, or ~--card-font-size~
+- var :: if the file is mostly CSS variables
+
+#+begin_src sh
+
+  src/
+  ├── components/
+  │   └── PlayingCard.js
+  ├── styles/
+  │   └── playing-card.tokens.css
+
+#+end_src
+
+*** Mkweb
 **** Brief
 Sirve para generar rápidamente, la estructura de carpetas (scaffolding) de un proyecto HTML/CSS/Javascript base, con todo preparado para programar.
 
@@ -24432,6 +26286,15 @@ Se ejecuta el script ~mkweb~ pasándole por parámetro el nombre de la carpeta d
   cd project-name
   git remote add origin git@github.com:GITUSER/project-name.git
   npm install
+
+  gh repo create --public project-name # or create it directly on github
+  git add .
+  git commit -m 'first commit'
+  # git branch -M main # renames the current branch to main (before master)
+  git remote add origin git@github.com:GITUSER/project-name.git
+  git push -u origin main
+  # npm run dev (if you want to start the server)
+
   code . # (launch vscode)
   npm run dev
 
@@ -24441,7 +26304,7 @@ Se ejecuta el script ~mkweb~ pasándole por parámetro el nombre de la carpeta d
 - Para crear un proyecto de /Lit/, escribe: ~mkweb project-name --lit~.
 - Aunque puedes usar ~npm~, se recomienda usar ~pnpm~, compatible y mucho más rápido.
 
-**** Scaffolding
+**** Scaffolding mkweb
 
 - Carpeta ~src/~ incluye el código fuente del proyecto:
   - Carpeta ~assets/~ que puede incluir estáticos (hasheados).
@@ -24451,6 +26314,671 @@ Se ejecuta el script ~mkweb~ pasándole por parámetro el nombre de la carpeta d
   - Archivo /Javascript/ ( ~index.js~ ) referenciado en el HTML anterior.
 - Carpeta ~dist/~ creada tras un ~npm run build~ (lista para subir a producción).
 - Carpeta ~public/~ con archivos estáticos similar a ~assets/~, pero a diferencia de esta, sus archivos son copiados a ~dist/~ manteniendo la estructura de carpetas y nombres de ficheros sin ser hasheados.
+
+** Construcción y control de proyecto
+*** Instalación de pnpm
+
+#+begin_src sh
+
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+#+end_src
+
+*** Instalación de Node
+Primero se instala [[Instalación de pnpm][pnpm]] y luego:
+
+#+begin_src sh
+
+  # Node (LTS)
+  pnpm runtime set node lts -g
+
+#+end_src
+
+*** Scaffolding
+
+#+begin_src sh
+
+  📂project-name            # Carpeta del proyecto
+  ├─── 📂src                # Código fuente editable
+  │    ├───📂assets         # Ficheros estáticos
+  │    │   ├───📁fonts      # Tipografías
+  │    │   └───📁images     # Imágenens
+  │    ├───📄style.css      # Archivo CSS
+  │    ├───📂modules        # Carpeta de modulos/components Javascript
+  │    └───📄main.js        # Javascript principal
+  ├─── 📄index.html         # HTML
+  ├─── 📄README.md          # Intrucciones y comentarios del proyecto
+  ├─── 📄.gitignore         # Ficheros o carpetas a ignorar
+  └─── 📄package.json       # Fichero de informacion del proyecto
+
+#+end_src
+
+*** Crear proyecto con pnpm
+
+#+begin_src sh
+
+  # Inicializa. Crea 'package.json'.
+  pnpm init
+
+  # Añade modulos ESM. (añade esta línea '"type": "module"' en el package.json)
+  pnpm pkg set type=module
+
+#+end_src
+
+*** Instalar un servidor local
+Rápido, ligero, sin dependencias.
+
+Accesible desde http://localhost:1234 (a veces 127.0.0.1)
+
+#+begin_src sh
+
+  pnpm add -D servor # same as: npm install servor
+
+  pnx servor src/ index.html 1234 --reload
+
+#+end_src
+
+*** Automatizar scripts
+Identifica comandos complejos para simplificarlos. Añadelos en la propiedad scripts del ~package.json~.
+
+#+begin_src js
+
+  {
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "lint": "oxlint src/",
+      "format": "oxfmt src/",
+      "dev": "servor src/ index.html 1234 --reload"
+    }
+  }
+
+#+end_src
+
+*** Linter
+Herramientas que revisan código.
+
+#+begin_src sh
+
+  # Instalación de linter + formateador
+  pnpm add -D oxlint oxfmt
+
+  # Crea reglas de confiuración (si no las tiene)
+  pnx oxlint --init
+
+  # Ejecutar en la carpeta actual recursivamente (también en node_module)
+  pnx oxlint
+  # Para que ignore la carpeta node_modules
+  echo "node_modules/" >.gitignore
+
+  # Ejecuta solo en la carpeta que se le indica
+  pnx oxlint src/
+
+#+end_src
+
+*** Git
+
+#+begin_src sh
+
+  # Carpeta del proyecto
+  cd project-name
+
+  # Inicializar repositorio local.
+  git init
+
+  # Añadir y revisar cambios.
+  git add .
+
+  # Guardar cambios.
+  git commit -m "Add first files"
+
+#+end_src
+
+*** GitHub remoto
+Crear un repositoryo en GitHub (remoto). -> A través de la web.
+
+#+begin_src sh
+
+  # Añadimos origin (repo remoto) a main (rama principal local)
+  git remote add origin https://github.com/ManzDev/gallinerica
+
+  # Si hay gente en el proyecto trabajando, trae siempre los cambios
+  # git pull
+
+  # Subimos los cambios del repo local al remoto
+  git push -u origin main
+  # (las siguientes simplemente `git push`)
+  # git push
+
+  # Flujo habitual para trabajar
+  # Rama main, rama develop, ramas para features
+
+#+end_src
+
+*** GitHub gh
+Automatizar tareas de GitHub.
+
+#+begin_src sh
+
+  # Crear un repositorio público de la carpeta actual, usando el origin
+  gh repo create --public ManzDev/nombre-repo --source . --remote origin
+
+#+end_src
+
+*** Despliegue en GitHub pages
+Código fuente: ~github.com/user/repo~
+GitHub pages (web alojadas): ~user.github.io/repo~
+Carpeta a desplegar ~src/~ o ~dist/~
+
+#+begin_src sh
+
+  # Instalamos comando para desplegar
+  pnpm add -D gh-pages
+
+  # Despliegue en la rama 'gh-gages'
+  gh-gpages -d src
+
+  # opcional: añadirlo al package.json (scripts)
+  {
+      "deploy": "gh-pages -d src/"
+  }
+
+#+end_src
+
+* Miscellaneous
+** Drawing on canvas
+*** Brief
+A [[Canvas][canvas]] node represents an area in a document that our program may draw on. This drawing is done through a drawing context object, created with the ~getContext~ method.
+
+The 2D drawing interface allows us to fill and stroke various shapes. The context’s [[Lines and surfaces][fillStyle]] property determines how shapes are filled. The ~strokeStyle~ and ~lineWidth~ properties control the way lines are drawn.
+
+Rectangles and pieces of text can be drawn with a single method call. The [[Lines and surfaces][fillRect]] and ~strokeRect~ methods draw rectangles, and the ~fillText~ and ~strokeText~ methods draw text. To create custom shapes, we must first build up a path.
+
+Calling [[Paths][beginPath]] starts a new path. A number of other methods add lines and curves to the current path. For example, ~lineTo~ can add a straight line. When a path is finished, it can be filled with the ~fill~ method or stroked with the ~stroke~ method.
+
+Moving pixels from an image or another canvas onto our canvas is done with the [[drawImage]] method. By default, this method draws the whole source image, but by giving it more parameters, you can copy a specific area of the image. We used this for our game by copying individual poses of the game character out of an image that contained many such poses.
+
+Transformations allow you to draw a shape in multiple orientations. A 2D drawing context has a current transformation that can be changed with the [[Transformation][translate]] , ~scale~ , and ~rotate~ methods. These will affect all subsequent drawing operations. A transformation state can be saved with the [[Storing and clearing transformations][save]] method and restored with the ~restore~ method.
+
+When showing an animation on a canvas, the ~clearRect~ method can be used to clear part of the canvas before redrawing it.
+
+*** SVG
+This is an HTML document with a simple SVG picture in it:
+
+#+begin_src html
+
+  <p>Normal HTML here.</p>
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <circle r="50" cx="50" cy="50" fill="red"/>
+    <rect x="120" y="5" width="90" height="90"
+          stroke="blue" fill="none"/>
+  </svg>
+
+#+end_src
+
+The ~xmlns~ attribute changes an element (and its children) to a different XML *namespace*. This namespace, identified by a URL, specifies the dialect that we are currently speaking. The ~<circle>~ and ~<rect>~ tags, which do not exist in HTML, do have a meaning in SVG—they draw shapes using the style and position specified by their attributes.
+
+These tags create DOM elements, just like HTML tags, that scripts can interact with. For example, this changes the <circle> element to be colored cyan instead:
+
+#+begin_src javascript
+
+  let circle = document.querySelector("circle");
+  circle.setAttribute("fill", "cyan");
+
+#+end_src
+
+*** Canvas
+A canvas is a single DOM element that encapsulates a picture. It provides a programming interface for drawing shapes onto the space taken up by the node. The main difference between a canvas and an [[SVG]] picture is that in SVG the original description of the shapes is preserved so that they can be moved or resized at any time. A canvas, on the other hand, converts the shapes to pixels (colored dots on a raster) as soon as they are drawn and does not remember what these pixels represent. The only way to move a shape on a canvas is to clear the canvas (or the part of the canvas around the shape) and redraw it with the shape in a new position.
+
+*The canvas element*:
+Canvas graphics can be drawn onto a ~<canvas>~ element. You can give such an element ~width~ and ~height~ attributes to determine its size in pixels. A new canvas is empty, meaning it is entirely transparent and thus shows up as empty space in the document.
+
+The ~<canvas>~ tag is intended to allow different styles of drawing. To get access to an actual drawing interface, we first need to create a context, an object whose methods provide the drawing interface. There are currently two widely supported drawing styles: "2d" for two-dimensional graphics and "webgl" for three-dimensional graphics through the OpenGL interface.
+
+You create a context with the ~getContext~ method on the ~<canvas>~ DOM element.
+
+*Note*: When no ~width~ or ~height~ attribute is specified, a canvas element gets a default ~width~ of 300 pixels and ~height~ of 150 pixels.
+
+#+begin_src javascript
+
+  <p>Before canvas.</p>
+  <canvas width="120" height="60"></canvas>
+  <p>After canvas.</p>
+
+  <script>
+    let canvas = document.querySelector("canvas");
+    let context = canvas.getContext("2d");
+    context.fillStyle = "red";
+    context.fillRect(10, 10, 100, 50);
+  </script>
+
+  // After creating the context object, the example draws a red rectangle
+  // 100 pixels wide and 50 pixels high, with its top-left corner at
+  // coordinates (10,10).
+
+  // Just like in HTML (and SVG), the coordinate system that the canvas
+  // uses puts (0,0) at the top-left corner, and the positive y-axis goes
+  // down from there.
+
+#+end_src
+
+*** Choosing a graphics interface
+So when you need to generate graphics in the browser, you can choose between plain HTML, SVG, and canvas. There is no single best approach that works in all situations. Each option has strengths and weaknesses.
+
+Plain *HTML* has the advantage of being simple. It also integrates well with *text*. Both SVG and canvas allow you to draw text, but they won’t help you position that text or wrap it when it takes up more than one line. In an HTML-based picture, it is much easier to include blocks of text.
+
+*SVG* can be used to produce *crisp graphics that look good at any zoom* level. Unlike HTML, it is designed for drawing and is thus more suitable for that purpose.
+
+Both *SVG* and *HTML* build up a data structure (the *DOM*) that represents your picture. This makes it possible to *modify elements after they are drawn*. If you need to repeatedly change a small part of a big picture in response to what the user is doing or as part of an animation, doing it in a canvas can be needlessly expensive. The DOM also allows us to register mouse event handlers on every element in the picture (even on shapes drawn with SVG). You can’t do that with canvas.
+
+But *canvas’s* pixel-oriented approach can be an advantage when *drawing a huge number of tiny elements*. The fact that it does not build up a data structure but only repeatedly draws onto the same pixel surface gives canvas a lower cost per shape.
+
+There are also effects, such as rendering a scene one pixel at a time (for example, using a ray tracer) or postprocessing an image with JavaScript (blurring or distorting it), that can be realistically handled only by a pixel-based approach.
+
+In some cases, you may want to combine several of these techniques. For example, you might draw a graph with SVG or canvas but show textual information by positioning an HTML element on top of the picture.
+
+*** Lines and surfaces
+In the canvas interface, a shape can be *filled*, meaning its area is given a certain color or pattern, or it can be *stroked*, which means a line is drawn along its edge.
+
+The ~fillRect~ and ~strokeRect~ methods takes the x- and y-coordinates of the rectangle’s top-left corner, then its width, and then its height. Neither method takes any further parameters. The color of the fill, thickness of the stroke, and so on, are not determined by an argument to the method (as you might reasonably expect) but rather by properties of the context object.
+
+The ~strokeStyle~ property controls the way shapes are filled, and determines the color used for a stroked line. The width of that line is determined by the ~lineWidth~ property, which may contain any positive number.
+
+The ~fillStyle~ property specifies the color, gradient, or pattern to use *inside shapes* (default black).
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.strokeStyle = "blue";
+    // coordinates=(5,5), width=50, height=50
+    cx.strokeRect(5, 5, 50, 50);
+    cx.lineWidth = 5;
+    cx.strokeRect(135, 5, 50, 50);
+  </script>
+
+#+end_src
+
+*** Paths
+**** beginPath
+A path is a sequence of lines. The 2D canvas interface takes a peculiar approach to describing such a path. It is done entirely through side effects. Paths are not values that can be stored and passed around. Instead, if you want to do something with a path, you make a sequence of method calls to describe its shape.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.beginPath();
+    for (let y = 10; y < 100; y += 10) {
+        cx.moveTo(10, y);
+        cx.lineTo(90, y);
+    }
+    cx.stroke();
+  </script>
+      // Each segment created with lineTo starts at the path’s current
+  // position. That position is usually the end of the last segment, unless
+  // moveTo was called.
+
+  // Output: This creates a path with 9 of horizontal line segments
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+  ---------------------
+
+#+end_src
+
+**** fill
+When filling a path (using the ~fill~ method), each shape is filled separately. A path can contain multiple shapes—each ~moveTo~ motion starts a new one. But the path needs to be *closed* (meaning its start and end are in the same position) before it can be filled. If the path is not already closed, a line is added from its end to its start, and the shape enclosed by the completed path is filled.
+
+You could also use the ~closePath~ method to explicitly close a path by adding an actual line segment back to the path’s start. This segment is drawn when stroking the path.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.beginPath();
+    cx.moveTo(50, 10);
+    cx.lineTo(10, 70);
+    cx.lineTo(90, 70);
+    cx.fill();
+  </script>
+
+  // Output: This example draws a filled triangle.
+         /\
+        /..\
+       /....\
+      /......\
+     /________\
+
+#+end_src
+
+*** Curves
+**** quadraticCurveTo
+The ~quadraticCurveTo~ method draws a curve to a given point. To determine the curvature of the line, the method is given a control point as well as a destination point. Imagine this control point as *attracting* the line, giving it its curve. The line won’t go through the control point, but its direction at the start and end points will be such that a straight line in that direction would point toward the control point.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.beginPath();
+    cx.moveTo(10, 90);
+    // control=(60,10) goal=(90,90)
+    cx.quadraticCurveTo(60, 10, 90, 90);
+    cx.lineTo(60, 10); // line segment going through control point
+    cx.closePath();
+    cx.stroke();
+  </script>
+
+  // Output: Quadratic curve.
+  c(60,10)
+             / \
+            /   \
+           / _   \
+          /.    . \
+         /.       .\
+        /.         .\
+     s(10,90)       e(90,90)
+
+#+end_src
+
+**** bezierCurveTo
+The ~bezierCurveTo~ method draws a similar kind of curve. Instead of a single control point, this one has two—one for each of the line’s endpoints.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.beginPath();
+    cx.moveTo(10, 90);
+    // control1=(10,10) control2=(30,10) goal=(50,90)
+    cx.bezierCurveTo(10, 10, 30, 10, 50, 90);
+    cx.lineTo(30, 10); // line segment going through control point
+    cx.lineTo(10, 10); // line segment going through control point
+    cx.closePath();
+    cx.stroke();
+  </script>
+  // The two control points specify the direction at both ends of the
+  // curve. The farther they are away from their corresponding point, the
+  // more the curve will “bulge” in that direction.
+
+  // Output: Quadratic curve.
+  c1(10,10)  c2(30,10)
+         _____
+        ¦      \
+        ¦       \
+        ¦   _    \
+        ¦ .    .  \
+        ¦.       . \
+        ¦.         .\
+     s(10,90)       e(50,90)
+
+#+end_src
+
+**** arc
+The ~arc~ method is a way to draw a line that curves along the edge of a circle. It takes a pair of coordinates for the arc’s center, a radius, and then a start angle and end angle.
+
+Those last two parameters make it possible to draw only part of the circle. The angles are measured in radians, not degrees. This means a full circle has an angle of ~2π~, which is about ~6.28~. The angle starts counting at the point to the right of the circle’s center and goes clockwise from there. You can use a start of ~0~ and an end bigger than ~2π~ to draw a full circle.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.beginPath();
+    // center=(50,50) radius=40 angle=0 to 7
+    cx.arc(50, 50, 40, 0, 7);
+    // center=(150,50) radius=40 angle=0 to ½π
+    cx.arc(150, 50, 40, 0, 0.5 * Math.PI);
+    cx.stroke();
+  </script>
+  // The picture contains a line from the right of the full circle
+  // (first call to arc) to the right of the quarter-circle (second call).
+
+           -------
+        --/       \--
+       /             \
+       |             |-------------|
+       \             /            /
+        --\       /--            .
+           -------            --
+
+#+end_src
+
+**** Example: Drawing a pie chart
+Draw a pie chart of a customer satisfaction survey results.
+
+To draw a pie chart, we draw a number of pie slices, each made up of an ~arc~ and a pair of lines to the center of that ~arc~. We can compute the angle taken up by each ~arc~ by dividing a full circle (~2π~) by the total number of responses and then multiplying that number (the angle per response) by the number of people who picked a given choice.
+
+#+begin_src javascript
+
+  <canvas width="200" height="200"></canvas>
+
+  <script>
+  const results = [
+      {name: "Satisfied", count: 1043, color: "lightblue"},
+      {name: "Neutral", count: 563, color: "lightgreen"},
+      {name: "Unsatisfied", count: 510, color: "pink"},
+      {name: "No comment", count: 175, color: "silver"}
+  ];
+
+  let cx = document.querySelector("canvas").getContext("2d");
+  let total = results
+      .reduce((sum, {count}) => sum + count, 0);
+  // Start at the top
+  let currentAngle = -0.5 * Math.PI;
+  for (let result of results) {
+      let sliceAngle = (result.count / total) * 2 * Math.PI;
+      cx.beginPath();
+      // center=100,100, radius=100
+      // from current angle, clockwise by slice's angle
+      cx.arc(100, 100, 100,
+             currentAngle, currentAngle + sliceAngle);
+      currentAngle += sliceAngle;
+      cx.lineTo(100, 100);
+      cx.fillStyle = result.color;
+      cx.fill();
+  }
+  </script>
+
+#+end_src
+
+*** Text
+A 2D canvas drawing context provides the methods ~fillText~ and ~strokeText~. The latter can be useful for outlining letters, but usually ~fillText~ is what you need. It will fill the outline of the given text with the current ~fillStyle~.
+
+The last two arguments to ~fillText~ and ~strokeText~ provide the position at which the font is drawn. By default, they indicate the position of the start of the text’s alphabetic baseline, which is the line that letters “stand” on, not counting hanging parts in letters such as j or p. You can change the horizontal position by setting the ~textAlign~ property to ~"end"~ or ~"center"~ and the vertical position by setting ~textBaseline~ to ~"top"~ , ~"middle"~ , or ~"bottom"~ .
+
+#+begin_src javascript
+
+  <canvas></canvas>
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.font = "28px Georgia";
+    cx.fillStyle = "fuchsia";
+    cx.fillText("I can draw text, too!", 10, 50);
+  </script>
+
+#+end_src
+
+*** Images
+**** drawImage
+The ~drawImage~ method allows us to draw pixel data onto a canvas. This pixel data can originate from an ~<img>~ element or from another canvas. The following example creates a detached ~<img>~ element and loads an image file into it. But it cannot immediately start drawing from this picture because the browser may not have loaded it yet. To deal with this, we register a ~"load"~ event handler and do the drawing after the image has loaded.
+
+By default, ~drawImage~ will draw the image at its original size. You can also give it two additional arguments to set a different width and height.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    let img = document.createElement("img");
+    img.src = "img/hat.png";
+    img.addEventListener("load", () => {
+        for (let x = 10; x < 200; x += 30) {
+            cx.drawImage(img, x, 10);
+        }
+    });
+  </script>
+  // It will draw 9 consecutive images separated by 30 pixels each.
+
+#+end_src
+
+**** Pack multiple sprites (subpicture)
+When ~drawImage~ is given *nine* arguments, it can be used to draw only a fragment of an image. The second through fifth arguments indicate the rectangle (x, y, width, and height) in the *source image* that should be copied, and the sixth to ninth arguments give the rectangle (*on the canvas*) into which it should be copied.
+
+This can be used to pack multiple *sprites* (image elements) into a single image file and then draw only the part you need. For example, we have a picture containing a game character in multiple poses.
+
+By alternating which pose we draw, we can show an animation that looks like a walking character.
+
+To animate a picture on a canvas, the ~clearRect~ method is useful. It resembles ~fillRect~, but instead of coloring the rectangle, it makes it transparent, removing the previously drawn pixels.
+
+We know that each *sprite*, each subpicture, is 24 pixels wide and 30 pixels high. The following code loads the image and then sets up an interval (repeated timer) to draw the next frame:
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    let img = document.createElement("img");
+    img.src = "img/player.png";
+    let spriteW = 24, spriteH = 30;
+    img.addEventListener("load", () => {
+        let cycle = 0;
+        setInterval(() => {
+            cx.clearRect(0, 0, spriteW, spriteH);
+            cx.drawImage(img,
+                         // source rectangle
+                         cycle * spriteW, 0, spriteW, spriteH,
+                         // destination rectangle
+                         0,               0, spriteW, spriteH);
+            cycle = (cycle + 1) % 8;
+        }, 120);
+    });
+  </script>
+  // The cycle binding tracks our position in the animation. For each
+  // frame, it is incremented and then clipped back to the 0 to 7 range by
+  // using the remainder operator. This binding is then used to compute the
+  // x-coordinate that the sprite for the current pose has in the picture.
+
+#+end_src
+
+*** Transformation
+**** scale
+Calling the ~scale~ method will cause anything drawn after it to be scaled. This method takes two parameters, one to set a horizontal scale and one to set a vertical scale.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    cx.scale(3, .5);
+    cx.beginPath();
+    cx.arc(50, 50, 40, 0, 7);
+    cx.lineWidth = 3;
+    cx.stroke();
+  </script>
+
+#+end_src
+
+**** scale (flip)
+Scaling will cause everything about the drawn image, including the line width, to be stretched out or squeezed together as specified. Scaling by a negative amount will flip the picture around. The flipping happens around point (0,0), which means it will also flip the direction of the coordinate system. When a horizontal scaling of -1 is applied, a shape drawn at x position 100 will end up at what used to be position -100.
+
+So to turn a picture around, we can’t simply add ~cx.scale(-1, 1)~ before the call to [[drawImage]] because that would move our picture outside of the canvas, where it won’t be visible. You could adjust the coordinates given to ~drawImage~ to compensate for this by drawing the image at x position -50 instead of 0. Another solution, which doesn’t require the code that does the drawing to know about the scale change, is to adjust the axis around which the scaling happens.
+
+There are several other methods besides ~scale~ that *influence the coordinate system for a canvas* (*set a new coordinates system*). You can rotate subsequently drawn shapes with the ~rotate~ method and move them with the ~translate~ method. The interesting—and confusing—thing is that these transformations *stack*, meaning that each one happens relative to the previous transformations.
+
+So if we translate by 10 horizontal pixels twice, everything will be drawn 20 pixels to the right. If we first move the center of the coordinate system to (50,50) and then rotate by 20 degrees (about 0.1π radians), that rotation will happen *around* point (50,50).
+
+But if we *first* rotate by 20 degrees and *then* translate by (50,50), the translation will happen in the rotated coordinate system and thus produce a different orientation. *The order in which transformations are applied matters*.
+
+To flip a picture around the vertical line at a given x position, we can do the following:
+
+#+begin_src javascript
+
+  function flipHorizontally(context, around) {
+      context.translate(around, 0);
+      context.scale(-1, 1);
+      context.translate(-around, 0);
+  }
+
+#+end_src
+
+We move the y-axis to where we want our mirror to be, apply the mirroring, and finally move the y-axis back to its proper place in the mirrored universe.
+
+We can now draw a mirrored character at position (100,0) by flipping the world around the character’s vertical center.
+
+#+begin_src javascript
+
+  <canvas></canvas>
+
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    let img = document.createElement("img");
+    img.src = "img/player.png";
+    let spriteW = 24, spriteH = 30;
+    img.addEventListener("load", () => {
+        flipHorizontally(cx, 100 + spriteW / 2);
+        cx.drawImage(img, 0, 0, spriteW, spriteH,
+                     100, 0, spriteW, spriteH);
+    });
+  </script>
+
+#+end_src
+
+*** Storing and clearing transformations
+*Transformations stick around*. Everything else we draw after drawing that mirrored character would also be mirrored. That might be inconvenient.
+
+The ~save~ and ~restore~ methods on the 2D canvas context do this transformation management. They conceptually keep a stack of transformation states. When you call ~save~, the current state is pushed onto the stack, and when you call ~restore~, the state on top of the stack is taken off and used as the context’s current transformation. You can also call ~resetTransform~ to *fully reset the transformation*.
+
+The ~branch~ function in the following example illustrates what you can do with a function that changes the transformation and then calls a function (in this case itself), which continues drawing with the given transformation.
+
+This function draws a treelike shape (actually is a fractal) by drawing a line, *moving the center of the coordinate system* to the end of the line, and calling itself twice—first rotated to the left and then rotated to the right. Every call reduces the length of the branch drawn, and the recursion stops when the length drops below 8.
+
+#+begin_src javascript
+
+ <canvas width="600" height="300"></canvas>
+
+ <script>
+  let cx = document.querySelector("canvas").getContext("2d");
+  function branch(length, angle, scale) {
+      cx.fillRect(0, 0, 1, length);
+      if (length < 8) return;
+      cx.save();
+      cx.translate(0, length);
+      cx.rotate(-angle); // rotates coordinate axis
+      branch(length * scale, angle, scale);
+      cx.rotate(2 * angle);
+      branch(length * scale, angle, scale);
+      cx.restore();
+  }
+  cx.translate(300, 0);
+  branch(60, 0.5, 0.8);
+  </script>
+
+  // If the calls to save and restore were not there, the second recursive
+  // call to branch would end up with the position and rotation created by
+  // the first call. It wouldn’t be connected to the current branch but
+  // rather to the innermost, rightmost branch drawn by the first call. The
+  // resulting shape might also be interesting, but it is definitely not a
+  // tree.
+
+#+end_src
 
 ** ES2017-JS Universe
 *** ECMAScript
@@ -25495,501 +28023,6 @@ So below is the picture of the ECMAScript runtime:
 #+end_src
 
 And that is it; that’s what happens under the hood of the ECMAScript engine!
-
-** Drawing on canvas
-*** Brief
-A [[Canvas][canvas]] node represents an area in a document that our program may draw on. This drawing is done through a drawing context object, created with the ~getContext~ method.
-
-The 2D drawing interface allows us to fill and stroke various shapes. The context’s [[Lines and surfaces][fillStyle]] property determines how shapes are filled. The ~strokeStyle~ and ~lineWidth~ properties control the way lines are drawn.
-
-Rectangles and pieces of text can be drawn with a single method call. The [[Lines and surfaces][fillRect]] and ~strokeRect~ methods draw rectangles, and the ~fillText~ and ~strokeText~ methods draw text. To create custom shapes, we must first build up a path.
-
-Calling [[Paths][beginPath]] starts a new path. A number of other methods add lines and curves to the current path. For example, ~lineTo~ can add a straight line. When a path is finished, it can be filled with the ~fill~ method or stroked with the ~stroke~ method.
-
-Moving pixels from an image or another canvas onto our canvas is done with the [[drawImage]] method. By default, this method draws the whole source image, but by giving it more parameters, you can copy a specific area of the image. We used this for our game by copying individual poses of the game character out of an image that contained many such poses.
-
-Transformations allow you to draw a shape in multiple orientations. A 2D drawing context has a current transformation that can be changed with the [[Transformation][translate]] , ~scale~ , and ~rotate~ methods. These will affect all subsequent drawing operations. A transformation state can be saved with the [[Storing and clearing transformations][save]] method and restored with the ~restore~ method.
-
-When showing an animation on a canvas, the ~clearRect~ method can be used to clear part of the canvas before redrawing it.
-
-*** SVG
-This is an HTML document with a simple SVG picture in it:
-
-#+begin_src html
-
-  <p>Normal HTML here.</p>
-  <svg xmlns="http://www.w3.org/2000/svg">
-    <circle r="50" cx="50" cy="50" fill="red"/>
-    <rect x="120" y="5" width="90" height="90"
-          stroke="blue" fill="none"/>
-  </svg>
-
-#+end_src
-
-The ~xmlns~ attribute changes an element (and its children) to a different XML *namespace*. This namespace, identified by a URL, specifies the dialect that we are currently speaking. The ~<circle>~ and ~<rect>~ tags, which do not exist in HTML, do have a meaning in SVG—they draw shapes using the style and position specified by their attributes.
-
-These tags create DOM elements, just like HTML tags, that scripts can interact with. For example, this changes the <circle> element to be colored cyan instead:
-
-#+begin_src javascript
-
-  let circle = document.querySelector("circle");
-  circle.setAttribute("fill", "cyan");
-
-#+end_src
-
-*** Canvas
-A canvas is a single DOM element that encapsulates a picture. It provides a programming interface for drawing shapes onto the space taken up by the node. The main difference between a canvas and an [[SVG]] picture is that in SVG the original description of the shapes is preserved so that they can be moved or resized at any time. A canvas, on the other hand, converts the shapes to pixels (colored dots on a raster) as soon as they are drawn and does not remember what these pixels represent. The only way to move a shape on a canvas is to clear the canvas (or the part of the canvas around the shape) and redraw it with the shape in a new position.
-
-*The canvas element*:
-Canvas graphics can be drawn onto a ~<canvas>~ element. You can give such an element ~width~ and ~height~ attributes to determine its size in pixels. A new canvas is empty, meaning it is entirely transparent and thus shows up as empty space in the document.
-
-The ~<canvas>~ tag is intended to allow different styles of drawing. To get access to an actual drawing interface, we first need to create a context, an object whose methods provide the drawing interface. There are currently two widely supported drawing styles: "2d" for two-dimensional graphics and "webgl" for three-dimensional graphics through the OpenGL interface.
-
-You create a context with the ~getContext~ method on the ~<canvas>~ DOM element.
-
-*Note*: When no ~width~ or ~height~ attribute is specified, a canvas element gets a default ~width~ of 300 pixels and ~height~ of 150 pixels.
-
-#+begin_src javascript
-
-  <p>Before canvas.</p>
-  <canvas width="120" height="60"></canvas>
-  <p>After canvas.</p>
-
-  <script>
-    let canvas = document.querySelector("canvas");
-    let context = canvas.getContext("2d");
-    context.fillStyle = "red";
-    context.fillRect(10, 10, 100, 50);
-  </script>
-
-  // After creating the context object, the example draws a red rectangle
-  // 100 pixels wide and 50 pixels high, with its top-left corner at
-  // coordinates (10,10).
-
-  // Just like in HTML (and SVG), the coordinate system that the canvas
-  // uses puts (0,0) at the top-left corner, and the positive y-axis goes
-  // down from there.
-
-#+end_src
-
-*** Choosing a graphics interface
-So when you need to generate graphics in the browser, you can choose between plain HTML, SVG, and canvas. There is no single best approach that works in all situations. Each option has strengths and weaknesses.
-
-Plain *HTML* has the advantage of being simple. It also integrates well with *text*. Both SVG and canvas allow you to draw text, but they won’t help you position that text or wrap it when it takes up more than one line. In an HTML-based picture, it is much easier to include blocks of text.
-
-*SVG* can be used to produce *crisp graphics that look good at any zoom* level. Unlike HTML, it is designed for drawing and is thus more suitable for that purpose.
-
-Both *SVG* and *HTML* build up a data structure (the *DOM*) that represents your picture. This makes it possible to *modify elements after they are drawn*. If you need to repeatedly change a small part of a big picture in response to what the user is doing or as part of an animation, doing it in a canvas can be needlessly expensive. The DOM also allows us to register mouse event handlers on every element in the picture (even on shapes drawn with SVG). You can’t do that with canvas.
-
-But *canvas’s* pixel-oriented approach can be an advantage when *drawing a huge number of tiny elements*. The fact that it does not build up a data structure but only repeatedly draws onto the same pixel surface gives canvas a lower cost per shape.
-
-There are also effects, such as rendering a scene one pixel at a time (for example, using a ray tracer) or postprocessing an image with JavaScript (blurring or distorting it), that can be realistically handled only by a pixel-based approach.
-
-In some cases, you may want to combine several of these techniques. For example, you might draw a graph with SVG or canvas but show textual information by positioning an HTML element on top of the picture.
-
-*** Lines and surfaces
-In the canvas interface, a shape can be *filled*, meaning its area is given a certain color or pattern, or it can be *stroked*, which means a line is drawn along its edge.
-
-The ~fillRect~ and ~strokeRect~ methods takes the x- and y-coordinates of the rectangle’s top-left corner, then its width, and then its height. Neither method takes any further parameters. The color of the fill, thickness of the stroke, and so on, are not determined by an argument to the method (as you might reasonably expect) but rather by properties of the context object.
-
-The ~strokeStyle~ property controls the way shapes are filled, and determines the color used for a stroked line. The width of that line is determined by the ~lineWidth~ property, which may contain any positive number.
-
-The ~fillStyle~ property specifies the color, gradient, or pattern to use *inside shapes* (default black).
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.strokeStyle = "blue";
-    // coordinates=(5,5), width=50, height=50
-    cx.strokeRect(5, 5, 50, 50);
-    cx.lineWidth = 5;
-    cx.strokeRect(135, 5, 50, 50);
-  </script>
-
-#+end_src
-
-*** Paths
-**** beginPath
-A path is a sequence of lines. The 2D canvas interface takes a peculiar approach to describing such a path. It is done entirely through side effects. Paths are not values that can be stored and passed around. Instead, if you want to do something with a path, you make a sequence of method calls to describe its shape.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.beginPath();
-    for (let y = 10; y < 100; y += 10) {
-        cx.moveTo(10, y);
-        cx.lineTo(90, y);
-    }
-    cx.stroke();
-  </script>
-      // Each segment created with lineTo starts at the path’s current
-  // position. That position is usually the end of the last segment, unless
-  // moveTo was called.
-
-  // Output: This creates a path with 9 of horizontal line segments
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-  ---------------------
-
-#+end_src
-
-**** fill
-When filling a path (using the ~fill~ method), each shape is filled separately. A path can contain multiple shapes—each ~moveTo~ motion starts a new one. But the path needs to be *closed* (meaning its start and end are in the same position) before it can be filled. If the path is not already closed, a line is added from its end to its start, and the shape enclosed by the completed path is filled.
-
-You could also use the ~closePath~ method to explicitly close a path by adding an actual line segment back to the path’s start. This segment is drawn when stroking the path.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.beginPath();
-    cx.moveTo(50, 10);
-    cx.lineTo(10, 70);
-    cx.lineTo(90, 70);
-    cx.fill();
-  </script>
-
-  // Output: This example draws a filled triangle.
-         /\
-        /..\
-       /....\
-      /......\
-     /________\
-
-#+end_src
-
-*** Curves
-**** quadraticCurveTo
-The ~quadraticCurveTo~ method draws a curve to a given point. To determine the curvature of the line, the method is given a control point as well as a destination point. Imagine this control point as *attracting* the line, giving it its curve. The line won’t go through the control point, but its direction at the start and end points will be such that a straight line in that direction would point toward the control point.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.beginPath();
-    cx.moveTo(10, 90);
-    // control=(60,10) goal=(90,90)
-    cx.quadraticCurveTo(60, 10, 90, 90);
-    cx.lineTo(60, 10); // line segment going through control point
-    cx.closePath();
-    cx.stroke();
-  </script>
-
-  // Output: Quadratic curve.
-  c(60,10)
-             / \
-            /   \
-           / _   \
-          /.    . \
-         /.       .\
-        /.         .\
-     s(10,90)       e(90,90)
-
-#+end_src
-
-**** bezierCurveTo
-The ~bezierCurveTo~ method draws a similar kind of curve. Instead of a single control point, this one has two—one for each of the line’s endpoints.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.beginPath();
-    cx.moveTo(10, 90);
-    // control1=(10,10) control2=(30,10) goal=(50,90)
-    cx.bezierCurveTo(10, 10, 30, 10, 50, 90);
-    cx.lineTo(30, 10); // line segment going through control point
-    cx.lineTo(10, 10); // line segment going through control point
-    cx.closePath();
-    cx.stroke();
-  </script>
-  // The two control points specify the direction at both ends of the
-  // curve. The farther they are away from their corresponding point, the
-  // more the curve will “bulge” in that direction.
-
-  // Output: Quadratic curve.
-  c1(10,10)  c2(30,10)
-         _____
-        ¦      \
-        ¦       \
-        ¦   _    \
-        ¦ .    .  \
-        ¦.       . \
-        ¦.         .\
-     s(10,90)       e(50,90)
-
-#+end_src
-
-**** arc
-The ~arc~ method is a way to draw a line that curves along the edge of a circle. It takes a pair of coordinates for the arc’s center, a radius, and then a start angle and end angle.
-
-Those last two parameters make it possible to draw only part of the circle. The angles are measured in radians, not degrees. This means a full circle has an angle of ~2π~, which is about ~6.28~. The angle starts counting at the point to the right of the circle’s center and goes clockwise from there. You can use a start of ~0~ and an end bigger than ~2π~ to draw a full circle.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.beginPath();
-    // center=(50,50) radius=40 angle=0 to 7
-    cx.arc(50, 50, 40, 0, 7);
-    // center=(150,50) radius=40 angle=0 to ½π
-    cx.arc(150, 50, 40, 0, 0.5 * Math.PI);
-    cx.stroke();
-  </script>
-  // The picture contains a line from the right of the full circle
-  // (first call to arc) to the right of the quarter-circle (second call).
-
-           -------
-        --/       \--
-       /             \
-       |             |-------------|
-       \             /            /
-        --\       /--            .
-           -------            --
-
-#+end_src
-
-**** Example: Drawing a pie chart
-Draw a pie chart of a customer satisfaction survey results.
-
-To draw a pie chart, we draw a number of pie slices, each made up of an ~arc~ and a pair of lines to the center of that ~arc~. We can compute the angle taken up by each ~arc~ by dividing a full circle (~2π~) by the total number of responses and then multiplying that number (the angle per response) by the number of people who picked a given choice.
-
-#+begin_src javascript
-
-  <canvas width="200" height="200"></canvas>
-
-  <script>
-  const results = [
-      {name: "Satisfied", count: 1043, color: "lightblue"},
-      {name: "Neutral", count: 563, color: "lightgreen"},
-      {name: "Unsatisfied", count: 510, color: "pink"},
-      {name: "No comment", count: 175, color: "silver"}
-  ];
-
-  let cx = document.querySelector("canvas").getContext("2d");
-  let total = results
-      .reduce((sum, {count}) => sum + count, 0);
-  // Start at the top
-  let currentAngle = -0.5 * Math.PI;
-  for (let result of results) {
-      let sliceAngle = (result.count / total) * 2 * Math.PI;
-      cx.beginPath();
-      // center=100,100, radius=100
-      // from current angle, clockwise by slice's angle
-      cx.arc(100, 100, 100,
-             currentAngle, currentAngle + sliceAngle);
-      currentAngle += sliceAngle;
-      cx.lineTo(100, 100);
-      cx.fillStyle = result.color;
-      cx.fill();
-  }
-  </script>
-
-#+end_src
-
-*** Text
-A 2D canvas drawing context provides the methods ~fillText~ and ~strokeText~. The latter can be useful for outlining letters, but usually ~fillText~ is what you need. It will fill the outline of the given text with the current ~fillStyle~.
-
-The last two arguments to ~fillText~ and ~strokeText~ provide the position at which the font is drawn. By default, they indicate the position of the start of the text’s alphabetic baseline, which is the line that letters “stand” on, not counting hanging parts in letters such as j or p. You can change the horizontal position by setting the ~textAlign~ property to ~"end"~ or ~"center"~ and the vertical position by setting ~textBaseline~ to ~"top"~ , ~"middle"~ , or ~"bottom"~ .
-
-#+begin_src javascript
-
-  <canvas></canvas>
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.font = "28px Georgia";
-    cx.fillStyle = "fuchsia";
-    cx.fillText("I can draw text, too!", 10, 50);
-  </script>
-
-#+end_src
-
-*** Images
-**** drawImage
-The ~drawImage~ method allows us to draw pixel data onto a canvas. This pixel data can originate from an ~<img>~ element or from another canvas. The following example creates a detached ~<img>~ element and loads an image file into it. But it cannot immediately start drawing from this picture because the browser may not have loaded it yet. To deal with this, we register a ~"load"~ event handler and do the drawing after the image has loaded.
-
-By default, ~drawImage~ will draw the image at its original size. You can also give it two additional arguments to set a different width and height.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    let img = document.createElement("img");
-    img.src = "img/hat.png";
-    img.addEventListener("load", () => {
-        for (let x = 10; x < 200; x += 30) {
-            cx.drawImage(img, x, 10);
-        }
-    });
-  </script>
-  // It will draw 9 consecutive images separated by 30 pixels each.
-
-#+end_src
-
-**** Pack multiple sprites (subpicture)
-When ~drawImage~ is given *nine* arguments, it can be used to draw only a fragment of an image. The second through fifth arguments indicate the rectangle (x, y, width, and height) in the *source image* that should be copied, and the sixth to ninth arguments give the rectangle (*on the canvas*) into which it should be copied.
-
-This can be used to pack multiple *sprites* (image elements) into a single image file and then draw only the part you need. For example, we have a picture containing a game character in multiple poses.
-
-By alternating which pose we draw, we can show an animation that looks like a walking character.
-
-To animate a picture on a canvas, the ~clearRect~ method is useful. It resembles ~fillRect~, but instead of coloring the rectangle, it makes it transparent, removing the previously drawn pixels.
-
-We know that each *sprite*, each subpicture, is 24 pixels wide and 30 pixels high. The following code loads the image and then sets up an interval (repeated timer) to draw the next frame:
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    let img = document.createElement("img");
-    img.src = "img/player.png";
-    let spriteW = 24, spriteH = 30;
-    img.addEventListener("load", () => {
-        let cycle = 0;
-        setInterval(() => {
-            cx.clearRect(0, 0, spriteW, spriteH);
-            cx.drawImage(img,
-                         // source rectangle
-                         cycle * spriteW, 0, spriteW, spriteH,
-                         // destination rectangle
-                         0,               0, spriteW, spriteH);
-            cycle = (cycle + 1) % 8;
-        }, 120);
-    });
-  </script>
-  // The cycle binding tracks our position in the animation. For each
-  // frame, it is incremented and then clipped back to the 0 to 7 range by
-  // using the remainder operator. This binding is then used to compute the
-  // x-coordinate that the sprite for the current pose has in the picture.
-
-#+end_src
-
-*** Transformation
-**** scale
-Calling the ~scale~ method will cause anything drawn after it to be scaled. This method takes two parameters, one to set a horizontal scale and one to set a vertical scale.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    cx.scale(3, .5);
-    cx.beginPath();
-    cx.arc(50, 50, 40, 0, 7);
-    cx.lineWidth = 3;
-    cx.stroke();
-  </script>
-
-#+end_src
-
-**** scale (flip)
-Scaling will cause everything about the drawn image, including the line width, to be stretched out or squeezed together as specified. Scaling by a negative amount will flip the picture around. The flipping happens around point (0,0), which means it will also flip the direction of the coordinate system. When a horizontal scaling of -1 is applied, a shape drawn at x position 100 will end up at what used to be position -100.
-
-So to turn a picture around, we can’t simply add ~cx.scale(-1, 1)~ before the call to [[drawImage]] because that would move our picture outside of the canvas, where it won’t be visible. You could adjust the coordinates given to ~drawImage~ to compensate for this by drawing the image at x position -50 instead of 0. Another solution, which doesn’t require the code that does the drawing to know about the scale change, is to adjust the axis around which the scaling happens.
-
-There are several other methods besides ~scale~ that *influence the coordinate system for a canvas* (*set a new coordinates system*). You can rotate subsequently drawn shapes with the ~rotate~ method and move them with the ~translate~ method. The interesting—and confusing—thing is that these transformations *stack*, meaning that each one happens relative to the previous transformations.
-
-So if we translate by 10 horizontal pixels twice, everything will be drawn 20 pixels to the right. If we first move the center of the coordinate system to (50,50) and then rotate by 20 degrees (about 0.1π radians), that rotation will happen *around* point (50,50).
-
-But if we *first* rotate by 20 degrees and *then* translate by (50,50), the translation will happen in the rotated coordinate system and thus produce a different orientation. *The order in which transformations are applied matters*.
-
-To flip a picture around the vertical line at a given x position, we can do the following:
-
-#+begin_src javascript
-
-  function flipHorizontally(context, around) {
-      context.translate(around, 0);
-      context.scale(-1, 1);
-      context.translate(-around, 0);
-  }
-
-#+end_src
-
-We move the y-axis to where we want our mirror to be, apply the mirroring, and finally move the y-axis back to its proper place in the mirrored universe.
-
-We can now draw a mirrored character at position (100,0) by flipping the world around the character’s vertical center.
-
-#+begin_src javascript
-
-  <canvas></canvas>
-
-  <script>
-    let cx = document.querySelector("canvas").getContext("2d");
-    let img = document.createElement("img");
-    img.src = "img/player.png";
-    let spriteW = 24, spriteH = 30;
-    img.addEventListener("load", () => {
-        flipHorizontally(cx, 100 + spriteW / 2);
-        cx.drawImage(img, 0, 0, spriteW, spriteH,
-                     100, 0, spriteW, spriteH);
-    });
-  </script>
-
-#+end_src
-
-*** Storing and clearing transformations
-*Transformations stick around*. Everything else we draw after drawing that mirrored character would also be mirrored. That might be inconvenient.
-
-The ~save~ and ~restore~ methods on the 2D canvas context do this transformation management. They conceptually keep a stack of transformation states. When you call ~save~, the current state is pushed onto the stack, and when you call ~restore~, the state on top of the stack is taken off and used as the context’s current transformation. You can also call ~resetTransform~ to *fully reset the transformation*.
-
-The ~branch~ function in the following example illustrates what you can do with a function that changes the transformation and then calls a function (in this case itself), which continues drawing with the given transformation.
-
-This function draws a treelike shape (actually is a fractal) by drawing a line, *moving the center of the coordinate system* to the end of the line, and calling itself twice—first rotated to the left and then rotated to the right. Every call reduces the length of the branch drawn, and the recursion stops when the length drops below 8.
-
-#+begin_src javascript
-
- <canvas width="600" height="300"></canvas>
-
- <script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  function branch(length, angle, scale) {
-      cx.fillRect(0, 0, 1, length);
-      if (length < 8) return;
-      cx.save();
-      cx.translate(0, length);
-      cx.rotate(-angle); // rotates coordinate axis
-      branch(length * scale, angle, scale);
-      cx.rotate(2 * angle);
-      branch(length * scale, angle, scale);
-      cx.restore();
-  }
-  cx.translate(300, 0);
-  branch(60, 0.5, 0.8);
-  </script>
-
-  // If the calls to save and restore were not there, the second recursive
-  // call to branch would end up with the position and rotation created by
-  // the first call. It wouldn’t be connected to the current branch but
-  // rather to the innermost, rightmost branch drawn by the first call. The
-  // resulting shape might also be interesting, but it is definitely not a
-  // tree.
-
-#+end_src
 
 * References
 - [[https://eloquentjavascript.net/][Eloquent JavaScript]]

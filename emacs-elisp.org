@@ -188,11 +188,11 @@
 
 *** Navigation (imenu)
 
-| /M-g i/ | imenu                                  |
-|       |                                        |
-|       | imenu-auto-rescan                      |
-|       |                                        |
-|       | imenu-create-index-function (backends) |
+| /M-g i/ | /C-p u/ | imenu                                  |
+|       |       |                                        |
+|       |       | imenu-auto-rescan                      |
+|       |       |                                        |
+|       |       | imenu-create-index-function (backends) |
 
 *** Diagnostic (flycheck)
 
@@ -376,11 +376,14 @@
 | /C-c M-g t/ | trace the historical changes made to a def |
 | /C-x p m/   | magit-project-status                       |
 |           |                                            |
-| /TAB/       | toggle section at point                    |
+| /TAB/       | magit-section-toggle                       |
+| /M-TAB/     | magit-section-cycle-diffs                  |
+|           | magit-section-hide-children                |
+| /1...4/     | magit-section-show-level-                  |
+| /M-1...M-4/ | magit-section-show-level- -all             |
+| /C-TAB/     | magit-section-cycle                        |
 | /S-TAB/     | magit-section-cycle-global                 |
-| /1...4/     | sections                                   |
-| /M-1...M-4/ | all sections                               |
-| /2/         | fold the sections                          |
+| /S-DEL/     | magit-section-up                           |
 |           |                                            |
 | /RET/       | shows detailed view at point               |
 | /SPC/       | shows detailed view at point other window  |
@@ -517,14 +520,14 @@
 
 **** Movements
 
-| /C-p/ | magit-previous-line            |
-| /C-n/ | magit-next-line                |
-|     |                                |
-| /p/   | magit-section-backward         |
-| /n/   | magit-section-forward          |
-|     |                                |
-| /M-p/ | magit-section-backward-sibling |
-| /M-n/ | magit-section-forward-sibling  |
+| /C-p/ | /M-c/ | magit-previous-line            |
+| /C-n/ | /M-t/ | magit-next-line                |
+|     |     |                                |
+| /p/   | /c/   | magit-section-backward         |
+| /n/   | /t/   | magit-section-forward          |
+|     |     |                                |
+| /M-p/ |     | magit-section-backward-sibling |
+| /M-n/ |     | magit-section-forward-sibling  |
 
 **** Miscellaneous
 
@@ -2511,8 +2514,8 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-}     |                                 |
 | C-(     |                                 |
 | C-=     | calc                            |
-| C-*     | dired-jump                      |
-| C-)     | eshell                          |
+| C-*     | eshell                          |
+| C-)     | dired-jump                      |
 | C-+     | ibuffer                         |
 | C-]     | ^esc                            |
 | C-!     |                                 |
@@ -2569,10 +2572,10 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-5      |                                   |
 | C-3      |                                   |
 | C-1      |                                   |
-| C-9      | image-dired                       |
-| C-0      | dired-jump-other-window           |
-| C-2      | shell-command                     |
-| C-4      |                                   |
+| C-9      |                                   |
+| C-0      | shell-command                     |
+| C-2      | dired-jump-other-window           |
+| C-4      | image-dired                       |
 | C-6      |                                   |
 | C-8      |                                   |
 | C-`      |                                   |
@@ -2829,7 +2832,7 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | S-<kp-subtract>     |                                          |
 |                     |                                          |
 | S-<kp-7>            | ~mc/mark-previous-like-this              |
-| S-<kp-8>            | rf-find-or-switch-to-english             |
+| S-<kp-8>            | rf-switch-to-image-dired-screenshots     |
 | S-<kp-9>            | kmacro-start-macro                       |
 | S-<kp-add>          |                                          |
 |                     |                                          |
@@ -2858,7 +2861,7 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | M-<kp-subtract>     |                                         |
 |                     |                                         |
 | M-<kp-7>            |                                         |
-| M-<kp-8>            | rf-find-or-switch-to-layout-maps        |
+| M-<kp-8>            | rf-find-or-switch-to-archive            |
 | M-<kp-9>            |                                         |
 | M-<kp-add>          |                                         |
 |                     |                                         |
@@ -3565,6 +3568,10 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | n   | t             | magit-section-forward          |
 |     |               |                                |
 | '^  | S-<backspace> | magit-section-up               |
+
+**** magit-diff-section-map
+
+| M-RET | magit-diff-visit-file-other-window |
 
 *** marginalia
 **** minibuffer-local-map
@@ -8760,7 +8767,7 @@ It's used for example in the ~(sort SEQ PREDICATE)~ function. The ~sort~ functio
 PREDICATE is called with two elements of SEQ, and should return non-nil if the first element should sort before the second.
 
 * Regexp
-** Regexp
+** Brief
 Regular expressions have a syntax in which a few characters are *special constructs* and the rest are *ordinary*. An ordinary character matches that same character and nothing else. The special characters are ~$^.*+?[\~ .
 
 *Nota*: La expresión regular de emacs es básicamente BRE, pero se ha ampliado para tratar ~+~ y ~?~ como metacaracteres así como en ERE. Por lo tanto, no hay necesidad de escaparlos con ~\~ en la expresión regular de emacs.
@@ -13559,67 +13566,6 @@ Useful minor-modes:
 - electric-pair-mode
 
 ** Debugging
-*** User interface
-The following diagram shows the main components of the debugging user interface:
-
-- Run and Debug view :: displays all information related to running, debugging, and managing debug configuration settings.
-- Debug toolbar :: has buttons for the most common debugging actions.
-- Debug console :: enables viewing and interacting with the output of your code running in the debugger.
-- Debug sidebar :: during a debug session, lets you interact with the call stack, breakpoints, variables, and watch variables.
-
-*** Start debugging
-https://code.visualstudio.com/docs/editor/debugging
-
-*** Launch configurations
-Creating a launch configuration file is beneficial because it allows you to configure and save debugging setup details. VS Code keeps debugging configuration information in a ~launch.json~ file located in a ~.vscode~ folder in your workspace (project root folder) or in your user settings or workspace settings.
-
-*** Debug actions
-
-- Continue / Pause :: resume normal program/script execution (up to the next breakpoint) / inspect code executing at the current line and debug line-by-line.
-
-- Step Over :: execute the next method as a single command without inspecting or following its component steps.
-
-- Step Into :: enter the next method to follow its execution line-by-line.
-
-- Step Out :: when inside a method or subroutine, return to the earlier execution context by completing remaining lines of the current method as though it were a single command.
-
-- Restart :: terminate the current program execution and start debugging again using the current run configuration.
-
-- Stop :: terminate the current program execution.
-
-*** Breakpoints
-**** Conditional breakpoints
-A powerful VS Code debugging feature is the ability to set conditions based on expressions, hit counts, or a combination of both.
-
-- Expression condition :: the breakpoint will be hit whenever the expression evaluates to true
-- Hit count :: the hit count controls how many times a breakpoint needs to be hit before it interrupts execution. Whether a hit count is respected, and the exact syntax of the expression, can vary among debugger extensions.
-
-**** Triggered breakpoints
-Is a breakpoint that is automatically enabled once another breakpoint is hit. They can be very useful when diagnosing failure cases in code that happen only after a certain precondition.
-
-**** Inline breakpoints
-Are only hit when the execution reaches the column associated with the inline breakpoint. This is particularly useful when debugging minified code which contains multiple statements in a single line.
-
-**** Function breakpoints
-Instead of placing breakpoints directly in source code, a debugger can support creating breakpoints by specifying a function name. This is useful in situations where source is not available but a function name is known.
-
-**** Data breakpoints
-If a debugger supports data breakpoints, they can be set from the context menu in the *VARIABLES* view. The Break on Value Change/Read/Access commands add a data breakpoint that is hit when the value of the underlying variable changes/is read/is accessed.
-
-*** Logpoints
-A Logpoint is a variant of a breakpoint that does not "break" into the debugger but instead logs a message to the debug console. Logpoints enable you to inject logging while debugging without modifying the source code. They are especially useful when you're debugging production servers that cannot be paused or stopped. Logpoints can also help you save time by not having to add or remove logging statements in your code.
-
-*** Data inspection
-Variables can be inspected in the *VARIABLES* section or by hovering over their source in the editor. Variable values and expression evaluation are relative to the selected stack frame in the *CALL STACK* section.
-
-*** Variable substitution
-VS Code makes commonly used paths and other values available as variables and supports variable substitution inside strings in ~launch.json~. For example, ~${workspaceFolder}~ gives the root path of a workspace folder, ~${file}~ the file open in the active editor, and ~${env:Name}~ the environment variable 'Name'.
-
-*** Debug Console REPL
-Expressions can be evaluated with the Debug Console REPL (Read-Eval-Print Loop) feature.
-
-Expressions are evaluated after you press =Enter= and the Debug Console REPL shows suggestions as you type. If you need to enter multiple lines, use =Shift+Enter= between the lines and then send all lines for evaluation with =Enter=.
-
 *** dape package
 **** Installation
 First install ~dape~ package.
@@ -13643,8 +13589,8 @@ Then install the supported debug adapters.
 To begin a debugging session, invoke the ~dape~ command. In the minibuffer prompt, enter a debug adapter configuration name from ~dape-configs~. For example, on ~.js~ files, =Run adapter=: ~js-debug-node~, whrere the path is: ~/home/rich/.emacs.d/var/dap-adapters/js-debug/src/depDeguggerServer.js~.
 
 **** Notes
-
-- If the debugger is not running, verify that the path of the file you want to debug matches the one you are entering on the prompt:
+***** Debugger is not running
+If the debugger is not running, verify that the path of the file you want to debug matches the one you are entering on the prompt:
 
 #+begin_src emacs-lisp
 
@@ -13653,7 +13599,7 @@ To begin a debugging session, invoke the ~dape~ command. In the minibuffer promp
 
 #+end_src
 
-- Example ~dape-config~ template for ~debugpy~:
+Example ~dape-config~ template for ~debugpy~:
 
 #+begin_src emacs-lisp
 
@@ -13666,6 +13612,40 @@ To begin a debugging session, invoke the ~dape~ command. In the minibuffer promp
                  :request "launch"
                  :cwd dape-cwd-fn
                  :program dape-find-file-buffer-default))
+
+#+end_src
+
+***** How to use it in JS
+It can be used with two adapters:
+
+Start Dape with *js-debug-node*:
+It runs automatically with the following configurations
+
+#+begin_src emacs-lisp
+
+  Run adapter: js-debug-node
+
+  :cwd "/home/rich/projects/name"
+  :program "src/index.js"
+  :console "internalConsole"
+
+#+end_src
+
+Start Dape with *js-debug-chrome*:
+It runs automatically with the following configurations, but first start a local server for the HTML project at the URL that is configured in ~:url~, to do this, launch a static server on port 3000
+
+#+begin_src sh
+
+  python3 -m http.server 3000 -d /home/rich/projects/name/
+
+#+end_src
+#+begin_src emacs-lisp
+
+  Run adapter: js-debug-chrome
+
+  :url "http://localhost:3000"
+  :webRoot "/home/rich/projects/name"
+
 
 #+end_src
 
@@ -13765,6 +13745,68 @@ So to fix it, use this command ~dap-debug-edit-template~ and set configure this 
     :name "Firefox::Run"))
 
 #+end_src
+
+*** Debug with VSC
+**** User interface
+The following diagram shows the main components of the debugging user interface:
+
+- Run and Debug view :: displays all information related to running, debugging, and managing debug configuration settings.
+- Debug toolbar :: has buttons for the most common debugging actions.
+- Debug console :: enables viewing and interacting with the output of your code running in the debugger.
+- Debug sidebar :: during a debug session, lets you interact with the call stack, breakpoints, variables, and watch variables.
+
+**** Start debugging
+https://code.visualstudio.com/docs/editor/debugging
+
+**** Launch configurations
+Creating a launch configuration file is beneficial because it allows you to configure and save debugging setup details. VS Code keeps debugging configuration information in a ~launch.json~ file located in a ~.vscode~ folder in your workspace (project root folder) or in your user settings or workspace settings.
+
+**** Debug actions
+
+- Continue / Pause :: resume normal program/script execution (up to the next breakpoint) / inspect code executing at the current line and debug line-by-line.
+
+- Step Over :: execute the next method as a single command without inspecting or following its component steps.
+
+- Step Into :: enter the next method to follow its execution line-by-line.
+
+- Step Out :: when inside a method or subroutine, return to the earlier execution context by completing remaining lines of the current method as though it were a single command.
+
+- Restart :: terminate the current program execution and start debugging again using the current run configuration.
+
+- Stop :: terminate the current program execution.
+
+**** Breakpoints
+***** Conditional breakpoints
+A powerful VS Code debugging feature is the ability to set conditions based on expressions, hit counts, or a combination of both.
+
+- Expression condition :: the breakpoint will be hit whenever the expression evaluates to true
+- Hit count :: the hit count controls how many times a breakpoint needs to be hit before it interrupts execution. Whether a hit count is respected, and the exact syntax of the expression, can vary among debugger extensions.
+
+***** Triggered breakpoints
+Is a breakpoint that is automatically enabled once another breakpoint is hit. They can be very useful when diagnosing failure cases in code that happen only after a certain precondition.
+
+***** Inline breakpoints
+Are only hit when the execution reaches the column associated with the inline breakpoint. This is particularly useful when debugging minified code which contains multiple statements in a single line.
+
+***** Function breakpoints
+Instead of placing breakpoints directly in source code, a debugger can support creating breakpoints by specifying a function name. This is useful in situations where source is not available but a function name is known.
+
+***** Data breakpoints
+If a debugger supports data breakpoints, they can be set from the context menu in the *VARIABLES* view. The Break on Value Change/Read/Access commands add a data breakpoint that is hit when the value of the underlying variable changes/is read/is accessed.
+
+**** Logpoints
+A Logpoint is a variant of a breakpoint that does not "break" into the debugger but instead logs a message to the debug console. Logpoints enable you to inject logging while debugging without modifying the source code. They are especially useful when you're debugging production servers that cannot be paused or stopped. Logpoints can also help you save time by not having to add or remove logging statements in your code.
+
+**** Data inspection
+Variables can be inspected in the *VARIABLES* section or by hovering over their source in the editor. Variable values and expression evaluation are relative to the selected stack frame in the *CALL STACK* section.
+
+**** Variable substitution
+VS Code makes commonly used paths and other values available as variables and supports variable substitution inside strings in ~launch.json~. For example, ~${workspaceFolder}~ gives the root path of a workspace folder, ~${file}~ the file open in the active editor, and ~${env:Name}~ the environment variable 'Name'.
+
+**** Debug Console REPL
+Expressions can be evaluated with the Debug Console REPL (Read-Eval-Print Loop) feature.
+
+Expressions are evaluated after you press =Enter= and the Debug Console REPL shows suggestions as you type. If you need to enter multiple lines, use =Shift+Enter= between the lines and then send all lines for evaluation with =Enter=.
 
 ** Tasks runners
 *** Brief

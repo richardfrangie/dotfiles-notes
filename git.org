@@ -24,10 +24,13 @@ This leads us to the three main sections of a Git project: the working tree, the
 #+end_src
 
 - The working tree :: is a single checkout of one version of the project. These files are pulled out of the compressed database in the Git directory and placed on disk for you to use or modify.
+
 - The staging area :: is a file, generally contained in your Git directory, that stores information about what will go into your next commit. Its technical name in Git parlance is the “index”.
+
 - The Git directory :: is where Git stores the metadata and object database for your project. This is the most important part of Git, and it is what is copied when you clone a repository from another computer.
 
 * Recording Changes to the Repository
+
 - Tracked files :: are files that were in the last snapshot, as well as any newly staged files; they can be unmodified, modified, or staged. In short, tracked files are files that Git knows about.
 
 - Untracked files :: are everything else — any files in your working directory that were not in your last snapshot and are not in your staging area.
@@ -122,6 +125,7 @@ When you create a new branch, this creates a new pointer to the same commit you�
 When you try to merge one commit with a commit that can be reached by following the first commit’s history, Git simplifies things by moving the pointer forward because there is no divergent work to merge together — this is called a “fast-forward.”
 
 *** Remote Branches
+
 - Remote reference ::  are reference (pointers) in your remote repositories, including branches, tags, and so on.
 
 - Remote-tracking branches :: are references to the state of remote branches. They’re local references that you can’t move; Git moves them for you whenever you do any network communication, to make sure they accurately represent the state of the remote repository. Think of them as bookmarks, to remind you where the branches in your remote repositories were the last time you connected to them.
@@ -444,10 +448,10 @@ Regarding the “summary” line (the 50 in your formula), the Linux kernel docu
 #+begin_src
 
 For these reasons, the "summary" must be no more than 70-75
-characters, and it must describe both what the patch changes, as well
-as why the patch might be necessary.  It is challenging to be both
-succinct and descriptive, but that is what a well-written summary
-should do.
+characters, and it must describe both *what the patch changes, as
+well as why the patch might be necessary*.  It is challenging to be
+both succinct and descriptive, but that is what a well-written
+summary should do.
 
 #+end_src
 
@@ -467,7 +471,7 @@ Because Git allows you to have multiple remote repositories, it’s possible to 
 5. The maintainer adds the contributor’s repository as a remote and merges locally.
 6. The maintainer pushes merged changes to the main repository.
 
-   One of the main advantages of this approach is that you can continue to work, and the maintainer of the main repository can pull in your changes at any time.
+One of the main advantages of this approach is that you can continue to work, and the maintainer of the main repository can pull in your changes at any time.
 
 *** Dictator and Lieutenants Workflow
 It’s generally used by huge projects with hundreds of collaborators; one famous example is the Linux kernel.
@@ -677,6 +681,7 @@ Are stored as full objects in the Git database. They’re checksummed; contain t
 A remote repository is generally a *bare repository* — a Git repository that has no working directory. In the simplest terms, a bare repository is the contents of project’s ~.git~ directory and nothing else. It’s just the Git data.
 
 *** The Protocols
+
 - Local Protocol :: The most basic protocol is the *Local protocol*, in which the remote repository is in another directory on the same host.  If you have a shared mounted filesystem, then you can clone, push to, and pull from a local file-based repository. To clone a repository like this, or to add one as a remote to an existing project, use the path to the repository as the URL.
 
 - The HTTP Protocols ::
