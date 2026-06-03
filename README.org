@@ -25,34 +25,34 @@ Although the files can be viewed in plain text or with preview on GitHub, it's r
 ** [[file:javascript.org][JavaScript]]
 Broad overview and summary of the JS language, covering generic aspects, logical structure, and some core components. The content is mainly based on the [[https://eloquentjavascript.net/][Eloquent JavaScript]] book, and the great series of articles by [[http://dmitrysoshnikov.com/][Dmitry Sóshnikov]]. One interesting feature of [[https://orgmode.org/][Org]] is that, in addition to plain text, it allows for the inclusion of source code examples using code blocks that format the syntax according to the programming language being used.
 
-[[file:screenshots/javascript-file.png]]
+[[file:docs/images/javascript-file.png]]
 
 ** [[file:shell.org][Shell]]
 An extensive list of the most popular and useful commands in GNU/Linux, along with an introduction to the basics of command line use, and shell scripting. The content is primarily based on the book [[https://linuxcommand.org/tlcl.php][The Linux Command Line]], and the [[https://www.gnu.org/software/coreutils/manual/html_node/index.html][GNU Coreutils]] documentation. The commands are structured into sections with their abbreviated description, the most useful options, and related commands, which is very useful for quickly looking up commands using the [[https://orgmode.org/][Org]] header structure.
 
-[[./screenshots/shell-file.png]]
+[[./docs/images/shell-file.png]]
 
 ** [[file:init.org][Init]]
 Emacs initialization file that containing personal EmacsLisp code for customizing [[https://www.gnu.org/software/emacs/][Emacs]]. The file is created using an approach similar to literate programming, which is more like self-documentation, and is organized into sections similar to those found in the builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Easy-Customization.html][Customize interface]]. It also includes some additional functions, as well as many of the most useful packages, specially the Minad Stack ([[https://github.com/minad/vertico][vertico]], [[https://github.com/minad/consult][consult]], [[https://github.com/minad/corfu][corfu]], [[https://github.com/minad/cape][cape]], [[https://github.com/minad/tempel][tempel]], [[https://github.com/minad/marginalia][marginalia]]), wich are amazing, and very well-designed packages.
 
-[[file:screenshots/init-file.png]]
+[[file:docs/images/init-file.png]]
 
 ** [[file:gnu-linux.org][GNU/Linux]]
 A broad overview of the GNU/Linux system, with a focus on the Debian distribution. The content is primarily based on the [[https://archive.org/details/howlinuxworkswha0000ward][How Linux Works]] book, and supplemented by the [[https://www.debian.org/doc/manuals/debian-reference/][Debian user's guide]].
 
-[[file:screenshots/gnu-linux-file.png]]
+[[file:docs/images/gnu-linux-file.png]]
 
 ** [[file:emacs-elisp.org][Emacs Elisp]]
 A great summary of the Elisp programming language, along with an overview of the main features and builtin modes of the [[https://www.gnu.org/software/emacs/][Emacs]] editor. Elisp is primarily used to customize and extend the functionality of Emacs. Additionaly, it includes a list of the most useful commands, functions, and packages, each accompained by a brief explanation. This content is based on primarily on the  [[https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html][An Introduction to Programming in Emacs Lisp]] book, and [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html][GNU Emacs Manual]].
 
-[[file:screenshots/emacs-elisp-file.png]]
+[[file:docs/images/emacs-elisp-file.png]]
 
 ** [[file:math.org][Math]]
 A simple and basic summary of elementary mathematical concepts. One of the advantages of [[https://orgmode.org/][Org]] mode is its support for embedding LaTeX code into its files. This feature allows you to easily process text to produce pretty output for mathematical symbols.
 
-[[file:screenshots/math-file.png]]
+[[file:docs/images/math-file.png]]
 
 ** [[file:keyboard-cmd-layout.svg][Keyboard Bindings]]
 SVG file created in Inkscape showing all system keyboard shortcuts. You can play around with Inkscape to create or remove commands or with layers to show or hide commands (e.g. standard, emacs, system, ...) and keyboard layouts (e.g qwerty, dvorak, ...).
 
-[[file:screenshots/keyboard-layout-cmds.png]]
+[[file:docs/images/keyboard-layout-cmds.png]]
