@@ -1877,6 +1877,25 @@ To ensure that a filename is portable between multiple platforms (i.e., differen
 
 #+end_src
 
+#+begin_src sh
+
+ - rw- rw- r--  1 user    group       0 Oct 12 09:35 filename
+ d rwx rws -w-  3 Nancy   staff       5 May  2 10:29 iCER_Design
+ d rwx rws r--  9 root    root       61 May  2 10:36 iCER_Photo
+ ┬ ─┬─ ─┬─ ─┬─  │   │       │         │  │            │
+ │  │   │   │   │   │       │         │  │            └─ filename
+ │  │   │   │   │   │       │         │  └─ date/time last modified
+ │  │   │   │   │   │       │         └─ size
+ │  │   │   │   │   │       └─ group name
+ │  │   │   │   │   └─ user (owner) name          r  w  x
+ │  │   │   │   └─ number of hard links           │  │  │
+ │  │   │   └─ other (everyone) permissions       │  │  └─ executable
+ │  │   └─ group permissions                      │  └─ writeable
+ │  └─ user permissions                           └─ readable
+ └─ file type
+
+#+end_src
+
 *** The Permissions Mask
 A shell’s built-in ~umask~ (permissions mask) facility sets the default permissions. Include the ~umask~ command in one of your startup files to make certain that any program you run creates files with your desired permissions. There are two reasonable choices:
 

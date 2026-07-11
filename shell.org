@@ -816,6 +816,7 @@ Print system information.
 ( ~lsb_release -a~ system information like distribution name )
 ( ~cat /proc/version~ version of the Linux kernel used, its name, the version of the compiler used )
 ( ~dpkg -l | egrep "linux-(header|image)"~ list all kernels installed )
+( ~hostnamectl~ show system hostname and related information )
 
 *** history
 History of commands that have been entered.
@@ -858,23 +859,9 @@ List all the keys and their values in a specified schema (structure that defines
 Lists keys and values of all input devices, recursively.
 If no SCHEMA is given, list keys in all schemas.
 
-*** gsettings set org.gnome.desktop.peripherals.mouse left-handed true
-Swap mouse buttons.
-
 *** gsettings list-keys org.gnome.desktop.a11y.mouse
 List the options of Dwell, Hover Auto-Click.
 ( ~gsettings get org.gnome.desktop.a11y.mouse click-type-window-visible~ get the click-type-window-visible value )
-
-*** gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true
-Turn on Dwell, Hover Auto-Click.
-( ~gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled false~ stop dwell hover click )
-
-*** gsettings set org.gnome.desktop.a11y.mouse dwell-time 1.0
-Set the /dwell-time/ (delay) to /1.0/.
-( ~gsettings set org.gnome.desktop.a11y.mouse dwell-threshold 1~ set the dwell-threshold (pixels movement allowed) to 1 )
-
-*** gsettings get org.gnome.desktop.input-sources xkb-options
-Input sources related various options for the X Keyboard Extension (XKB). Useful to Swap Control Alt Keys.
 
 *** gsettings list-keys org.gnome.desktop.wm.keybindings
 Get the list keys for wm keybindings.
@@ -889,10 +876,16 @@ Get the list and shorcut keys for shell keybindings.
 Get a key repeat rate.
 ( ~gsettings set org.gnome.desktop.peripherals.keyboard delay 350~ set the delay )
 ( ~gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 40~ set the speed )
-
-*** gsettings get org.gnome.desktop.peripherals.mouse speed
-Get the moue speed. -1 (slow) and 1 (fast).
+( ~gsettings get org.gnome.desktop.peripherals.mouse speed~ get the moue speed. -1 (slow) and 1 (fast) )
 ( ~gsettings set org.gnome.desktop.peripherals.mouse natural-scroll true~ set natural scrolling )
+( ~gsettings get org.gnome.desktop.input-sources xkb-options~ input sources related various options for the X Keyboard Extension (XKB). Useful to Swap Control AltKeys )
+
+*** gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true
+Turn on Dwell, Hover Auto-Click.
+( ~gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled false~ stop dwell hover click )
+( ~gsettings set org.gnome.desktop.a11y.mouse dwell-time 1.0~ set the dwell-time (delay) to 1.0 )
+( ~gsettings set org.gnome.desktop.a11y.mouse dwell-threshold 1~ set the dwell-threshold (pixels movement allowed) to 1 )
+( ~gsettings set org.gnome.desktop.peripherals.mouse left-handed true~ swap mouse buttons )
 
 *** gnome-extensions list --user
 Show user-installed extensions.
@@ -1131,6 +1124,7 @@ A gap in the sequence numbers (icmp_req), usually means there’s some kind of c
 The round-trip time is the total elapsed time between the moment that the request packet leaves and the moment that the response packet arrives. If there’s no way to reach the destination, the final router to see the packet returns an ICMP “host unreachable” packet to ping.
 [ /-4/ IPv4 only /-6/ IPv6 only /-A/ adaptive ping /-O/ report outstanding ICMP ECHO reply before sending next packet /-a/ audible ping ]
 ( ~ping -OA 8.8.8.8~ send ICMP reporting outstanding and adaptive ping )
+( ~ping 0~ command to ping the localhost )
 
 *** traceroute machine
 Print the route packets trace to network host.
@@ -1142,6 +1136,7 @@ Dig output begins with information about the command issued and the name server(
 ( ~host www.example.com~ DNS lookup utility. Find the IP address behind a domain name )
 ( ~host 8.8.8.8~ in reverse to try to discover the hostname behind the IP address )
 ( ~whois host~ client for the whois directory service )
+( ~curl ipinfo.io/8.8.8.8~ get a clean JSON summary of any IP )
 
 *** hostname
 Show or set the system's host name.
@@ -1277,10 +1272,10 @@ Scan for devices.
 *** pnpm
 Alias: pn is available as a short alias for pnpm.
 [ /-C <path>, --dir <path>/ run as if pnpm was started in <path> instead of the current working directory /-w, --workspace-root/ run as if pnpm was started in the root of the workspace instead of the current working directory ]
-( ~pnpm init~ create a package.json file (initialize a project) )
-( ~pnpm init --bare~ creates a package.json with only the required fields )
-( ~pnpm init --init-type <type>~ set the module system for the package )
-( ~pnpm init --init-package-manager~ pin the project to the current pnpm version )
+( ~pn init~ create a package.json file (initialize a project) )
+( ~pn init --bare~ creates a package.json with only the required fields )
+( ~pn init --init-type <type>~ set the module system for the package )
+( ~pn init --init-package-manager~ pin the project to the current pnpm version )
 
 *** pnpm install
 Is used to install all dependencies for a project.
@@ -1291,66 +1286,67 @@ force reinstall dependencies: refetch packages modified in store /--offline/ if 
 *** pnpm add <pkg>
 Installs a package (e.g. version: ^4.x.x) and any packages that it depends on. By default, any new package is installed as a production dependency.
 [ /-D/ save to devDependencies /-O/ save to optionalDependencies /-g/ install package globally /-E/ saved dependencies will be configured with an exact version rather than using pnpm's default semver range operator ]
-( ~pnpm add sax~ save to dependencies )
-( ~pnpm add -D sax~ save to devDependencies )
-( ~pnpm add -O sax~ save to optionalDependencies )
-( ~pnpm add -g sax~  install package globally )
-( ~pnpm add -g eslint prettier~ installing multiple packages in a single command groups them into *one isolated install* (CAUTION) )
-( ~pnpm add sax@next~ install from the next tag )
-( ~pnpm add sax@3.0.0~ specify version 3.0.0 )
-( ~pnpm add ./some-directory~ install from the local file system )
+( ~pn add sax~ save to dependencies )
+( ~pn add -D sax~ save to devDependencies )
+( ~pn add -O sax~ save to optionalDependencies )
+( ~pn add -g sax~  install package globally )
+( ~pn add -g eslint prettier~ installing multiple packages in a single command groups them into *one isolated install* (CAUTION) )
+( ~pn add sax@next~ install from the next tag )
+( ~pn add sax@3.0.0~ specify version 3.0.0 )
+( ~pn add ./some-directory~ install from the local file system )
 
 *** pnpm update
 Updates packages to their latest version based on the specified range.
 Aliases: up, upgrade.
-( ~pnpm up~ updates all dependencies, adhering to ranges specified in package.json )
-( ~pnpm up --latest~ updates all dependencies to their latest versions )
-( ~pnpm up foo@2~ updates foo to the latest version on v2 )
-( ~pnpm up "@babel/*"~ updates all dependencies under the @babel scope )
-( ~pnpm outdated~ checks for outdated packages )
-( ~pnpm update -g [pkg]~ update global packages (re-installs into new isolated directories) )
+( ~pn up~ updates all dependencies, adhering to ranges specified in package.json )
+( ~pn up --latest~ updates all dependencies to their latest versions )
+( ~pn up foo@2~ updates foo to the latest version on v2 )
+( ~pn up "@babel/*"~ updates all dependencies under the @babel scope )
+( ~pn outdated~ checks for outdated packages )
+( ~pn update -g [pkg]~ update global packages (re-installs into new isolated directories) )
 
 *** pnpm remove
 Removes packages from node_modules and from the project's package.json.
 Aliases: rm, uninstall, un
 [ /-g/ remove a global package /-D/ only remove the dependency from devDependencies /-O/ only remove the dependency from optionalDependencies /-P/ Only remove the dependency from dependencies ]
-( ~pnpm rm -g sax~  remove a globally installed package (removes the entire installation group) )
-( ~pnpm prune~ removes unnecessary packages )
-( ~pnpm clean~ safely remove node_modules contents from all workspace projects (Alias: clean) )
+( ~pn rm -g sax~  remove a globally installed package (removes the entire installation group) )
+( ~pn prune~ removes unnecessary packages )
+( ~pn clean~ safely remove node_modules contents from all workspace projects (Alias: purge) )
+( ~pn store prune~ removes unreferenced packages from the store )
 
 *** pnpm list
 Output all the versions of packages that are installed, as well as their dependencies, in a tree-structure.
 Alias: ls
 [ /-g/ list packages in the global install directory /--depth <number>/ max display depth of the dependency tree /--long/ show extended information /-P/ display only the dependency graph for packages in dependencies and optionalDependencies /-D/ display only the dependency graph for packages in devDependencies /--recursive, -r/ perform command on every package in subdirectories ]
-( ~pnpm list -g~ list all globally installed packages )
-( ~pnpm list -g --depth=<n>~ shows the full dependency tree )
-( ~pnpm search <keyword>~ search the registry for packages matching the given keywords (Aliases: s, se, find) )
-( ~pnpm view <pkg>~ view package metadata from the registry (Aliases: info, show) )
-( ~pnpm repo lodash~ open the repo of a package on the registry )
-( ~pnpm audit~ checks for known security issues with the installed packages )
-( ~pnpm why <pkg>~ shows all packages that depend on the specified package )
-( ~pnpm docs [<pkg> ...]~ open a package's documentation (or homepage) in the browser (Alias: home) )
+( ~pn list -g~ list all globally installed packages )
+( ~pn list -g --depth=<n>~ shows the full dependency tree )
+( ~pn search <keyword>~ search the registry for packages matching the given keywords (Aliases: s, se, find) )
+( ~pn view <pkg>~ view package metadata from the registry (Aliases: info, show) )
+( ~pn repo lodash~ open the repo of a package on the registry )
+( ~pn audit~ checks for known security issues with the installed packages )
+( ~pn why <pkg>~ shows all packages that depend on the specified package )
+( ~pn docs [<pkg> ...]~ open a package's documentation (or homepage) in the browser (Alias: home) )
 
 *** pnpm run <script>
 *Runs a script* defined in the package's manifest file.
 In addition to the shell’s pre-existing PATH, pnpm run includes node_modules/.bin in the PATH provided to scripts. This means that so long as you have a package installed, you can use it in a script like a regular command. Even though the package is not installed globally in your shell, it will run.
-( ~pnpm <script>~ shorthand (ONLY for scripts that do not share the same name as already existing pnpm commands) )
-( ~pnpm run~ shows available scripts )
-( ~pnpm set-script <name> <command>~ adds or updates an entry in the scripts field of the project manifest (Alias: ss) )
-( ~pnpm set-script lint "eslint ."~ set the linter script )
-( ~pnpm test~ runs an arbitrary command specified in the package's test property of its scripts object )
-( ~pnpm start~ runs an arbitrary command specified in the package's start property of its scripts object. If no start property is specified on the scripts object, it will attempt to run node server.js as a default, failing if neither are present )
-( ~pnpm run "/<regex>/"~ run multiple scripts at the same time by using a regex instead of the script name (note that regex is between slashes) )
-( ~pnpm run "/^watch:.*/"~ run all scripts that start with watch: )
+( ~pn <script>~ shorthand (ONLY for scripts that do not share the same name as already existing pnpm commands) )
+( ~pn run~ shows available scripts )
+( ~pn set-script <name> <command>~ adds or updates an entry in the scripts field of the project manifest (Alias: ss) )
+( ~pn set-script lint "eslint ."~ set the linter script )
+( ~pn test~ runs an arbitrary command specified in the package's test property of its scripts object )
+( ~pn start~ runs an arbitrary command specified in the package's start property of its scripts object. If no start property is specified on the scripts object, it will attempt to run node server.js as a default, failing if neither are present )
+( ~pn run "/<regex>/"~ run multiple scripts at the same time by using a regex instead of the script name (note that regex is between slashes) )
+( ~pn run "/^watch:.*/"~ run all scripts that start with watch: )
 
 *** pnpm exec <cmd>
 *Execute a shell command in scope of a project*.
 node_modules/.bin is added to the PATH, so pnpm exec allows executing commands of dependencies.
 Any options for the exec command should be listed before the exec keyword. Options listed after the exec keyword are passed to the executed command.
 *Gemeni*: run tools that are already sitting inside your local node_modules.
-( ~pnpm <cmd>~ shorthand (ONLY when the command is not in conflict with a builtin pnpm command ) )
-( ~pnpm exec jest~ execute jest in scope of the project. If Jest is a dependency of the project, there is no need to install Jest globally )
-( ~pnpm pm <cmd>~ always runs the built-in pnpm command, bypassing any same-named script in package.json. For example, if your project defines a "clean" script in package.json, then pnpm clean runs that script instead of the built-in pnpm clean )
+( ~pn <cmd>~ shorthand (ONLY when the command is not in conflict with a builtin pnpm command ) )
+( ~pn exec jest~ execute jest in scope of the project. If Jest is a dependency of the project, there is no need to install Jest globally )
+( ~pn pm <cmd>~ always runs the built-in pnpm command, bypassing any same-named script in package.json. For example, if your project defines a "clean" script in package.json, then pnpm clean runs that script instead of the built-in pnpm clean )
 
 *** pnx
 *Fetches* a package from the registry without installing it as a dependency, hotloads it, and *runs* whatever default command binary it exposes.
@@ -1359,18 +1355,18 @@ Aliases: pnpm dlx, pnpx. (dlx = download execute)
 [ /--package <name>/ the package to install before running the command ]
 ( ~pnx create-vue my-app~ use create-vue anywhere without needing to install it under another project. This will fetch create-vue from the registry and run it with the given arguments )
 ( ~pnx create-vue@next my-app~ create a project. Specify which exact version of the package )
-( ~pnpx npkill~ size of each of all packages in the current directory )
-( ~pnpx npm-check -u~ show updates of packages )
+( ~pnx npkill~ size of each of all packages in the current directory )
+( ~pnx npm-check -u~ show updates of packages )
 
 *** pnpm runtime <cmd>
 Manage runtimes.
 Alias: rt
 [ /--global, -g/ globally ]
-( ~pnpm runtime set <name> <version> [-g]~ install the specified version of a runtime )
-( ~pnpm runtime set node 22 -g~ install Node.js v22 globally )
-( ~pnpm runtime set node lts -g~ install the LTS version of Node.js )
-( ~pnpm runtime set node latest -g~ install the latest version of Node.js )
-( ~pnpm runtime set node argon -g~ pnpm runtime set node argon -g )
+( ~pn runtime set <name> <version> [-g]~ install the specified version of a runtime )
+( ~pn runtime set node 22 -g~ install Node.js v22 globally )
+( ~pn runtime set node lts -g~ install the LTS version of Node.js )
+( ~pn runtime set node latest -g~ install the latest version of Node.js )
+( ~pn runtime set node argon -g~ pnpm runtime set node argon -g )
 
 *** pnpm self-update [<version>]
 Updates pnpm to the latest version or the one specified.
@@ -1378,28 +1374,28 @@ Updates pnpm to the latest version or the one specified.
 *In a project that pins pnpm*: When the project's package.json has a packageManager field set to pnpm (or a devEngines.packageManager entry for pnpm), self-update only updates the pinned version in package.json to the resolved one. It does not install pnpm globally. The next time you run a pnpm command, pnpm will automatically download and switch to the specified version.
 *Outside a project (or when the pnpm pin is ignored)*: If the project does not pin pnpm, or the pin is being ignored via pmOnFail: ignore, self-update installs the resolved pnpm version globally and links it to PNPM_HOME so it becomes the active pnpm binary on your system.
 *Warning*: depending on where it's run, it can cause version conflicts and lead to errors. If that happens, you'll have to reinstall it.
-( ~pnpm self-update~ in the HOME directory updates globally )
-( ~pnpm self-update 10~ update )
-( ~pnpm self-update next-10~ update )
-( ~pnpm self-update 10.6.5~ update )
-( ~pnpm with <version|current> <args...>~ run pnpm at a specific version (or the currently running one) for a single invocation, ignoring the packageManager and devEngines.packageManager fields of the project's manifest )
-( ~pnpm with current install~ run the globally installed pnpm, ignoring the version pinned in the manifest )
-( ~pnpm with 11.0.0-rc.1 install~ run a specific version )
-( ~pnpm version <newversion>~ bump the package version )
+( ~pn self-update~ in the HOME directory updates globally )
+( ~pn self-update 10~ update )
+( ~pn self-update next-10~ update )
+( ~pn self-update 10.6.5~ update )
+( ~pn with <version|current> <args...>~ run pnpm at a specific version (or the currently running one) for a single invocation, ignoring the packageManager and devEngines.packageManager fields of the project's manifest )
+( ~pn with current install~ run the globally installed pnpm, ignoring the version pinned in the manifest )
+( ~pn with 11.0.0-rc.1 install~ run a specific version )
+( ~pn version <newversion>~ bump the package version )
 
 *** pnpm pkg
 Manages the contents of package.json from the command line.
 Nested fields are addressed with dot-separated paths (e.g. scripts.test, repository.url).
 [ /--json/ when setting, parses each value as JSON before writing. When getting a single key, returns the JSON-encoded form instead of the raw value ]
-( ~pnpm pkg get~ prints the full manifest (package.json) )
-( ~pnpm pkg get name version~ retrieves these values from package.json )
-( ~pnpm pkg set name=my-package~ sets one or more values in package.json )
-( ~pnpm pkg get scripts.test~ retrieves this value from package.json )
-( ~pnpm pkg set scripts.build="tsc -p ."~ sets one or more values in package.json )
-( ~pnpm pkg set 'keywords[0]'=cli~ sets one or more values in package.json )
-( ~pnpm pkg set private=true --json~  by default the value is stored as a string. Pass --json to parse the value as JSON before storing it (useful for booleans, numbers, arrays, and objects) )
-( ~pnpm pkg delete scripts.test~  removes one or more keys from package.json )
-( ~pnpm pkg fix~  auto-corrects common errors in package.json (e.g. removes a non-string name or version, drops dependency / scripts blocks whose values aren't objects, drops a bin field that's neither a string nor an object) )
+( ~pn pkg get~ prints the full manifest (package.json) )
+( ~pn pkg get name version~ retrieves these values from package.json )
+( ~pn pkg set name=my-package~ sets one or more values in package.json )
+( ~pn pkg get scripts.test~ retrieves this value from package.json )
+( ~pn pkg set scripts.build="tsc -p ."~ sets one or more values in package.json )
+( ~pn pkg set 'keywords[0]'=cli~ sets one or more values in package.json )
+( ~pn pkg set private=true --json~  by default the value is stored as a string. Pass --json to parse the value as JSON before storing it (useful for booleans, numbers, arrays, and objects) )
+( ~pn pkg delete scripts.test~  removes one or more keys from package.json )
+( ~pn pkg fix~  auto-corrects common errors in package.json (e.g. removes a non-string name or version, drops dependency / scripts blocks whose values aren't objects, drops a bin field that's neither a string nor an object) )
 
 *** pnpm config
 Manage the configuration files.
@@ -1417,9 +1413,9 @@ The global YAML configuration file (config.yaml) is located at: ~/.config/pnpm/c
 
 *** pnpm doctor
 Checks for known common issues with pnpm configuration.
-( ~pnpm help -a~ print all the available commands )
-( ~pnpm help <cmd>~ display help information about pnpm )
-( ~pnpm ping~ ping the configured registry to verify connectivity. This is useful for quickly confirming that the current machine can reach the registry without installing or publishing anything )
+( ~pn help -a~ print all the available commands )
+( ~pn help <cmd>~ display help information about pnpm )
+( ~pn ping~ ping the configured registry to verify connectivity. This is useful for quickly confirming that the current machine can reach the registry without installing or publishing anything )
 
 ** apt
 *** apt list
@@ -1626,6 +1622,86 @@ List of currently installed Node versions.
 ( ~nvm use 18~ temporarily use Node version 18 )
 ( ~nvm alias default 18~ use version 18 by default )
 
+** uv
+*** uvx tool run
+Run a tool in a temporary environment.
+( ~uv tool run~ same as above )
+( ~uvx ruff~ run ruff )
+( ~uvx pycowsay hello from uv~ run pycowsay with arguments )
+
+*** uv tool install
+Install a tool user-wide.
+( ~uv tool uninstall~ uninstall a tool )
+
+*** uv tool list
+List installed tools.
+
+*** uv pip show
+Show information about one or more installed packages
+
+*** uv tool update-shell
+Update the shell to include tool executables.
+Ensure that the tool executable directory is on the PATH.
+
+* Tools
+** Images
+*** convert input.png output.jpg
+Convert the image format.
+[ /-resize 30%/ resize /-quality 20%/ quality ]
+
+*** mogrify -format png * .jpg
+Convert and compress all /jpg/ images in the current directory to /png/.
+
+*** jpegoptim -d dir -m 75 image.jpg
+Reduce JPG image to a quality of /75/ (suggested scale 60-80) and send to other directory /dir/.
+*Overwrites the original image* if the /-d dir/ option is not set. Interesting feature is that it accepts the exact size of the target file.
+[ /-n/ simulate compression and see what will be the size /-d/ save in other directory  /-S 100k/ try to optimize file to given size (percentage can also be used *-S 30%*) /-m 60/ sets  the  maximum  image quality factor (60 high quality-low size 10 low quality-high size) (disables lossless optimization mode, which is by default enabled) ]
+( ~jpegoptim -S 20k -d dir image.jpg~ reduce to specif size )
+( ~jpegoptim -n image.jpg~ only shows possible results )
+( ~convert input.jpeg -quality 80 output.jpeg~ compress JPEG images )
+( ~optipng file.png~ compress and optimization )
+( ~optipng *.png~ optimize the all .png files in a folder )
+
+*** pngquant -Q 65-80 image.png
+Converter and lossy PNG image.
+*Overwrites the original image* if these /-f --ext .png/ options are set.
+[ /-f/ overwrite existing output files /--ext .png/ file extension to use for output files instead of the default 'fs8.png' /-o file/ output to *file* name /-Q min-man/ will use the least amount of colors required to meet or exceed the max quality 0 worst to 100 perfect ]
+( ~pngquant -f --ext .png -Q 70-95 image.png~ overwrites the original images )
+( ~pngquant 64 image.png~ resulting image will have /64/ colors )
+
+*** gifsicle -b --colors 256 file.gif
+To optimize (compress) /file.gif/. Reduce  the number of distinct colors in each output GIF to /256/.
+( ~gifsicle -e file.gif~ to explode /file.gif/ into its component frames )
+( ~gifsicle -I file.gif~  to print information )
+( ~ffmpeg -i input.gif -vf "scale=iw/2:ih/2" -loop 0 output.gif~ compress a GIF file )
+
+*** optipng -out output.png   input.png
+Reduce the PNG image to what thinks it's probably the most effective and rename it in a new /output/ file. *Overwrites the original image* if the /-out/ option is not set.
+[ /-out/  write  output  file to file /-dir/  write the output files to directory /-o/ select the optimization level (0 minimal effort 1 probably the most effective 2 higher enable) ]
+( ~optipng -out output -o1 input~ equivalent command )
+( ~pngquant -f --ext .png image.png; opting image.png~ a little more compression )
+
+*** magick xx.png -quality 90% xx.jpg
+Convert png to jpg.
+When /quality/ is omitted, default is 92.
+( ~magick xx.png -flatten yy.png~ remove transparency with white )
+( ~for ff in *.png; do magick $ff $ff.jpg; done~ convert all png in a dir to jpg )
+
+** Fonts
+*** woff2_compress input-font.ttf
+Convert a TrueType font (.ttf) to WOFF2. Need to install the woff2 package.
+( ~libwoff1~ converting fonts to WOFF 2.0 )
+
+*** sfnt2woff-zopfli input-font.ttf
+Create WOFF files with Zopfli compression.
+( ~ttf2woff input-font.ttf output-font.woff~ convert a TrueType font (.ttf) to WOFF )
+
+*** fontforge
+For converting from ttf to svg.
+
+*** batik ttf2svf
+For converting from ttf to svg.
+
 * Frontend toolchain
 ** Oxlint
 *** oxlint [OPTIONS] [PATH]
@@ -1740,64 +1816,6 @@ Scaffolding your first vite project.
 ( ~pnpm create vite@latest~ scaffold a vite project )
 ( ~pnpm create vite my-app -- --template vanilla~ scaffold a Vite + Vanilla project )
 ( ~pnpm create vite my-vue-app --template vue --no-interactive~ create a project without interactive prompts )
-
-** Images
-*** convert input.png output.jpg
-Convert the image format.
-[ /-resize 30%/ resize /-quality 20%/ quality ]
-
-*** mogrify -format png * .jpg
-Convert and compress all /jpg/ images in the current directory to /png/.
-
-*** jpegoptim -d dir -m 75 image.jpg
-Reduce JPG image to a quality of /75/ (suggested scale 60-80) and send to other directory /dir/.
-*Overwrites the original image* if the /-d dir/ option is not set. Interesting feature is that it accepts the exact size of the target file.
-[ /-n/ simulate compression and see what will be the size /-d/ save in other directory  /-S 100k/ try to optimize file to given size (percentage can also be used *-S 30%*) /-m 60/ sets  the  maximum  image quality factor (60 high quality-low size 10 low quality-high size) (disables lossless optimization mode, which is by default enabled) ]
-( ~jpegoptim -S 20k -d dir image.jpg~ reduce to specif size )
-( ~jpegoptim -n image.jpg~ only shows possible results )
-( ~convert input.jpeg -quality 80 output.jpeg~ compress JPEG images )
-( ~optipng file.png~ compress and optimization )
-( ~optipng *.png~ optimize the all .png files in a folder )
-
-*** pngquant -Q 70-95 image.png
-Converter and lossy PNG image.
-*Overwrites the original image* if these /-f --ext .png/ options are set.
-[ /-f/ overwrite existing output files /--ext .png/ file extension to use for output files instead of the default 'fs8.png' /-o file/ output to *file* name /-Q min-man/ will use the least amount of colors required to meet or exceed the max quality 0 worst to 100 perfect ]
-( ~pngquant -f --ext .png -Q 65-80 image.png~ overwrites the original images )
-( ~pngquant 64 image.png~ resulting image will have /64/ colors )
-
-*** gifsicle -b --colors 256 file.gif
-To optimize (compress) /file.gif/. Reduce  the number of distinct colors in each output GIF to /256/.
-( ~gifsicle -e file.gif~ to explode /file.gif/ into its component frames )
-( ~gifsicle -I file.gif~  to print information )
-( ~ffmpeg -i input.gif -vf "scale=iw/2:ih/2" -loop 0 output.gif~ compress a GIF file )
-
-*** optipng -out output.png   input.png
-Reduce the PNG image to what thinks it's probably the most effective and rename it in a new /output/ file. *Overwrites the original image* if the /-out/ option is not set.
-[ /-out/  write  output  file to file /-dir/  write the output files to directory /-o/ select the optimization level (0 minimal effort 1 probably the most effective 2 higher enable) ]
-( ~optipng -out output -o1 input~ equivalent command )
-( ~pngquant -f --ext .png image.png; opting image.png~ a little more compression )
-
-*** magick xx.png -quality 90% xx.jpg
-Convert png to jpg.
-When /quality/ is omitted, default is 92.
-( ~magick xx.png -flatten yy.png~ remove transparency with white )
-( ~for ff in *.png; do magick $ff $ff.jpg; done~ convert all png in a dir to jpg )
-
-** Fonts
-*** woff2_compress input-font.ttf
-Convert a TrueType font (.ttf) to WOFF2. Need to install the woff2 package.
-( ~libwoff1~ converting fonts to WOFF 2.0 )
-
-*** sfnt2woff-zopfli input-font.ttf
-Create WOFF files with Zopfli compression.
-( ~ttf2woff input-font.ttf output-font.woff~ convert a TrueType font (.ttf) to WOFF )
-
-*** fontforge
-For converting from ttf to svg.
-
-*** batik ttf2svf
-For converting from ttf to svg.
 
 * Programs
 ** rsync
@@ -1990,6 +2008,38 @@ Apply the supplied binding.
 
 *** man keyd.rvaiya
 Man page.
+
+** pass
+*** pass init name@mail.com
+Initialize password store.
+[ /-n/ no symbols /-c/ copy it to the clipboard instead of displaying it at the console ]
+
+*** pass ls
+List all the existing passwords in the store.
+( ~pass Folder/file~ show existing password )
+( ~pass find .com~ find existing passwords in store that match .com )
+
+*** pass insert Folder/file
+Add password to store.
+( ~pass insert -m Folder/file~ add multiline password to store )
+
+*** pass show Folder/file
+Decrypt  and print a password named pass-name.
+( ~pass Folder/file~ same as above )
+
+*** pass -c Folder/file
+Copy existing password to clipboard.
+
+*** pass generate Folder/file 15
+Generate new passwords using /dev/urandom internally.
+( ~pass generate -n Folder/file 15~ generate new alphanumeric password )
+( ~pass generate -c Folder/file 15~ generate new password and copy it to the clipboard )
+
+*** pass rm Folder/file
+Remove password.
+
+*** pass edit name
+Edited in the default text editor.
 
 ** input-remapper
 *** input-remapper-gtk
@@ -2520,7 +2570,14 @@ Create a new public repository on github.
 ** Encryption
 *** gpg --list-key
 Show all public keys currently stored in your local GPG keyring.
+List the specified keys.  If no keys are specified, then all keys from the configured public keyrings are listed.
+( ~gpg --list-secret-keys~ list  the specified secret keys )
 ( ~gpg --list-key keyID~ show the public key currently stored )
+
+*** gpg --full-generate-key
+Generate a GPG key pair.
+( ~gpg --quick-generate-key "Comment"~ simple command to generate a standard key (primary key and subkey are created) )
+( ~gpg --quick-generate-key "Comment" rsa4096~ simple command to generate a standard key with rsa algorithm (only the primary key is created) )
 
 *** gpg --keyserver keyring.debian.org --recv-keys E145360
 Fetch a key from the server /keyring.debian.org/ and put into local GPG keyring.

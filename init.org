@@ -20,9 +20,19 @@ Manager for Emacs Lisp packages.
   ;; Load use-package to manage package configuration:
   (require 'use-package)
 
+  ;; To use the :ensure-system-package keyword install this extension:
+  (use-package use-package-ensure-system-package)
+
   ;; Specify :ensure t in any future packages we'd like to declare and install:
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
+
+  ;; To use the use-package-ensure-system-package install this package:
+  (use-package system-packages)
+
+
+  ;; Built-in packages can be upgraded via a package archive.
+  (setq package-install-upgrade-built-in t)
 
 
   ;; Enable `hl-line-mode' for the specific list-packages major mode.
@@ -100,6 +110,16 @@ The standard faces of Emacs.
                             ((t (:foreground "#657076")))))
       (custom-set-faces '(font-lock-comment-face
                           ((t (:foreground "#5B6268")))))))
+
+
+  ;; Default face names for hi-lock interactive functions.
+  (setq hi-lock-face-defaults
+        '("hi-aquamarine" "hi-salmon" "hi-pink" "hi-green" "hi-blue"
+          "hi-yellow" "hi-black-b" "hi-blue-b" "hi-red-b" "hi-green-b"
+          "hi-black-hb"))
+  ;; Change the highlight color to match the background theme
+  (custom-set-faces '(hi-yellow
+                      ((t (:background "aquamarine" :foreground "black")))))
 
 #+end_src
 
@@ -287,6 +307,18 @@ Support for Emacs frames and window systems.
               (frame (make-frame)))
           (set-frame-size frame width height))))
 
+  ;; Wait 0.5 seconds after Emacs opens, then position the frame
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (run-at-time 0.5 nil
+                           #'rf-position-and-resize-frame-bottom-right)))
+  ;; or
+  ;; (add-hook 'emacs-startup-hook
+  ;;           (lambda ()
+  ;;             (run-with-timer 0.5 nil
+  ;;                             #'rf-position-and-resize-frame-bottom-right)))
+
+
 #+end_src
 
 ** Windows
@@ -363,6 +395,20 @@ Input from the mouse.
   ;; Make paste at point (not cursor position) when middle-clicking:
   (setq mouse-yank-at-point t)
 
+
+  ;; Mouse Click to Highlight Matching Words
+  (defun xah-mouse-click-to-search (Click)
+    "Mouse click to start `isearch-forward-symbol-at-point'
+  (emacs 24.4) at clicked point.
+  URL `http://xahlee.info/emacs/emacs/emacs_mouse_click_highlight_word.html'
+  Version 2016-07-18"
+    (interactive "e")
+    (let ((xp1 (posn-point (event-start Click))))
+      (goto-char xp1)
+      (isearch-forward-symbol-at-point)))
+  ;; Then set binding, example:
+  ;; (global-set-key (kbd "<mouse-3>") 'xah-mouse-click-to-search)
+
 #+end_src
 
 ** Scrolling
@@ -393,8 +439,8 @@ Displaying text cursors.
     ;; Add a cursor based on continuous lines:
     :bind (("<kp-7>" . mc/mark-next-like-this)
            ("S-<kp-7>" . mc/mark-previous-like-this)
-           ("C-d" . mc/mark-next-like-this)
-           ("C-S-d" . mc/mark-previous-like-this)
+           ("M-d" . mc/mark-next-like-this)
+           ("M-D" . mc/mark-previous-like-this)
            ;; Add or remove a cursor where you click:
            ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
 
@@ -403,8 +449,8 @@ Displaying text cursors.
   (use-package goto-chg
     :commands goto-last-change
     :bind (:repeat-map goto-last-repeat-map
-                       ("d" . goto-last-change)
-                       ("b" . goto-last-change-reverse)))
+                       ("m" . goto-last-change)
+                       ("w" . goto-last-change-reverse)))
 
 
   ;; Identical to C-x C-x but won't activate the region (Mickey Petersen).
@@ -435,14 +481,14 @@ Controlling the behavior of the minibuffer.
   (keymap-set minibuffer-local-map "M-r" nil)
   (keymap-set minibuffer-local-map "M-s" nil)
   (keymap-set minibuffer-local-map "C-," 'se-take-the-word-at-point)
-  ;; Set next/previous history in case the vertico-map is unavailable.
-  (keymap-set minibuffer-local-map "C-S-h" 'previous-line-or-history-element)
-  (keymap-set minibuffer-local-map "C-S-n" 'next-line-or-history-element)
+  ;; Trick: set next/previous history in case the vertico-map is unavailable.
+  (keymap-set minibuffer-local-map "C-S-C" 'previous-line-or-history-element)
+  (keymap-set minibuffer-local-map "C-S-T" 'next-line-or-history-element)
   ;; Set vertico-first and vertico-last
   (keymap-set minibuffer-local-map "M-s" 'vertico-first)
   (keymap-set minibuffer-local-map "M-S" 'vertico-last)
-  ;; (keymap-set minibuffer-local-map "C-S-h" 'previous-history-element)
-  ;; (keymap-set minibuffer-local-map "C-S-n" 'next-history-element)
+  ;;; (keymap-set minibuffer-local-map "C-S-h" 'previous-history-element)
+  ;;; (keymap-set minibuffer-local-map "C-S-n" 'next-history-element)
 
   ;; Minibuffer, stop cursor going into prompt (Xah)
   (customize-set-variable
@@ -552,23 +598,25 @@ Most basic editing facilities.
         (setq last-point (point)))
       (= start-point last-point)))
 
-  (defun rf-pos-bovl (&optional N)
+  (defun rf-pos-bovl (&optional n)
     "Return the position of the first character on the current visual line.
-  With optional argument N non-nil, move forward N - 1 lines first."
+  With optional argument N non-nil, move forward N - 1 lines first.
+  Modified version that fixes the error that occurred when reaching
+  the last line of the buffer"
     (interactive)
     (save-excursion
-      (when N
-        (line-move-visual N))
-      (beginning-of-visual-line)
+      (if (and n (not (line-move-visual n t)))
+          (end-of-visual-line)
+        (beginning-of-visual-line))
       (point)))
 
-  (defun rf-pos-eovl (&optional N)
+  (defun rf-pos-eovl (&optional n)
     "Return the position of the last character on the current visual line.
   With optional argument N non-nil, move forward N - 1 lines first."
     (interactive)
     (save-excursion
-      (when N
-        (line-move-visual N))
+      (when n
+        (line-move-visual n))
       (end-of-visual-line)
       (point)))
 
@@ -873,7 +921,6 @@ Yet Another Snippet extension.
                 ("TAB" . nil)
                 ("<tab>" . nil)
                 ("C-<iso-lefttab>" . yas-expand)
-                ;;;("C-M-<tab>" . yas-expand)
                 :map yas-keymap
                 ("TAB" . yas-next-field-or-maybe-expand)
                 ("<tab>" . yas-next-field-or-maybe-expand)
@@ -1198,7 +1245,7 @@ VERTical Interactive COmpletion.
     :after vertico
     :ensure nil
     :demand t
-    :bind (("C-b" . vertico-repeat)
+    :bind (("M-b" . vertico-repeat)
            :map vertico-map
            ("C-S-c" . vertico-repeat-previous)
            ("C-S-t" . vertico-repeat-next)
@@ -1284,8 +1331,8 @@ Provides a completion style that divides the pattern into space-separated compon
     (setq completion-styles '(orderless basic)
           ;; Disable defaults, use our settings
           completion-category-defaults nil
-          ;;; Enable partial-completion for files.
-          ;;; Either give orderless precedence or partial-completion.
+          ;; Enable partial-completion for files.
+          ;; Either give orderless precedence or partial-completion.
           completion-category-overrides
           '((file (styles partial-completion))
             ;; enable initialism by default for symbols
@@ -1363,44 +1410,45 @@ Provides search and navigation commands based on the Emacs completion function c
     (defvar-keymap consult-goto-map
       :doc "Keymap for the consult goto commands."
       :prefix 'consult-goto-map
-      "u" #'consult-imenu
-      "e" #'consult-imenu-multi
-      "p" #'consult-outline
-      "." #'consult-org-heading
-      "d" #'goto-last-change
-      "b" #'goto-last-change-reverse
-      "f" #'consult-goto-line
-      "n" #'consult-project-buffer
-      "r" #'consult-bookmark
-      "m" #'consult-mark
-      "w" #'consult-global-mark)
-    (keymap-set global-map "C-p" consult-goto-map)
-
-    (defvar-keymap consult-search-map
-      :doc "Keymap for the consult search commands."
-      :prefix 'consult-search-map
-      "u" #'consult-grep
-      "e" #'consult-ripgrep
-      "o" #'consult-git-grep
-      "h" #'consult-fd
-      "g" #'rf-consult-fd
-      "t" #'consult-find
-      "c" #'rf-consult-find
-      "n" #'consult-locate
-      "d" #'consult-history
-      "f" #'consult-isearch-history
-      "w" #'consult-complex-command
-      "m" #'consult-minor-mode-menu
-      "i" #'consult-man
-      "y" #'consult-info
-      "k" #'consult-keep-lines
-      "j" #'consult-focus-lines
       "p" #'consult-flycheck
       "." #'consult-flymake
       "," #'consult-compile-error
-      "v" #'consult-kmacro
-      "}" #'consult-register)
-    (keymap-set global-map "C-k" consult-search-map))
+      "y" #'consult-mark
+      "i" #'consult-global-mark
+      "u" #'consult-imenu
+      "e" #'consult-imenu-multi
+      "h" #'consult-outline
+      "t" #'consult-org-heading
+      "m" #'goto-last-change
+      "w" #'goto-last-change-reverse
+      "v" #'consult-goto-line
+      "n" #'consult-bookmark
+      "r" #'bookmark-set
+      "f" #'consult-isearch-history)
+    (keymap-set global-map "C-p" consult-goto-map)
+
+    (defvar-keymap consult-search-map
+      :doc "Keymap for the consult search and select commands."
+      :prefix 'consult-search-map
+      "." #'consult-keep-lines
+      "p" #'consult-focus-lines
+      "i" #'consult-man
+      "y" #'consult-info
+      "u" #'consult-grep
+      "e" #'consult-ripgrep
+      "o" #'consult-git-grep
+      "k" #'consult-kmacro
+      "j" #'consult-complex-command
+      "h" #'consult-fd
+      "t" #'consult-find
+      "g" #'rf-consult-fd
+      "c" #'rf-consult-find
+      "n" #'consult-locate
+      "r" #'consult-project-buffer
+      "d" #'consult-history
+      "m" #'consult-minor-mode-menu
+      "{" #'consult-register)
+    (keymap-set global-map "C-." consult-search-map))
 
 #+end_src
 
@@ -1513,7 +1561,7 @@ Cape provides Completion At Point Extensions which can be used in combination wi
 
   ;; Completion At Point Extensions
   (use-package cape
-    :bind (("M-q" . cape-prefix-map)
+    :bind (("C-k" . cape-prefix-map)
            :map cape-prefix-map
            ("n" . cape-file)
            ("c" . cape-line)
@@ -1566,8 +1614,8 @@ Cape provides Completion At Point Extensions which can be used in combination wi
   ;; Conveniently act on minibuffer completions.
   (use-package embark
     :bind
-    (("C-," . embark-act)
-     ("C-." . embark-dwim)
+    (("C-," . embark-dwim)
+     ("C-<" . embark-act)
      ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
 
      :map minibuffer-local-map
@@ -1601,12 +1649,12 @@ Cape provides Completion At Point Extensions which can be used in combination wi
      ("h" . outline-backward-same-level)
      ("n" . outline-forward-same-level)
      ("g" . outline-up-heading)
-     ("r" . rf-outline-down-heading))
+     ("r" . rf-org-down-heading))
     :config
     ;; Key used for embark-cycle
     (setq embark-cycle-key ",")
     ;; Make the command a repeatable action inside the map
-    (add-to-list 'embark-repeat-actions 'rf-outline-down-heading)
+    (add-to-list 'embark-repeat-actions 'rf-org-down-heading)
     ;; Kill-buffer from the minibuffer after M-x switch-to-buffer.
     ;; https://old.reddit.com/r/emacs/comments/11lqkbo/
     ;; weekly_tips_tricks_c_thread/jbe06qv/
@@ -1622,10 +1670,12 @@ Cape provides Completion At Point Extensions which can be used in combination wi
                  (type (plist-get target :type))
                  (buffer (plist-get target :target)))
             (cond
-             ;; MODIFICATION: don't delete the scratch or Messages buffer
-             ((or (string= buffer "*scratch*")
-                  (string= buffer "*Messages*")
-                  (string= buffer "*eshell*"))
+             ;; MODIFICATION: don't delete the scratch, Messages,... buffer
+             ;; Also replace in the `xah-close-current-buffer' function
+             ((or (member buffer '("*scratch*" "*Messages*"
+                                   "*gptel*" "*Gemini*" "*eshell*"))
+                  (string-match-p
+                   ".* Agent @ .*" buffer))
               (message "Try removing the buffer: %s." buffer))
              ((eq type 'buffer)
               (let ((embark-pre-action-hooks))
@@ -1658,7 +1708,7 @@ Cape provides Completion At Point Extensions which can be used in combination wi
                ("t" . outline-next-visible-heading)
                ("h" . outline-backward-same-level)
                ("n" . outline-forward-same-level)
-               ("r" . rf-outline-down-heading)
+               ("r" . rf-org-down-heading)
                ("f" . org-insert-heading-respect-content)
                ("o" . org-todo)
                ("y" . org-refile)
@@ -1731,9 +1781,6 @@ Convenient way to repeat previous commands.
   ;; Type 'C-x u u' instead of 'C-x u C-x u' to undo many changes.
   (repeat-mode)
 
-  ;; Disable the "repeat suggest" message when repeat-mode is active
-  ;;; (custom-set-variables '(repeat-echo-function 'ignore))
-
   ;; Stops the modal repeating of keys in sequence.
   (setq repeat-exit-key "SPC")
 
@@ -1744,84 +1791,92 @@ Manage repeat commands and maps triggered by the =Meta= key.
 
 #+begin_src emacs-lisp
 
-    (defvar-keymap char-word-movement-repeat-map
-      :doc "Keymap for repeating character and word movement."
-      :repeat t
-      "g" #'backward-word
-      "r" #'forward-word
-      "c" #'previous-line
-      "t" #'next-line
-      "h" #'backward-char
-      "n" #'forward-char
-      "m" #'xah-beginning-of-line-or-block
-      "w" #'xah-end-of-line-or-block)
+  (defvar-keymap repeat-repeat-map
+    :doc "Keymap to repeat repeat command."
+    :repeat t
+    "'" #'repeat)
 
-    (defvar-keymap bracket-movement-repeat-map
-      :doc "Keymap for repeating bracket movement."
-      :repeat t
-      "d" #'xah-backward-left-bracket
-      "b" #'xah-forward-right-bracket
-      "v" #'xah-goto-matching-bracket)
+  (defvar-keymap char-word-movement-repeat-map
+    :doc "Keymap for repeating character and word movement."
+    :repeat t
+    "g" #'backward-word
+    "r" #'forward-word
+    "c" #'previous-line
+    "t" #'next-line
+    "h" #'backward-char
+    "n" #'forward-char
+    "m" #'xah-beginning-of-line-or-block
+    "w" #'xah-end-of-line-or-block)
 
-    (defvar-keymap beggining-end-movement-repeat-map
-      :doc "Keymap for repeating beginning or end of buffer movement."
-      :repeat t
-      "s" #'ergoemacs-beginning-or-end-of-buffer
-      "S" #'ergoemacs-end-or-beginning-of-buffer)
+  (defvar-keymap beggining-end-movement-repeat-map
+    :doc "Keymap for repeating beginning or end of buffer movement."
+    :repeat t
+    "s" #'ergoemacs-end-or-beginning-of-buffer
+    "S" #'ergoemacs-beginning-or-end-of-buffer)
 
-    (defvar-keymap char-word-delete-repeat-map
-      :doc "Keymap to repeat commands to delete characters and words."
-      :repeat t
-      "," #'backward-kill-word
-      "p" #'kill-word
-      "o" #'delete-backward-char
-      "u" #'delete-forward-char)
+  (defvar-keymap char-word-delete-repeat-map
+    :doc "Keymap to repeat commands to delete characters and words."
+    :repeat t
+    "," #'backward-kill-word
+    "p" #'kill-word
+    "o" #'delete-backward-char
+    "u" #'delete-forward-char)
 
-    (defvar-keymap delete-current-text-block-repeat-map
-      :doc "Keymap for repeating `xah-delete-current-text-block' command."
-      :repeat t
-      "." #'xah-delete-current-text-block)
+  (defvar-keymap delete-current-text-block-repeat-map
+    :doc "Keymap for repeating `xah-delete-current-text-block' command."
+    :repeat t
+    "." #'xah-delete-current-text-block)
 
-    (defvar-keymap line-whitespaces-delete-repeat-map
-      :doc "Keymap to repeat commands to delete line and whitspaces."
-      :repeat t
-      "k" #'kill-line
-      "j" #'xah-shrink-whitespaces)
+  (defvar-keymap line-whitespaces-delete-repeat-map
+    :doc "Keymap to repeat commands to delete line and whitspaces."
+    :repeat t
+    "k" #'kill-line
+    "j" #'xah-shrink-whitespaces)
 
-    (defvar-keymap move-last-mark-repeat-map
-      :doc "Keymap for repeating last mark movement."
-      :repeat t
-      "y" #'xah-pop-local-mark-ring)
+  (defvar-keymap move-last-mark-repeat-map
+    :doc "Keymap for repeating last mark movement."
+    :repeat t
+    "y" #'xah-pop-local-mark-ring)
 
-    (defvar-keymap recenter-repeat-map
-      :doc "Keymap to repeat `recenter' command."
-      :repeat t
-      "l" #'recenter-top-bottom)
+  (defvar-keymap recenter-repeat-map
+    :doc "Keymap to repeat `recenter' command."
+    :repeat t
+    "l" #'recenter-top-bottom)
 
-    (defvar-keymap cyclic-window-frame-repeat-map
-      :doc "Keymap for repeating window and frame rotatation."
-      :repeat t
-      "a" #'other-frame
-      "e" #'other-window)
+  (defvar-keymap cyclic-window-frame-repeat-map
+    :doc "Keymap for repeating window and frame rotatation."
+    :repeat t
+    "a" #'other-frame
+    "e" #'other-window)
 
-    (defvar-keymap toggle-case-repeat-map
-      :doc "Keymap for repeating toggle letter case."
-      :repeat t
-      "'" #'xah-toggle-letter-case)
+  (defvar-keymap toggle-case-repeat-map
+    :doc "Keymap for repeating toggle letter case."
+    :repeat t
+    "q" #'xah-toggle-letter-case)
 
-    (defvar-keymap selection-repeat-map
-      :doc "Keymap for repeating selection commands."
-      :repeat t
-      "+" #'rf-xah-select-block
-      "*" #'xah-select-line)
+  (defvar-keymap selection-repeat-map
+    :doc "Keymap for repeating selection commands."
+    :repeat t
+    "+" #'rf-xah-select-block
+    "*" #'xah-select-line)
 
-    (defvar-keymap scroll-other-repeat-map
-      :doc "Keymap to repeat scrolling another window."
-      :repeat t
-      "<prior>" #'scroll-other-window-down
-      "<next>"  #'scroll-other-window
-      "m" #'scroll-other-window-down
-      "w" #'scroll-other-window)
+  (defvar-keymap scroll-other-repeat-map
+    :doc "Keymap to repeat scrolling another window."
+    :repeat t
+    "<prior>" #'scroll-other-window-down
+    "<next>"  #'scroll-other-window
+    "m" #'scroll-other-window-down
+    "w" #'scroll-other-window)
+
+  (defvar-keymap mark-next-repeat-map
+    :doc "Keymap to repeat next mark."
+    :repeat t
+    "d" #'mc/mark-next-like-this)
+
+  (defvar-keymap mark-previous-repeat-map
+    :doc "Keymap to repeat previous mark."
+    :repeat t
+    "d"  #'mc/mark-previous-like-this)
 
 #+end_src
 
@@ -1847,42 +1902,6 @@ Manage repeat commands  and maps triggered by the =Meta-Shift= key.
     "l" #'winner-undo
     "/" #'winner-redo)
 
-  (defvar-keymap switch-resize-windows-repeat-map
-    :doc "Keymap to switch, and resize windows."
-    :repeat t
-    :prefix 'switch-resize-windows-repeat-map
-    ;; Switch windows.
-    "c" #'windmove-up
-    "t" #'windmove-down
-    "h" #'windmove-left
-    "n" #'windmove-right
-    ;;  Resize windows.
-    "C" #'enlarge-window
-    "T" #'shrink-window
-    "H" #'shrink-window-horizontally
-    "N" #'enlarge-window-horizontally
-    ;; Miscellaneous.
-    "s" #'window-swap-states
-    "b" #'balance-windows
-    ;; Position frames.
-    "u" #'rf-position-and-resize-frame
-    "i" #'rf-position-and-resize-frame-top-right
-    "x" #'rf-position-and-resize-frame-bottom-right
-    "k" #'rf-position-and-resize-frame-bottom-left
-    ;; Move the frame to the laptop.
-    "e" #'rf-move-frame-to-laptop)
-  (keymap-set global-map "M-U" switch-resize-windows-repeat-map)
-
-  (defvar-keymap rectangle-related-map
-    :doc "Keymap for rectangle-related commands."
-    :prefix 'rectangle-related-map
-    "h" #'yank-rectangle
-    "t" #'kill-rectangle
-    "n" #'copy-rectangle-as-kill
-    "g" #'picture-yank-rectangle-from-register
-    "c" #'copy-rectangle-to-register)
-  (keymap-set global-map "M-Q" rectangle-related-map)
-
   (defvar-keymap backward-kill-line-repeat-map
     :doc "Keymap to repeat commands to backward kill line."
     :repeat t
@@ -1897,11 +1916,6 @@ Manage repeat commands and maps triggered by the =Control= and =Control-Shift= k
 #+begin_src emacs-lisp
 
   ;; C-
-  (defvar-keymap repeat-repeat-map
-    :doc "Keymap to repeat repeat command."
-    :repeat t
-    "'" #'repeat)
-
   (defvar-keymap paste-repeat-map
     :doc "Keymap for repeating paste command."
     :repeat t
@@ -1943,8 +1957,49 @@ Manage repeat commands and maps triggered by the =Control= and =Control-Shift= k
     "t" #'switch-to-previous-buffer
     "n" #'rf-recently-not-visible-buffer)
 
+#+end_src
 
-  ;; C-S-
+*** Control shift
+Manage repeat commands  and maps triggered by the =Control-Shift= key.
+
+#+begin_src emacs-lisp
+
+  (defvar-keymap switch-resize-windows-repeat-map
+    :doc "Keymap to switch, and resize windows."
+    :repeat t
+    :prefix 'switch-resize-windows-repeat-map
+    ;; Switch windows.
+    "c" #'windmove-up
+    "t" #'windmove-down
+    "h" #'windmove-left
+    "n" #'windmove-right
+    ;;  Resize windows.
+    "C" #'enlarge-window
+    "T" #'shrink-window
+    "H" #'shrink-window-horizontally
+    "N" #'enlarge-window-horizontally
+    ;; Miscellaneous.
+    "s" #'window-swap-states
+    "b" #'balance-windows
+    ;; Position frames.
+    "u" #'rf-position-and-resize-frame
+    "i" #'rf-position-and-resize-frame-top-right
+    "x" #'rf-position-and-resize-frame-bottom-right
+    "k" #'rf-position-and-resize-frame-bottom-left
+    ;; Move the frame to the laptop.
+    "e" #'rf-move-frame-to-laptop)
+  (keymap-set global-map "C-S-u" switch-resize-windows-repeat-map)
+
+  (defvar-keymap rectangle-related-map
+    :doc "Keymap for rectangle-related commands."
+    :prefix 'rectangle-related-map
+    "h" #'yank-rectangle
+    "t" #'kill-rectangle
+    "n" #'copy-rectangle-as-kill
+    "g" #'picture-yank-rectangle-from-register
+    "c" #'copy-rectangle-to-register)
+  (keymap-set global-map "C-S-j" rectangle-related-map)
+
   (defvar-keymap scroll-other-cotrol-repeat-map
     :doc "Keymap to repeat scrolling another window using control key."
     :repeat t
@@ -1957,15 +2012,23 @@ Manage repeat commands and maps triggered by the =Control= and =Control-Shift= k
     "<prior>" #'xah-previous-user-buffer
     "<next>"  #'xah-next-user-buffer)
 
-  (defvar-keymap mark-next-previous-repeat-map
-    :doc "Keymap to repeat previous and next mark."
+#+end_src
+
+*** Misc
+Manage repeat commands  and maps triggered by the minor modes like ~prog-mode-map~.
+
+#+begin_src emacs-lisp
+
+  (defvar-keymap bracket-movement-repeat-map
+    :doc "Keymap for repeating bracket movement."
     :repeat t
-    "d" #'mc/mark-next-like-this
-    "D"  #'mc/mark-previous-like-this)
+    "v" #'xah-goto-matching-bracket
+    "m" #'xah-backward-left-bracket
+    "w" #'xah-forward-right-bracket)
 
 #+end_src
 
-** Bind key
+** Bindings
 *** Meta
 **** M-
 Manage global =Meta= key combinations.
@@ -2009,24 +2072,24 @@ Manage global =Meta= key combinations.
              ("M-e" . other-window)
              ("M-u" . delete-forward-char)
              ("M-i" . cua-rectangle-mark-mode)
-             ("M-d" . xah-backward-left-bracket)
+             ;; ("M-d" . ~mc/mark-next-like-this)
              ("M-h" . backward-char)
              ("M-t" . next-line)
              ("M-n" . forward-char)
-             ("M-s" . ergoemacs-beginning-or-end-of-buffer)
+             ("M-s" . ergoemacs-end-or-beginning-of-buffer)
              ;; ("M--" . )
              ;; ("M-\\" . )
              ;; ("M-RET" . )
 
-             ("M-'" . xah-toggle-letter-case)
-             ;; ("M-q" . +cape-prefix-map)
+             ("M-'" . repeat)
+             ("M-q" . xah-toggle-letter-case)
              ("M-j" . xah-shrink-whitespaces)
              ("M-k" . kill-line)
              ;; ("M-x" . ^execute-extended-command)
-             ("M-b" . xah-forward-right-bracket)
+             ;; ("M-b" . ~vertico-repeat)
              ("M-m" . xah-beginning-of-line-or-block)
              ("M-w" . xah-end-of-line-or-block)
-             ("M-v" . xah-goto-matching-bracket)
+             ("M-v" . nil)
              ;; ("M-z" . ~evilnc-comment-or-uncomment-lines)
 
              ;; ("M-SPC" . )
@@ -2075,19 +2138,19 @@ Manage global =Meta= + =Shift= key combinations.
              ;; ("M-A" . )
              ;; ("M-O" . )
              ;; ("M-E" . ~ace-window)
-             ;; ("M-U" . +switch-resize-windows-repeat-map)
+             ;; ("M-U" . )
              ;; ("M-I" . )
-             ;; ("M-D" . )
+             ;; ("M-D" . ~mc/mark-previous-like-this)
              ;; ("M-H" . )
              ;; ("M-T" . ~drag-stuff-down)
              ;; ("M-N" . )
-             ("M-S" . ergoemacs-end-or-beginning-of-buffer)
+             ("M-S" . ergoemacs-beginning-or-end-of-buffer)
              ;; ("M-_" . )
              ;; ("M-|" . )
              ;; ("M-S-<return>" . ~rf-duplicate-thing-wrapper)
 
              ;; ("M-\"" . )
-             ;; ("M-Q" . +rectangle-related-map)
+             ;; ("M-Q" . )
              ;; ("M-J" . )
              ("M-K" . rf-backward-kill-line)
              ("M-X" . execute-extended-command-for-buffer)
@@ -2189,7 +2252,7 @@ Manage global =Meta= + =Control= key combinations.
              ("C-M-e" . eval-print-last-sexp)
              ;; ("C-M-u" . )
              ;; ("C-M-i" . )
-             ;; ("C-M-d" . )
+             ("C-M-d" . beginning-of-defun)
              ("C-M-h" . backward-sexp)
              ("C-M-t" . prog-indent-sexp)
              ("C-M-n" . forward-sexp)
@@ -2203,7 +2266,7 @@ Manage global =Meta= + =Control= key combinations.
              ;; ("C-M-j" . )
              ("C-M-k" . kill-sexp)
              ;; ("C-M-x" . )
-             ;; ("C-M-b" . )
+             ("C-M-b" . end-of-defun)
              ;; ("C-M-m" . )
              ("C-M-w" . save-buffers-kill-terminal)
              ;; ("C-M-v" . )
@@ -2242,23 +2305,23 @@ Manage global =Control= key combinations.
              ;; ("C-`" . )
              ;; ("C-$" . )
              ;; ("C-&" . ~consult-register-store)
-             ;; ("C-[" . DO NOT USE. BLOCKS THE META KEY)
-             ;; ("C-{" . ~magit-status)
-             ;; ("C-}" . )
-             ;; ("C-(" . )
-             ("C-=" . calc)
-             ("C-*" . dired-jump)
-             ("C-)" . eshell)
-             ("C-+" . ibuffer)
-             ;; ("C-]" . ^esc)
+             ;; ("C-[" . 'meta (DON'T USE. BLOCKS THE META KEY))
+             ;; ("C-{" . ~rf-gptel)
+             ;; ("C-}" . ~rf-agent-shell)
+             ("C-(" . calc)
+             ("C-=" . ibuffer)
+             ("C-*" . eshell)
+             ("C-)" . dired-jump)
+             ;; ("C-+" . ~magit-status)
+             ;; ("C-]" . 'esc)
              ;; ("C-!" . )
              ;; ("C-#" . )
              ;; ("C-DEL" . ^backward-kill-word)
 
              ;; ("C-<tab>" . ~tempel-complete)
              ;; ("C-;" . )
-             ;; ("C-," . ~embark-act)
-             ;; ("C-." . ~embark-dwim)
+             ;; ("C-," . ~embark-dwim)
+             ;; ("C-." . +consult-search-map)
              ;; ("C-p" . +consult-goto-map)
              ("C-y" . undo-redo)
              ;; ("C-f" . ~consult-line)
@@ -2274,8 +2337,8 @@ Manage global =Control= key combinations.
              ;; ("C-o" . ^open-line)
              ("C-e" . rf-eval-last-sexp-or-region)
              ;; ("C-u" . ^universal-argument)
-             ;; ("C-i" . ^tab)
-             ;; ("C-d" . ~mc/mark-next-like-this)
+             ;; ("C-i" . 'tab)
+             ;; ("C-d" . ~gptel-leader-map)
              ;; ("C-h" . ^help-map)
              ("C-t" . switch-to-previous-buffer)
              ;; ("C-n" . ~consult-buffer)
@@ -2284,13 +2347,13 @@ Manage global =Control= key combinations.
              ;; ("C-\\" . )
              ;; ("C-RET" . )
 
-             ("C-'" . repeat)
-             ;; ("C-q" . ^quoted-insert)
+             ;; ("C-'" . )
+             ;; ("C-q" . 'quoted-insert)
              ("C-j" . rf-jump-to-newline)
-             ;; ("C-k" . +consult-search-map)
+             ;; ("C-k" . +cape-prefix-map)
              ;; ("C-x" . ^ctl-x-map)
-             ;; ("C-b" . ~vertico-repeat)
-             ;; ("C-m" . ^newline)
+             ;; ("C-b" . ~agent-shell-leader-map)
+             ;; ("C-m" . 'newline)
              ("C-w" . xah-close-current-buffer)
              ("C-v" . xah-paste-or-paste-previous)
              ("C-z" . undo)
@@ -2315,17 +2378,17 @@ Manage global =Control= + =Shiftkey= combinations.
              ;; ("C-3" . )
              ;; ("C-1" . )
              ("C-9" . image-dired)
-             ("C-0" . dired-jump-other-window)
-             ("C-2" . shell-command)
-             ;; ("C-4" . )
-             ;; ("C-6" . )
+             ("C-0" . shell-command)
+             ("C-2" . dired-jump-other-window)
+             ;; ("C-4" . ~magit-dispatch)
+             ;; ("C-6" . ~magit-file-dispatch)
              ;; ("C-8" . )
              ;; ("C-`" . )
              ;; ("C-S-<backspace>" . )
 
              ;; ("C-<iso-lefttab>" . ~yas-expand)
              ;; ("C-:" . )
-             ;; ("C-<" . )
+             ;; ("C-<" . ~embark-act)
              ("C->" . rf-toggle-xah-narrow-to-region)
              ;; ("C-S-p" . )
              ;; ("C-S-y" . )
@@ -2341,9 +2404,9 @@ Manage global =Control= + =Shiftkey= combinations.
              ;; ("C-S-a" . )
              ("C-S-o" . xah-open-in-external-app)
              ("C-S-e" . eval-expression)
-             ;; ("C-S-u" . )
+             ;; ("C-S-u" . +switch-resize-windows-repeat-map)
              ;; ("C-S-i" . )
-             ;; ("C-S-d" . ~mc/mark-previous-like-this)
+             ;; ("C-S-d" . )
              ;; ("C-S-h" . )
              ("C-S-t" . xah-open-last-closed)
              ;; ("C-S-n" . ~consult-buffer-other-window)
@@ -2354,7 +2417,7 @@ Manage global =Control= + =Shiftkey= combinations.
 
              ;; ("C-\"" . )
              ;; ("C-S-q" . +google-translate-map)
-             ;; ("C-S-j" . )
+             ;; ("C-S-j" . +rectangle-related-map)
              ;; ("C-S-k" . )
              ;; ("C-S-x" . )
              ;; ("C-S-b" . )
@@ -2442,12 +2505,12 @@ Manage global keypad key combinations.
            '(
              ;; ("<kp-equal>"     . ~consult-buffer)
              ;; ("<kp-divide>"   . )
-             ;; ("<kp-multiply>" . )
+             ("<kp-multiply>" . kmacro-end-or-call-macro)
              ("<kp-subtract>" . rf-recently-not-visible-buffer)
 
              ;; ("<kp-7>" . ~mc/mark-next-like-this)
-             ("<kp-8>" . rf-last-interactive-command)
-             ("<kp-9>" . kmacro-end-or-call-macro)
+             ("<kp-8>" . rf-gptel)
+             ("<kp-9>" . rf-agent-shell)
              ("<kp-add>" . switch-to-previous-buffer)
 
              ("<kp-4>" . rf-find-or-switch-to-tertiary-file)
@@ -2469,12 +2532,12 @@ Manage global keypad key combinations.
            '(
              ("S-<kp-equal>" . find-file)
              ;; ("S-<kp-divide>" . )
-             ;; ("S-<kp-multiply>" . )
+             ("S-<kp-multiply>" . kmacro-start-macro)
              ;; ("S-<kp-subtract>" . )
 
              ;; ("S-<kp-7>" . ~mc/mark-previous-like-this)
-             ("S-<kp-8>" . rf-find-or-switch-to-english)
-             ("S-<kp-9>" . kmacro-start-macro)
+             ;; ("S-<kp-8>" . )
+             ;; ("S-<kp-9>" . )
              ;; ("S-<kp-add>" . )
 
              ("S-<kp-4>" . rf-find-or-switch-to-tertiary-test-file)
@@ -2496,11 +2559,11 @@ Manage global keypad key combinations.
            '(
              ;; ("M-<kp-equal>" . ~consult-buffer-other-window)
              ;; ("M-<kp-divide>" . )
-             ;; ("M-<kp-multiply>" . )
+             ("M-<kp-multiply>" . rf-switch-to-image-dired-screenshots)
              ;; ("M-<kp-subtract>" . )
 
-             ;; ("M-<kp-7>" . )
-             ("M-<kp-8>" . rf-find-or-switch-to-layout-maps)
+             ("M-<kp-7>" . rf-find-or-switch-to-archive)
+             ;; ("M-<kp-8>" . )
              ;; ("M-<kp-9>" . )
              ;; ("M-<kp-add>" . )
 
@@ -2713,7 +2776,11 @@ Directory editing.
               (dired-mark-files-regexp "^\\\.")
               (dired-do-kill-lines))
           (progn (revert-buffer) ; otherwise just revert to re-show
-                 (set (make-local-variable 'dired-dotfiles-show-p) t))))))
+                 (set (make-local-variable 'dired-dotfiles-show-p) t)))))
+    (defun rf-switch-to-image-dired-screenshots ()
+      "Switch to the `~/Pictures/Screenshots/' image dired directory"
+      (interactive)
+      (image-dired "~/Pictures/Screenshots/")))
 
 
   ;; Shows icons for each file in dired mode:
@@ -2834,7 +2901,7 @@ Finding files.
   (defvar rf-tertiary-test-file nil
     "Tertiary test file to switch to.")
 
-  (defvar rf-main-test-directory "/home/rich/projects/practice/TEST/"
+  (defvar rf-main-test-directory "/home/rich/projects/tests/TEST/"
     "Main test directory to be used with the test main files.
   It's the initial path to the main test files, such as
   `rf-main-test-file', `rf-secondary-test-file',and `rf-tertiary-test-file'.")
@@ -3026,11 +3093,11 @@ Outline-based notes management and organizer.
                     ("C-S-<up>" . nil) ("C-S-<down>" . nil)
                     ("S-<return>" . nil) ("S-RET" . nil)
                     ("M-h" . nil) ("M-}" . nil) ("M-{" . nil) ("C-," . nil)
-                    ("C-c C-d" . rf-outline-down-heading)
-                    ("<kp-multiply>" . rf-org-emphasize-bold)
+                    ("C-c C-d" . rf-org-down-heading)
                     ("<kp-divide>" . rf-org-emphasize-code)
-                    ("S-<kp-divide>" . rf-org-emphasize-italic)
-                    ("S-<kp-multiply>" . rf-org-emphasize-verbatim)
+                    ("S-<kp-divide>" . rf-org-emphasize-bold)
+                    ("M-<kp-divide>" . rf-org-emphasize-italic)
+                    ("C-<kp-divide>" . rf-org-emphasize-verbatim)
                     ("C-j" . rf-jump-to-newline))
 
         :config
@@ -3070,7 +3137,7 @@ General settings of the org mode.
     "Wrapper of general settings to activate within use-package org."
 
     ;; Contrary function of `outline-up-heading'.
-    (defun rf-outline-down-heading ()
+    (defun rf-org-down-heading ()
       "Move to the header line of the next visible tree."
       (interactive)
       (let (up-point forward-point)
@@ -3107,7 +3174,7 @@ Setting up org mode bindings.
       "h" #'org-backward-heading-same-level
       "n" #'org-forward-heading-same-level
       "g" #'org-up-element
-      "r" #'rf-outline-down-heading
+      "r" #'rf-org-down-heading
 
       "k" #'org-cut-subtree
       "d" #'org-previous-link
@@ -3118,7 +3185,9 @@ Setting up org mode bindings.
       "u" #'org-insert-structure-template
       "." #'org-narrow-to-subtree
       "m" #'org-return-and-maybe-indent
-      "j" #'org-table-copy-down)
+      "j" #'org-table-copy-down
+      "i" #'org-link-preview
+      "s" #'org-edit-special)
 
     ;; Settings the leader repeat maps:
     (defvar-keymap org-move-headers-repeat-map
@@ -3129,13 +3198,18 @@ Setting up org mode bindings.
       "h" #'org-backward-heading-same-level
       "n" #'org-forward-heading-same-level
       "g" #'org-up-element
-      "r" #'rf-outline-down-heading)
+      "r" #'rf-org-down-heading)
 
     (defvar-keymap org-next-link-repeat-map
       :doc "Keymap for repeating commands to jump between links."
       :repeat t
       "d" #'org-previous-link
       "b" #'org-next-link)
+
+    (defvar-keymap org-link-preview-repeat-map
+      :doc "Keymap to repeat `org-link-preview'.  Used in `repeat-mode'."
+      :repeat t
+      "i" #'org-link-preview)
 
     ;; Settings the org-mode repeat maps:
     (defvar-keymap org-open-line-repeat-map
@@ -3288,6 +3362,8 @@ Options concerning properties in Org mode.
                                          ("h" . "src html \n")
                                          ("j" . "src javascript \n")
                                          ("l" . "src emacs-lisp \n")
+                                         ("m" . "src markdown \n")
+                                         ("d" . "src mermaid \n")
                                          ("o" . "src conf \n")
                                          ("q" . "quote \n")
                                          ("r" . "src \n")
@@ -3418,9 +3494,9 @@ Code block evaluation and management in ‘org-mode’ documents
     (defun sc-org-babel-tangle-config ()
       "Exports the tangle configuration to the associated output files.
 
-    This function checks to see if the file being saved is the .org
-    file you're looking at right now, and if so, automatically
-    exports the configuration here to the associated output files."
+      This function checks to see if the file being saved is the .org
+      file you're looking at right now, and if so, automatically
+      exports the configuration here to the associated output files."
       (when (string-equal (file-name-directory (buffer-file-name))
                           (expand-file-name user-emacs-directory))
         ;; Dynamic scoping to the rescue
@@ -3431,6 +3507,9 @@ Code block evaluation and management in ‘org-mode’ documents
     (add-hook 'org-mode-hook
               (lambda ()
                 (add-hook 'after-save-hook #'sc-org-babel-tangle-config)))
+
+    ;; Explicitly load the gnuplot Babel library(to use gnuplot on org blocks)
+    (require 'ob-gnuplot)
 
     )
 
@@ -3466,6 +3545,69 @@ Options concerning agenda views in Org mode.
           '("~/Documents/todo.org"))
 
     )
+
+#+end_src
+
+** Markdown
+Major mode for editing text files in Markdown format.
+
+#+begin_src emacs-lisp
+
+  ;; Major mode for Markdown-formatted text.
+  (use-package markdown-mode
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "multimarkdown")
+    :bind (:map markdown-mode-map
+                ("M-n" . nil))
+    :config
+    (setq markdown-fontify-code-blocks-natively t)
+    ;; Change the ellipsis (DeepSeek):
+    (set-display-table-slot standard-display-table
+                            'selective-display
+                            (string-to-vector " ➣"))
+    ;; Markdown header delimiter face (#)
+    (set-face-attribute 'markdown-header-delimiter-face nil
+                        :foreground "#5B6268")
+    ;; Make Markdown headers inherit from Org header colors
+    (set-face-attribute 'markdown-header-face-1 nil :inherit 'org-level-1)
+    (set-face-attribute 'markdown-header-face-2 nil :inherit 'org-level-2)
+    (set-face-attribute 'markdown-header-face-3 nil :inherit 'org-level-3)
+    (set-face-attribute 'markdown-header-face-4 nil :inherit 'org-level-4)
+    (set-face-attribute 'markdown-header-face-5 nil :inherit 'org-level-5)
+    (set-face-attribute 'markdown-header-face-6 nil :inherit 'org-level-6)
+    ;; Qwen3.7-Plus:
+    (defun qw-outline-down-heading ()
+      "Move to the next heading at the current level or higher.
+    Skips all child headings."
+      (interactive)
+      (catch 'done
+        (while t
+          ;; 1. Try to go FORWARD to a sibling. If we succeed, we are done.
+          (condition-case nil
+              (progn (outline-forward-same-level 1) (throw 'done t))
+            (error nil)) ;; Failed to move forward, loop continues
+          ;; 2. Try to go UP to the parent. If we can't, we are at the top level.
+          (condition-case nil
+              (outline-up-heading 1)
+            (error (throw 'done nil)))))) ;; Exit gracefully
+    ;; Setting the leader map:
+    (defvar-keymap rf-markdown-leader-map
+      :doc "Keymap Markdown mode using a new leader key."
+      :prefix 'rf-markdown-leader-map
+      :repeat t
+      "c" #'outline-previous-visible-heading
+      "t" #'outline-next-visible-heading
+      "h" #'outline-backward-same-level
+      "n" #'outline-forward-same-level
+      "g" #'outline-up-heading
+      "r" #'qw-outline-down-heading)
+    (keymap-set markdown-mode-map "<f6>" rf-markdown-leader-map)
+    ;; Trick to use TAB -> markdown-cycle only in markdown-mode
+    (defvar-keymap markdown-char-word-movement-repeat-map
+      :doc "Keymap for repeating character and word movement in markdown-mode."
+      :parent char-word-movement-repeat-map
+      :repeat t
+      "TAB" #'markdown-cycle))
 
 #+end_src
 
@@ -3528,6 +3670,10 @@ Generic programming mode, from which others derive.
 
   ;; Disable the binding to enable it as another global binding
   (keymap-set prog-mode-map "M-q" nil)
+  ;; Movements in parentheses in prog mode
+  (keymap-set prog-mode-map "<f6> v" 'xah-goto-matching-bracket)
+  (keymap-set prog-mode-map "<f6> m" 'xah-backward-left-bracket)
+  (keymap-set prog-mode-map "<f6> w" 'xah-forward-right-bracket)
 
 
   ;; Display line numbers only in programming modes:
@@ -3594,7 +3740,8 @@ Structured Editing and Movement with Combobulate.
                  ;;              "v0.20.3" "typescript/src"))
                  (typescript .
                              ("https://github.com/tree-sitter/tree-sitter-typescript"
-                              "v0.23.2" "typescript/src"))))
+                              "v0.23.2" "typescript/src"))
+                 (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
         (add-to-list 'treesit-language-source-alist grammar)
         ;; Only install `grammar' if we don't already have it
         ;; installed. However, if you want to *update* a grammar then
@@ -3610,7 +3757,9 @@ Structured Editing and Movement with Combobulate.
     ;; wide range of programming languages.
     (use-package combobulate
       :vc
-      (combobulate :url "https://github.com/mickeynp/combobulate")
+      (combobulate :url "https://github.com/mickeynp/combobulate" :rev :newest)
+      ;; This part of the preface does not work when the package is installed
+      ;; for the first time; it must be commented out to allow installation.
       :preface
       (defvar-keymap combobulate-cursor-map
         :doc "Keymap for combobulate-cursor commands."
@@ -3641,10 +3790,10 @@ Structured Editing and Movement with Combobulate.
         "n" #'combobulate-navigate-logical-next
         "g" #'combobulate-navigate-up
         "r" #'combobulate-navigate-down
-        "d" #'combobulate-navigate-previous
-        "b" #'combobulate-navigate-next
-        "m" #'combobulate-navigate-beginning-of-defun
-        "w" #'combobulate-navigate-end-of-defun)
+        "d" #'combobulate-navigate-beginning-of-defun
+        "b" #'combobulate-navigate-end-of-defun
+        "l" #'combobulate-navigate-previous
+        "s" #'combobulate-navigate-next)
 
       (defvar-keymap combobulate-drag-repeat-map
         :doc "Keymap to repeat combobulate-drag commands."
@@ -3672,10 +3821,10 @@ Structured Editing and Movement with Combobulate.
              ("<f6> n" . combobulate-navigate-logical-next)
              ("<f6> g" . combobulate-navigate-up)
              ("<f6> r" . combobulate-navigate-down)
-             ("<f6> d" . combobulate-navigate-previous)
-             ("<f6> b" . combobulate-navigate-next)
-             ("<f6> m" . combobulate-navigate-beginning-of-defun)
-             ("<f6> w" . combobulate-navigate-end-of-defun)
+             ("<f6> d" . combobulate-navigate-beginning-of-defun)
+             ("<f6> b" . combobulate-navigate-end-of-defun)
+             ("<f6> l" . combobulate-navigate-previous)
+             ("<f6> s" . combobulate-navigate-next)
              ;; Editing
              ("<f6> C" . combobulate-drag-up)
              ("<f6> T" . combobulate-drag-down)
@@ -3693,16 +3842,6 @@ Structured Editing and Movement with Combobulate.
              ("C-S-t" . combobulate-cursor-next-field)
              :map combobulate-javascript-map
              ("=" . nil))
-      :config
-      ;; Remove these bindings that couse conflicts
-      (add-hook 'combobulate-javascript-minor-mode-hook
-                (lambda () (keymap-unset combobulate-javascript-map "M-(")))
-      (add-hook 'combobulate-css-minor-mode-hook
-                (lambda () (keymap-unset combobulate-css-map "M-(")))
-      (add-hook 'combobulate-json-minor-mode-hook
-                (lambda () (keymap-unset combobulate-json-map "M-(")))
-      (add-hook 'combobulate-html-minor-mode-hook
-                (lambda () (keymap-unset combobulate-html-map "M-(")))
       :custom
       ;; You can customize Combobulate's key prefix here.
       (combobulate-key-prefix "C-c o")))
@@ -3721,6 +3860,9 @@ Provides infrastructure and a set of commands for enriching the source code edit
   (use-package eglot
     :defer t
     :pin gnu
+    :ensure-system-package
+    ((vscode-langservers-extracted . "pn add -g vscode-langservers-extracted")
+     (typescript-language-server . "pn add -g typescript-language-server"))
     :init
     (defvar-keymap eglot-prefix-map
       :doc "Keymap for the eglot-prefix in prog-mode."
@@ -3747,8 +3889,8 @@ Provides infrastructure and a set of commands for enriching the source code edit
     ;; Disable any debug logging (buffer), and may speed things up.
     (eglot-events-buffer-size 0)
     ;; Disable annoying code action suggestions
-    (eglot-ignored-server-capabilities
-     '(:codeActionProvider))
+    ;;;(eglot-ignored-server-capabilities
+    ;;; '(:codeActionProvider))
     :config
     ;; Feature that Eglot shouldn’t automatically try to manage on
     ;; the user’s behalf. Eglot stay away from flymake Emacs feature.
@@ -3825,6 +3967,15 @@ Modern on-the-fly syntax checking for GNU Emacs.
                                             root))))
         (when (and eslint (file-executable-p eslint))
           (setq-local flycheck-javascript-eslint-executable eslint))))
+    (defun jb-use-oxlint-from-node-modules-flycheck ()
+      (let* ((root (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    "node_modules"))
+             (oxlint (and root
+                          (expand-file-name "node_modules/oxlint/bin/oxlint"
+                                            root))))
+        (when (and oxlint (file-executable-p oxlint))
+          (setq-local flycheck-javascript-oxlint-executable oxlint))))
     (defun jb-use-stylelint-from-node-modules-flycheck ()
       (let* ((root (locate-dominating-file
                     (or (buffer-file-name) default-directory)
@@ -3845,7 +3996,8 @@ Modern on-the-fly syntax checking for GNU Emacs.
           (setq-local flycheck-stylelintrc stylelintrc))))
 
     :hook ((flycheck-mode . (lambda ()
-                              (jb-use-eslint-from-node-modules-flycheck)
+                              ;; (jb-use-eslint-from-node-modules-flycheck)
+                              (jb-use-oxlint-from-node-modules-flycheck)
                               (jb-use-stylelint-from-node-modules-flycheck)
                               (rf-use-stylelintrc-from-root-project))))
     :bind (:map flycheck-error-list-mode-map
@@ -3872,7 +4024,7 @@ Modern on-the-fly syntax checking for GNU Emacs.
       "v" #'flycheck-buffer)
     (keymap-set flycheck-mode-map "<f6> p" flycheck-prog-map))
   ;; Flycheck doesn't check buffers itself but relies on external programs.
-  ;; These programs must be installed separately (e.g, npm install eslint)
+  ;; These programs must be installed separately (e.g, npm install eslint/oxlint)
 
 
   ;; Provides the consult-flycheck cmd, which integrates Consult with Flycheck.
@@ -3966,7 +4118,7 @@ Universal on-the-fly syntax checker.
   (use-package flymake-jsts
     :vc
     (flymake-jsts :url
-                  "https://github.com/orzechowskid/flymake-jsts")
+                  "https://github.com/orzechowskid/flymake-jsts" :rev :newest)
     :defer t
     :init
     ;; Use local eslint from node_modules before global (Jeff Barczewski).
@@ -3988,16 +4140,16 @@ Universal on-the-fly syntax checker.
                       `((eslint . ,eslintx)
                         (oxlint . "oxlint")
                         (biome . "biome")))))))
-  ;; Make sure eslint is installed and present on your emacs exec-path.
-  ;; npm install -g eslint
+  ;; Make sure eslint/oxlint is installed and present on your emacs exec-path.
+  ;; npm install -g eslint/oxlint
 
 
   ;; Flymake backend for CSS and friends using stylelint.
   ;;; It doesn't work.
   (use-package flymake-stylelint
     :vc
-    (flymake-stylelint :url
-                       "https://github.com/orzechowskid/flymake-stylelint")
+    (flymake-stylelint
+     :url "https://github.com/orzechowskid/flymake-stylelint"  :rev :newest)
     :defer t
     :init
     ;; Use local stylelint from node_modules before global (Jeff Barczewski).
@@ -4094,7 +4246,7 @@ Bringing rich debugging capabilities to Emacs via the Debug Adapter Protocol.
       "k" #'dape-info
       "j" #'dape-many-windows
       "q" #'dape-select-stack)
-    (keymap-set prog-mode-map "<f6> v" dape-prefix-map)
+    (keymap-set prog-mode-map "<f6> q" dape-prefix-map)
     (defvar-keymap dape-repeat-map
       :doc "Keymap for debugger repeat commands."
       :repeat (:exit (dape-kill
@@ -4142,9 +4294,9 @@ Controlling Git from Emacs.
 
   ;; A Git porcelain inside Emacs
   (use-package magit
-    :bind(("C-{" . magit-status)
-          ("C-c g" . magit-dispatch)
-          ("C-c f" . magit-file-dispatch)
+    :bind(("C-+" . magit-status)
+          ("C-4" . magit-dispatch)
+          ("C-6" . magit-file-dispatch)
           :map magit-mode-map
           ("C-w" . nil)
           ("c" . magit-section-backward)
@@ -4154,7 +4306,9 @@ Controlling Git from Emacs.
           ("C-S-c" . magit-section-backward-sibling)
           ("C-S-t" . magit-section-forward-sibling)
           ("S-<backspace>" . magit-section-up)
-          ("C-<insert>" . magit-copy-section-value)))
+          ("C-<insert>" . magit-copy-section-value)
+          :map magit-diff-section-map
+          ("M-RET" . magit-diff-visit-file-other-window)))
 
   ;; Access Git forges from Magit
   (use-package forge
@@ -4207,7 +4361,7 @@ Automate jobs inside and outside the inner software development loop (edit, comp
                       (add-to-list 'args "run")
                       (prodigy-define-service
                         :name (concat name "-" key)
-                        :command (or package-manager "npm")
+                        :command (or package-manager "pnpm")
                         :cwd (file-name-directory (buffer-file-name))
                         :path (file-name-directory (buffer-file-name))
                         :args args
@@ -4295,8 +4449,12 @@ Hypertext Markup Language editing mode.
            (html-ts-mode . combobulate-mode)
            (html-ts-mode . display-line-numbers-mode))
     :bind (:map html-mode-map
-                ("M-o" . nil)))
-  ;; ("M-i" . facemenu-keymap)))
+                ("M-o" . nil))
+    ;; ("M-i" . facemenu-keymap)
+    :config
+    ;; Remove combobulate binding that couse conflicts
+    (add-hook 'combobulate-html-minor-mode-hook
+              (lambda () (keymap-unset combobulate-html-map "M-("))))
 
 
   ;; Tree-sitter support for HTML/CSS in JS/TS template literals
@@ -4350,7 +4508,12 @@ Cascading Style Sheets (CSS) editing mode.
 
   ;; Yet another CSS mode.
   (use-package css-mode
-    :hook (css-ts-mode . electric-pair-local-mode)
+    :hook ((css-ts-mode . electric-pair-local-mode)
+           (css-ts-mode . combobulate-mode))
+    :config
+    ;; Remove combobulate binding that couse conflicts
+    (add-hook 'combobulate-css-minor-mode-hook
+              (lambda () (keymap-unset combobulate-css-map "M-(")))
     :custom
     (css-indent-offset 2))
 
@@ -4368,7 +4531,9 @@ Customization variables for JavaScript mode.
                 ("<f6> j" . rf-js-save-eval-print)
                 ("<f6> q" . rf-js-console-log-wrap))
     :config
-    ;; Remove highlighting combobulate in js console functions.
+    (add-hook 'combobulate-javascript-minor-mode-hook
+              (lambda () (keymap-unset combobulate-javascript-map "M-(")))
+    ;;; Remove highlighting combobulate in js console functions.
     (custom-set-faces '(combobulate-query-highlight-serene-shade-face
                         ((t (:foreground "DarkSeaGreen4")))))
     (setq line-spacing 2)
@@ -4449,7 +4614,8 @@ Lisp support, including Emacs Lisp.
 
   ;; Customizations for emacs-lisp-mode.
   (use-package emacs
-    :hook (emacs-lisp-mode . electric-pair-local-mode)
+    :hook ((emacs-lisp-mode . electric-pair-local-mode)
+           (lisp-interaction-mode . show-paren-local-mode))
     :bind (:map lisp-interaction-mode-map
                 ("C-j" . nil)
                 ("C-j" . rf-jump-to-newline)
@@ -4462,23 +4628,20 @@ Lisp support, including Emacs Lisp.
                 ("<f6> k" . kill-sexp)
                 ("<f6> h" . backward-sexp)
                 ("<f6> n" . forward-sexp)
+                ("<f6> d" . beginning-of-defun)
+                ("<f6> b" . end-of-defun)
                 ("<f6> t" . prog-indent-sexp)
                 ("<f6> e" . eval-print-last-sexp)
                 :repeat-map emacs-lisp-move-repeat-map
                 ("h" . backward-sexp)
                 ("n" . forward-sexp)
+                ("d" . beginning-of-defun)
+                ("b" . end-of-defun)
                 :repeat-map emacs-lisp-remove-repeat-map
                 (";" . transpose-sexps)
                 ("," . raise-sexp)
                 ("o" . backward-kill-sexp)
-                ("k" . kill-sexp))
-    :config
-    ;; DeepSeek: Force enable in all future scratch buffers
-    (defun ai-enable-electric-pair-in-scratch ()
-      "Enable electric-pair-mode in scratch buffer."
-      (when (string= (buffer-name) "*scratch*")
-        (electric-pair-local-mode 1)))
-    (add-hook 'after-init-hook 'ai-enable-electric-pair-in-scratch))
+                ("k" . kill-sexp)))
 
 #+end_src
 
@@ -4499,6 +4662,317 @@ Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you 
 #+end_src
 
 * Applications
+** AI
+*** Gptel
+Interact with LLMs from anywhere in Emacs.
+
+#+begin_src emacs-lisp
+
+  ;; A simple, extensible LLM client for Emacs
+  (use-package gptel
+    :vc (:url "https://github.com/karthink/gptel" :rev :newest)
+    :init (load "~/.emacs.d/lisp/gptel-directives-presets.el")
+    :bind ("C-{" . rf-gptel)
+    :config
+    ;; Bindings:
+    (defvar-keymap gptel-leader-map
+      :doc "Keymap for gptel commands."
+      "g" #'gptel
+      "d" #'gptel-send   ;; or RET
+      "u" #'gptel-menu
+      "q" #'gptel-quick
+      "r" #'gptel-rewrite
+      "a" #'gptel-add
+      "i" #'rf-gptel--inspect-fsm-interactive
+      "b" #'gptel-abort
+      "s" #'gptel-system-prompt
+      "f" #'gptel-add-file
+      "p" #'gptel-preset
+      "t" #'gptel-tools)
+    (keymap-set global-map "C-d" gptel-leader-map)
+    ;; Default backend:
+    (setq
+     gptel-model 'gemma-4-31b-it
+     gptel-backend (gptel-make-gemini "Gemini"
+                     :key gptel-api-key
+                     :stream t
+                     :models '(gemini-3.1-flash-lite
+                               gemma-4-31b-it
+                               gemma-4-26b-a4b-it)))
+    ;; Backends:
+    (gptel-make-openai "OpenRouter"
+      :host "openrouter.ai"
+      :endpoint "/api/v1/chat/completions"
+      :stream t
+      :key gptel-api-key
+      :models '(poolside/laguna-m.1:free ;; Programming 14
+                openai/gpt-oss-120b:free ;; Programming 27
+                nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+                liquid/lfm-2.5-1.2b-thinking:free ;; Thinking
+                qwen/qwen3-next-80b-a3b-instruct:free
+                qwen/qwen3-coder:free
+                anthropic/claude-opus-4.8-fast ;; Programming 48 Fast
+                deepseek/deepseek-v4-flash ;; Programming 8
+                xiaomi/mimo-v2.5 ;; Programming 1
+                anthropic/claude-opus-4.7 ;; Programming 4
+                tencent/hy3-preview)) ;; Programming 3 JS 1
+    (gptel-make-openai "Github Models"
+      :host "models.inference.ai.azure.com"
+      :endpoint "/chat/completions?api-version=2024-05-01-preview"
+      :stream t
+      :key gptel-api-key
+      :models '(gpt-4.1
+                gpt-4.1-mini
+                gpt-4.1-nano
+                DeepSeek-V3-0324
+                Phi-4-reasoning
+                Llama-4-Maverick-17B-128E-Instruct-FP8))
+    ;; Load the gptel MCP library:
+    (require 'gptel-integrations)
+    ;; Directives:
+    (setf (alist-get 'english gptel-directives)
+          "Correct the grammar, style, and naturalness of this statement. Just the correction, DO NOT explain it.")
+    ;; Presets:
+    ;; It differ from gptel-default in that it sets the system prompt
+    (gptel-make-preset 'gptel-init
+      :description "Use gptel's default intial configuration."
+      :context nil :use-context 'system :tools nil :use-tools t
+      :temperature nil :max-tokens nil :num-messages-to-send nil
+      :request-params nil :org-convert-response t :track-media nil
+      :track-response t :system 'default :stream t :cache nil)
+    (gptel-make-preset 'add-english-checker
+      :description "Direct assistant with speaker correction."
+      :system (list :append rf-gptel-preset-direct-english-correction))
+    ;; These are primarily to be used as a prefix (@key):
+    (gptel-make-preset 'en   ;; @en glish
+      :description "Correct English grammar and style only"
+      :system rf-gptel-preset-correct-english
+      :temperature 0.1
+      :max-tokens 500)
+    ;; Set model parameters from gptel-menu buffer-locally
+    (setq gptel--set-buffer-locally t)
+    ;; (gptel-preset 'add-english-checker)
+    ;; Functions:
+    (defun rf-gptel (&optional arg)
+      "Switch to or create a new *gptel* chat session.
+    With a nonnumeric prefix arg, create a new session."
+      (interactive "P")
+      (let ((buf (if arg
+                     (gptel (generate-new-buffer "*gptel*"))
+                   (save-excursion
+                     (gptel "*gptel*")))))
+        (switch-to-buffer buf)))
+    (defun rf-gptel--inspect-fsm-interactive ()
+      "Make the `gptel--inspect-fsm' function interactive."
+      (interactive)
+      (gptel--inspect-fsm))
+    :custom
+    (gptel-log-level 'info)
+    (gptel-track-media t)
+    (gptel-default-mode 'org-mode)
+    (gptel-org-branching-context t)
+    (gptel-prompt-prefix-alist '((markdown-mode . "### ")
+                                 (org-mode . "*User*: ")
+                                 (text-mode . "### ")))
+    (gptel-response-prefix-alist '((markdown-mode . "")
+                                   (org-mode . "*Assistant*:\n")
+                                   (text-mode . ""))))
+
+#+end_src
+
+*** Mpc
+Emacs client for interfacing with MCP,supporting connections to MCP servers.
+
+#+begin_src emacs-lisp
+
+  ;; An Mcp client inside Emacs
+  (use-package mcp
+    :after gptel
+    :custom (mcp-hub-servers
+             '(("filesystem" .
+                (:command "npx"
+                          :args ("-y" "@modelcontextprotocol/server-filesystem")
+                          :roots ("/home/rich/projects/")))
+               ("github" .
+                (:command "npx"
+                          :args ("-y" "@modelcontextprotocol/server-github")))
+               ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))))
+    :config (require 'mcp-hub))
+  ;; Start all MCPservers, such as launch all MCPservers after starting Emacs
+  ;; Only if you want to always start all servers for all instances of emacs
+  ;; :hook (after-init . mcp-hub-start-all-server)
+
+#+end_src
+
+*** Gptel agent
+Agent mode for gptel. This is a collection of tools and prompts to use gptel “agentically” with any LLM, to autonomously perform tasks.
+
+#+begin_src emacs-lisp
+
+  ;; Agent mode for gptel
+  (use-package gptel-agent
+    :after gptel
+    :vc (:url "https://github.com/karthink/gptel-agent" :rev :newest)
+    :config (gptel-agent-update)) ;; Read files from agents directories
+
+#+end_src
+
+*** Gptel quick
+Quick LLM lookups in Emacs.
+
+#+begin_src emacs-lisp
+
+  (use-package gptel-quick
+    :after gptel
+    :vc
+    (gptel-quick :url
+                 "https://github.com/karthink/gptel-quick" :rev :newest)
+    :after (gptel embark)
+    :config
+    (keymap-set embark-general-map "?" #'gptel-quick))
+
+  ;; Set here so that it is not overwritten when the package is loaded
+  (with-eval-after-load 'gptel-quick
+    (setq gptel-quick-display nil)
+    ;; Qwen3.7-Plus:
+    (defun my-inject-gptel-quick-copy-key (args)
+      "Safely inject a remap for xah command in the gptel-quick transient map."
+      (let ((map (car args)))
+        ;; Verify this is gptel-quick map by checking its unique fingerprint
+        ;; Ensures dont accidentally modify transient maps from other packages
+        (when (and (keymapp map)
+                   (lookup-key map [remap keyboard-quit])
+                   (lookup-key map (kbd "+"))
+                   (lookup-key map [remap kill-ring-save]))
+          ;; Grab the internal copy-response function that gptel-quick created
+          (let ((copy-cmd (lookup-key map [remap kill-ring-save])))
+            ;; Add command to the map, pointing to that same internal function
+            (define-key map [remap xah-copy-line-or-region-mod] copy-cmd))))
+      ;; Return the arguments completely unchanged so `set-transient-map'
+      args)
+    ;; Apply the advice to the function that activates transient maps
+    (advice-add 'set-transient-map
+                :filter-args #'my-inject-gptel-quick-copy-key))
+
+#+end_src
+
+*** Agent shell
+A native Emacs buffer to interact with LLM agents powered by ACP
+
+#+begin_src emacs-lisp
+
+  ;; Emacs Agent Shell
+  (use-package agent-shell
+    :ensure-system-package ((wl-paste . "apt install wl-clipboard")
+                            (gemini . "pn add -g @google/gemini-cli"))
+    ;; Enable 'agent-shell-buffers' to use 'rf-agent-shell-switch-buffer'
+    :commands (agent-shell-buffers rf-agent-shell)
+    :bind (("C-}" . rf-agent-shell)
+           :map agent-shell-mode-map
+           ("M-n" . nil) ("M-p" . nil) ("C-d" . nil) ("M-r" . nil)
+           ("C-<up>" . nil) ("C-<down>" . nil)
+           ("S-<return>" . nil) ("C-<tab>" . nil)
+           ("c" . agent-shell-previous-item)
+           ("t" . agent-shell-next-item)
+           ("C-S-c" . agent-shell-previous-input)
+           ("C-S-t" . agent-shell-next-input)
+           ("M-l" . agent-shell-search-history)
+           ("M-<return>" . agent-shell-newline)
+           ("C-<return>" . agent-shell-cycle-session-mode)
+           :map agent-shell-viewport-view-mode-map
+           ("c" . agent-shell-viewport-previous-item)
+           ("t" . agent-shell-viewport-next-item)
+           ("h" . agent-shell-viewport-previous-page)
+           ("n" . agent-shell-viewport-next-page)
+           ("k" . agent-shell-viewport-reply-continue)
+           ("l" . agent-shell-viewport-set-session-thought-level)
+           :map agent-shell-viewport-edit-mode-map
+           ("M-n" . nil) ("M-p" . nil) ("M-r" . nil) ("C-<tab>" . nil)
+           ("C-c c" . agent-shell-viewport-compose-peek-last)
+           ("C-S-c" . agent-shell-viewport-previous-history)
+           ("C-S-t" . agent-shell-viewport-next-history)
+           ("M-l" . agent-shell-viewport-search-history)
+           ("C-<return>" . agent-shell-viewport-cycle-session-mode)
+           :map agent-shell-diff-mode-map
+           ("c" . diff-hunk-prev)
+           ("t" . diff-hunk-next)
+           :map acp-traffic-entry-mode-map
+           ("c" . scroll-down-command)
+           ("t" . scroll-up-command))
+    :config
+    ;; Bindings:
+    (defvar-keymap agent-shell-leader-map
+      :doc "Keymap for agent-shell commands."
+      "b" #'agent-shell
+      "s" #'agent-shell-switch-buffer
+      "t" #'agent-shell-toggle
+      "TAB" #'agent-shell-cycle-session-mode
+      "m" #'agent-shell-set-session-model
+      "l" #'agent-shell-set-session-thought-level
+      "u" #'agent-shell-send-dwim
+      "o" #'agent-shell-other-buffer
+      "q" #'agent-shell-queue-request)
+    (keymap-set global-map "C-b" agent-shell-leader-map)
+    ;; Configure authentication for the agent providers:
+    (setq agent-shell-google-authentication
+          (agent-shell-google-make-authentication
+           :api-key (lambda () (auth-source-pass-get 'secret "api/gemini"))))
+    ;; Enable the root dir as a trusted folder in Gemini
+    (setq agent-shell-google-gemini-acp-command
+          '("gemini" "--experimental-acp" "--skip-trust"))
+    ;; Functions:
+    (defun rf-agent-shell (&optional arg)
+      "Switch to the most recently agent shell buffer.
+    If there is no agent shell buffer, prompt to create one.
+    If the current buffer is an agent and there are more agents,
+    switch to another one.
+    With C-u prefix ARG, force start a new shell.
+    With C-u C-u prefix ARG, prompt to pick an existing shell."
+      (interactive "P")
+      (let ((buf (car (agent-shell-buffers)))
+            (bufs (agent-shell-buffers)))
+        (cond
+         ((equal arg '(16))
+          (agent-shell--dwim :switch-to-shell t))
+         ((equal arg '(4))
+          (agent-shell--dwim :new-shell t))
+         (t
+          (if buf
+              (if (and (eq (current-buffer) buf)
+                       (> (length bufs) 1))
+                  (switch-to-buffer (car (last bufs)))
+                (switch-to-buffer buf))
+            ;; Change the following if you want a specific agent:
+            (agent-shell--dwim))))))
+    ;; Change the color of the cells that stand out:
+    (custom-set-faces  '(agent-shell-markdown-table-zebra
+                         ((t (:background "#2d3139"))))) ;; or #3e4451
+    :custom
+    (acp-logging-enabled t))
+  ;; ;; Prefer viewport interaction over shell interaction
+  ;; (setq agent-shell-prefer-viewport-interaction t)
+  ;; ;; Setting a default agent for all new shells
+  ;; (setq agent-shell-preferred-agent-config
+  ;;       (agent-shell-google-make-gemini-config))
+  ;; ;; Enable it if you want to use the `emacs-skills' or run M-x server-start
+  ;; (server-start)
+
+#+end_src
+
+*** Acp
+ACP is a standardized protocol for communicating with LLM agents like Gemini CLI, Claude Code, etc.
+
+#+begin_src emacs-lisp
+
+  ;; acp.el implements the Agent Client Protocol (ACP) for Emacs
+  (use-package acp
+    :bind (:map acp-traffic-mode-map
+                ("n" . nil) ("p" . nil)
+                ("c" . acp-traffic-previous-entry)
+                ("t" . acp-traffic-next-entry)))
+
+#+end_src
+
 ** Eshell
 Command shell implemented entirely in Emacs Lisp.
 
@@ -4593,6 +5067,28 @@ Mail reader for Emacs.
 
 #+end_src
 
+** Gnuplot
+An interactive plotting program.
+
+#+begin_src emacs-lisp
+
+  ;;  A major mode for Emacs for interacting with Gnuplot
+  (use-package gnuplot
+    :defer t)
+
+#+end_src
+
+** Mermaid
+Mermaid lets you create diagrams and visualizations using text and code. It is a JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.
+
+#+begin_src emacs-lisp
+
+  ;; Emacs major mode for working with mermaid graphs:
+  (use-package mermaid-mode
+    :defer t)
+
+#+end_src
+
 * External
 ** Vterm
 Emacs-libvterm (vterm) is fully-fledged terminal emulator inside GNU Emacs based on libvterm, a C library.
@@ -4649,6 +5145,17 @@ Proced mode.
 
 #+end_src
 
+** Comint
+General command interpreter in a window stuff.
+
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'comint
+    (keymap-set comint-mode-map "C-S-c" 'comint-previous-input)
+    (keymap-set comint-mode-map "C-S-t" 'comint-next-input))
+
+#+end_src
+
 * Help
 ** Basic help
 Support for Emacs help systems.
@@ -4667,6 +5174,17 @@ Support for Emacs help systems.
     (keymap-set help-mode-map "H" 'help-customize)
     (keymap-set help-mode-map "w" 'scroll-up-command)
     (keymap-set help-mode-map "m" 'scroll-down-command))
+
+#+end_src
+
+** Apropos
+Apropos commands for users and programmers.
+
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'apropos
+    (keymap-set apropos-mode-map "c" 'apropos-previous-symbol)
+    (keymap-set apropos-mode-map "t" 'apropos-next-symbol))
 
 #+end_src
 
@@ -4692,7 +5210,10 @@ A rich help system with contextual information.
      ("d" . backward-button)
      ("b" . forward-button)
      ("w" . scroll-up-command)
-     ("m" . scroll-down-command))
+     ("m" . scroll-down-command)
+     :map help-mode-map
+     ("d" . backward-button)
+     ("b" . forward-button))
     ;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
     ;; already links to the manual, if a function is referenced there.
     ([remap Info-goto-emacs-command-node] . helpful-function))
@@ -4750,7 +5271,6 @@ Code local to your site.
   (require 'wakib-keys)
   (require 'ergoemacs-functions)
   (require 'xah-function-mix)
-  ;;; (require 'my-abbrev)
 
 
   ;; My local code:

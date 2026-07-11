@@ -2,6 +2,118 @@
 #+date: 2022-05-20
 
 * Keybindings
+** AI
+*** Gptel
+
+| g |         | gptel                       | New dedicated buffer |
+|   | C-u     | gptel (dedicated buffer)    | New session          |
+| u |         | gptel-menu (C-u gptel-send) | Transient menu       |
+|   | C-{     | rf-gptel                    |                      |
+|   |         |                             |                      |
+| d | C-c RET | gptel-send                  | Send all text        |
+|   | C-c     | gptel-send (dedicated buff) | Send prompt          |
+|   | C-u C-c | gptel-send (dedicated buff) | Set parameters       |
+|   |         |                             |                      |
+| r |         | gptel-rewrite               |                      |
+| b |         | gptel-abort                 |                      |
+|   |         | gptel-mode                  | Restart chat         |
+|   |         |                             |                      |
+| a |         | gptel-add                   | Add/rm region or buf |
+| f |         | gptel-add-file              | Add file             |
+|   |         |                             |                      |
+| s |         | gptel-system-prompt         |                      |
+| p |         | gptel-preset                |                      |
+| t |         | gptel-tools                 |                      |
+|   |         |                             |                      |
+|   |         | gptel-org-set-topic         | Limit convrsatio ctx |
+|   |         | gptel-org-set-properties    | Config as properties |
+|   |         |                             |                      |
+|   |         | gptel-gh-login              |                      |
+|   |         | gptel-openai-oauth-login    |                      |
+|   |         |                             |                      |
+| i |         | rf-gptel--inspect-fsm-inter |                      |
+
+*** Agent shell
+
+| b     |             | agent-shell (DWIM)                      |
+|       |             |                                         |
+|       | C-}         | rf-agent-shell                          |
+|       |             | agent-shell-google-start-gemini         |
+|       |             | agent-shell-fork                        |
+|       |             |                                         |
+| s     |             | agent-shell-switch-buffer               |
+|       |             | agent-shell-prompt-compose              |
+|       |             | agent-shell-show-usage                  |
+|       |             | agent-shell-help-menu                   |
+|       |             |                                         |
+|       | r           | agent-shell-quote-region                |
+| u     |             | agent-shell-yank-dwim                   |
+|       |             | agent-shell-send-clipboard-image (C-u)  |
+|       |             | agent-shell-send-clipboard-image-to     |
+|       |             | agent-shell-insert-shell-command-output |
+|       |             |                                         |
+| t     |             | agent-shell-toggle                      |
+| tab   | C-tab       | agent-shell-cycle-session-mode          |
+| m     | C-c C-m/RET | agent-shell-set-session-mode            |
+| l     | C-c C-t     | agent-shell-set-session-thought-level   |
+|       | C-c C-v     | agent-shell-set-session-model           |
+|       |             |                                         |
+| o     | C-c C-o     | agent-shell-other-buffer                |
+|       | C-c C-s     | agent-shell-set-session-config-option   |
+|       | C-c C-c     | agent-shell-interrupt                   |
+|       |             |                                         |
+| c     | p / backtab | agent-shell-previous-item               |
+| t     | n / TAB     | agent-shell-next-item                   |
+| C-S-c | M-p         | agent-shell-previous-input              |
+| C-S-t | M-n         | agent-shell-next-input                  |
+| M-l   | M-r         | agent-shell-search-history              |
+| M-ret | S-return    | agent-shell-newline                     |
+|       |             |                                         |
+| q     |             | agent-shell-queue-request               |
+|       |             | agent-shell-remove-pending-request      |
+|       |             |                                         |
+| VIEW  | EDIT        |                                         |
+| v     | C-c C-v     | model                                   |
+| m     | C-c C-m     | mode                                    |
+| t     | C-c C-t     | thought                                 |
+
+*** Gptel agent
+
+|     | gptel-agent      | agen in current proj |
+| C-u | gptel-agent      | more options         |
+|     | gptel-agent-dirs |                      |
+
+*** Gptel quick
+
+| C-d q | gptel-quick                 |
+| +     | longer summary              |
+| M-RET | switch to chat and continue |
+|       | kill-ring-save              |
+|       |                             |
+|       | gptel-quick-word-count      |
+|       | gptel-quick-timeout         |
+|       | gptel-quick-use-context     |
+|       | gptel-quick-model           |
+|       | gptel-quick-display         |
+
+*** Mpc
+
+|    | gptel-mcp-connect        | register MCP tools          |
+|    | gptel-mcp-disconnect     | unregister MCP tools        |
+|    |                          |                             |
+|    | mcp-hub                  | launch server management    |
+|    |                          |                             |
+| l  | mcp-hub-view-log         | View server logs            |
+| s  | mcp-hub-start-server     | Start server under cursor   |
+| k  | mcp-hub-close-server     | Stop server under cursor    |
+| r  | mcp-hub-restart-server   | Restart server under cursor |
+| S  | mcp-hub-start-all-server | Start all config servers    |
+| R  | mcp-hub-restart-all-serv | Restart all config servers  |
+| K  | mcp-hub-close-all-server | Stop all running servers    |
+| +  | mcp-hub-add-root         | Add root dir to server      |
+| -  | mcp-hub-remove-root      | Remove root dir from server |
+| '= | mcp-hub-view-roots       | View server’s root dirs     |
+
 ** IDE
 *** Combobulate
 **** Navigating
@@ -13,11 +125,12 @@
 |       |      |                                          |
 | /C-M-u/ | f6 g | combobulate-navigate-up                  |
 | /C-M-d/ | f6 r | combobulate-navigate-down                |
-| /C-M-p/ | f6 m | combobulate-navigate-previous (siblings) |
-| /C-M-n/ | f6 w | combobulate-navigate-next (siblings)     |
 |       |      |                                          |
 | /C-M-a/ | f6 d | combobulate-navigate-beginning-of-defun  |
 | /C-M-e/ | f6 b | combobulate-navigate-end-of-defun        |
+|       |      |                                          |
+| /C-M-p/ | f6 l | combobulate-navigate-previous (siblings) |
+| /C-M-n/ | f6 s | combobulate-navigate-next (siblings)     |
 
 **** Editing
 
@@ -832,6 +945,8 @@
 | /M-S-up/down/    | org-shiftmetaup/down(line)         |
 | /C-c C-x b/      | org-tree-to-indirect-buffer        |
 |                |                                    |
+| /C-c C-t/        | org-todo (change state)            |
+|                |                                    |
 | /C-c C-n/        | org-next-visible-heading           |
 | /C-c C-p/        | org-previous-visible-heading       |
 | /C-c C-u/        | outline-up-heading                 |
@@ -1026,6 +1141,15 @@
 | /\</  |                |
 | /[ ]/ | any characters |
 
+#+begin_src sh
+
+  # orderless-annotation example
+  # Search for "end of buffer" in the annotation/description:
+  1. M-x
+  2. &end &of &buffer
+
+#+end_src
+
 *** Consult
 **** Virtual buffers
 
@@ -1102,6 +1226,10 @@
 |           |                                        |
 |           | #regexps#filter-string                 |
 | /\SPC/      | match space literally                  |
+
+- Using options in ~consult-fd~ :: run the command (~M-x consult-fd~), type the file to search for, then a hyphen and the option (~name -option~); for examples: ~M-x consult-fd name -H~ (searches all files and includes hidden directories)
+
+- To display the available options in ~consult-fd~ ::   ~M-x consult-fd name -h~ (opens menu of all available options)
 
 ,* Use embark: first type  ~C-u M-x consult-grep~, then the pattern (~*.el~), then =C-a= (embark select all), then =RET=, then confirm =y=, and then the string (word to looking for).
 
@@ -1384,7 +1512,7 @@
 | /n*/      | outline-next-visible-heading            |
 |         |                                         |
 | /u*/      | outline-up-heading                      |
-| /o/       | rf-outline-down-heading                 |
+| /o/       | rf-org-down-heading                 |
 |         |                                         |
 | /b*/      | outline-backward-same-level             |
 | /f*/      | outline-forward-same-level              |
@@ -1634,6 +1762,8 @@
 |       |                            |
 |       | package-upgrade-all        |
 |       | package-vc-upgrade-all     |
+|       |                            |
+|       | *package-get-descriptor    |
 
 ** Windows - Frames
 *** Windows
@@ -2025,80 +2155,6 @@
 | /F5/ - /F9/    |                                      |
 | /C-c letter/ |                                      |
 
-*** Syntax
-**** 1 Modifier
-
-| /M-a/    | Alt + a    |
-| /C-a/    | Ctrl + a   |
-| /A/      | Shift + a  |
-| /s-a/    | Super + a  |
-| /H-a/    | Hyper + a  |
-| /S-<f3>/ | Shift + F3 |
-
-**** 1 Modifier + Special Key
-
-| /M-<f3>/ | Alt + F3   |
-| /C-<f3>/ | Ctrl + F3  |
-| /S-<f3>/ | Shift + F3 |
-| /M-<up>/ | Alt + ↑    |
-| /C-<up>/ | Ctrl + ↑   |
-| /S-<up>/ | Shift + ↑  |
-
-**** 2 Modifier Keys
-
-| /M-A/        | Alt + Shift + a               |
-| /C-A/        | Ctrl + Shift + a              |
-| /C-M-a/      | Ctrl + Alt + a                |
-| /M-#/        | Alt + Shift + 3 / Alt + #     |
-| /C-#/        | Ctrl + Shift + 3 / Ctrl + #   |
-| /C-M-3/      | Ctrl + Alt + 3                |
-| /C-S-<kp-3>/ | Ctrl + Shift + “number pad 3” |
-
-**** 3 Modifier Keys
-
-| /C-M-S-a/    | Ctrl + Alt + Shift + a                  |
-| /C-M-!/      | Ctrl + Alt + Shift + 1 / Ctrl + Alt + ! |
-| /C-M-S-<up>/ | Ctrl + Alt + Shift + ↑                  |
-
-**** Function, and Numberpad keys
-
-| /<f3>/   | F3 key                  |
-| /<kp-3>/ | the key 3 on number pad |
-
-**** Arrows, Home, End, Cluster
-
-| /<left>/   | left arrow                  |
-| /<right>/  | right arrow                 |
-| /<up>/     | up arrow                    |
-| /<down>/   | down arrow                  |
-| /<next>/   | page down key               |
-| /<prior>/  | page up key                 |
-| /<insert>/ | Ins key                     |
-| /<delete>/ | Del key ⌦ (forward delete) |
-| /<home>/   |                             |
-| /<end>/    |                             |
-| /<menu>/   |                             |
-
-**** Enter, Return, Space, Backspace Keys
-
-| /<backspace>/ | backspace key ⌫                       |
-| /SPC/         | Space key                              |
-| /<return>/    | Enter/Return key while in GUI          |
-|             | emacs (usually auto translated to RET) |
-
-**** Find Key Syntax
-~Alt+x describe-key~ prompt user to type a key sequence, and display the key syntax and command bound to it, if any.
-
-key sequence can be a single key, or any sequence with modifier keys.
-
-For example, suppose you want to know the syntax for the key press of =Ctrl+Alt+t=.
-
-~Alt+x describe-key~ press =Ctrl+Alt+t=, emacs prints “ ~C-M-t~ runs the command transpose-sexps”. That means, " ~C-M-t~" is the key syntax.
-
-Emacs has a lot syntax variations for a given key combination, but the one printed by ~describe-key~ is guaranteed to work.
-
-*Note* that some Linux predefines some Super keybinding. You need to take them off before emacs can see it. Best way to check is simply try define the key in emacs first and see if it works.
-
 *** Characters
 
 | /C-u C-x =/   | what-cursor-position           |
@@ -2270,13 +2326,15 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 
 *** Misc
 
-| /C-x -/ / /+/   | zoom-in/out                        |
-| /F10/         | menu-bar-open                      |
-| /ESC x/       | same /M-x/ in no GUI term            |
-|             |                                    |
-| /C-x C-c/     | finish-sesion                      |
-| /C-x C-c/     | save-buffers-kill-terminal         |
-|             | save-buffers-kill-emacs            |
+| /C-x -/ / /+/ | zoom-in/out                |
+| /F10/       | menu-bar-open              |
+| /ESC x/     | same /M-x/ in no GUI term    |
+|           |                            |
+| /C-x C-c/   | finish-sesion              |
+| /C-x C-c/   | save-buffers-kill-terminal |
+|           | save-buffers-kill-emacs    |
+|           |                            |
+|           | list-faces-display         |
 
 * My keys
 ** Meta
@@ -2317,31 +2375,32 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | M-e    | other-window                         |
 | M-u    | delete-forward-char                  |
 | M-i    | cua-rectangle-mark-mode              |
-| M-d    | xah-backward-left-bracket            |
+| M-d    | ~mc/mark-next-like-this              |
 | M-h    | backward-char                        |
 | M-t    | next-line                            |
 | M-n    | forward-char                         |
-| M-s    | ergoemacs-beginning-or-end-of-buffer |
+| M-s    | ergoemacs-end-or-beginning-of-buffer |
 | M--    |                                      |
 | M-\    |                                      |
 | M-RET  |                                      |
 |        |                                      |
-| M-'    | xah-toggle-letter-case               |
-| M-q    | +cape-prefix-map                     |
+| M-'    | repeat                               |
+| M-q    | xah-toggle-letter-case               |
 | M-j    | xah-shrink-whitespaces               |
 | M-k    | kill-line                            |
 | M-x    | ^execute-extended-command            |
-| M-b    | xah-forward-right-bracket            |
+| M-b    | ~vertico-repeat                      |
 | M-m    | xah-beginning-of-line-or-block       |
 | M-w    | xah-end-of-line-or-block             |
-| M-v    | xah-goto-matching-bracket            |
+| M-v    | nil                                  |
 | M-z    | ~evilnc-comment-or-uncomment-lines   |
 |        |                                      |
 | M-SPC  |                                      |
 
-+ prefix
++ keymaps
 ^ default commands
 ~ use-package commands
+' literal key
 ,# system bindings
 - check commands
 
@@ -2380,19 +2439,19 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | M-A          |                                        |
 | M-O          |                                        |
 | M-E          | ~ace-window                            |
-| M-U          | +switch-resize-windows-repeat-map      |
+| M-U          |                                        |
 | M-I          |                                        |
-| M-D          |                                        |
+| M-D          | ~mc/mark-previous-like-this            |
 | M-H          | ~drag-stuff-left                       |
 | M-T          | ~drag-stuff-down                       |
 | M-N          | ~drag-stuff-right                      |
-| M-S          | ergoemacs-end-or-beginning-of-buffer   |
+| M-S          | ergoemacs-beginning-or-end-of-buffer   |
 | M-_          |                                        |
 | M-¦          |                                        |
 | M-S-<return> | ~rf-duplicate-thing-wrapper            |
 |              |                                        |
 | M-"          |                                        |
-| M-Q          | +rectangle-related-map                 |
+| M-Q          |                                        |
 | M-J          |                                        |
 | M-K          | rf-backward-kill-line                  |
 | M-X          | execute-extended-command-for-buffer    |
@@ -2507,62 +2566,62 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 ** Control
 *** C-
 
-| C-$     | #Switch applications            |
-| C-&     | ~consult-register-load          |
-| C-[     | DO NOT USE. BLOCKS THE META KEY |
-| C-{     | ~magit-status                   |
-| C-}     |                                 |
-| C-(     |                                 |
-| C-=     | calc                            |
-| C-*     | eshell                          |
-| C-)     | dired-jump                      |
-| C-+     | ibuffer                         |
-| C-]     | ^esc                            |
-| C-!     |                                 |
-| C-#     |                                 |
-| C-DEL   | ^backward-kill-word             |
-|         |                                 |
-| C-<tab> | ~tempel-complete                |
-| C-;     |                                 |
-| C-,     | ~embark-act                     |
-| C-.     | ~embark-dwim                    |
-| C-p     | +consult-goto-map               |
-| C-y     | undo-redo                       |
-| C-f     | ~consult-line                   |
-| C-g     | ^keyboard-quit                  |
-| C-c     | ^mode-specific-map              |
-| C-r     | find-file                       |
-| C-l     | ^recenter-top-bottom            |
-| C-/     |                                 |
-| C-@     |                                 |
-|         |                                 |
-| C-caps  |                                 |
-| C-a     | mark-whole-buffer               |
-| C-o     | ^open-line                      |
-| C-e     | rf-eval-last-sexp-or-region     |
-| C-u     | ^universal-argument             |
-| C-i     | ^tab                            |
-| C-d     | ~mc/mark-next-like-this         |
-| C-h     | ^help-map                       |
-| C-t     | switch-to-previous-buffer       |
-| C-n     | ~consult-buffer                 |
-| C-s     | save-buffer                     |
-| C--     | save-some-buffers               |
-| C-\     |                                 |
-| C-RET   |                                 |
-|         |                                 |
-| C-'     | repeat                          |
-| C-q     | ^quoted-insert                  |
-| C-j     | rf-jump-to-newline              |
-| C-k     | +consult-search-map             |
-| C-x     | ^ctl-x-map                      |
-| C-b     | ~vertico-repeat                 |
-| C-m     | ^newline                        |
-| C-w     | xah-close-current-buffer        |
-| C-v     | xah-paste-or-paste-previous     |
-| C-z     | undo                            |
-|         |                                 |
-| C-SPC   | ^set-mark-command               |
+| C-$     | #Switch applications                   |
+| C-&     | ~consult-register-load                 |
+| C-[     | 'meta (DON'T USE. BLOCKS THE META KEY) |
+| C-{     | ~rf-gptel                              |
+| C-}     | ~rf-agent-shell                        |
+| C-(     | calc                                   |
+| C-=     | ibuffer                                |
+| C-*     | eshell                                 |
+| C-)     | dired-jump                             |
+| C-+     | ~magit-status                          |
+| C-]     | 'esc                                   |
+| C-!     |                                        |
+| C-#     |                                        |
+| C-DEL   | ^backward-kill-word                    |
+|         |                                        |
+| C-<tab> | ~tempel-complete                       |
+| C-;     |                                        |
+| C-,     | ~embark-dwim                           |
+| C-.     | +consult-search-map                    |
+| C-p     | +consult-goto-map                      |
+| C-y     | undo-redo                              |
+| C-f     | ~consult-line                          |
+| C-g     | ^keyboard-quit                         |
+| C-c     | ^mode-specific-map                     |
+| C-r     | find-file                              |
+| C-l     | ^recenter-top-bottom                   |
+| C-/     |                                        |
+| C-@     |                                        |
+|         |                                        |
+| C-caps  |                                        |
+| C-a     | mark-whole-buffer                      |
+| C-o     | ^open-line                             |
+| C-e     | rf-eval-last-sexp-or-region            |
+| C-u     | ^universal-argument                    |
+| C-i     | 'tab                                   |
+| C-d     | ~gptel-leader-map                      |
+| C-h     | ^help-map                              |
+| C-t     | switch-to-previous-buffer              |
+| C-n     | ~consult-buffer                        |
+| C-s     | save-buffer                            |
+| C--     | save-some-buffers                      |
+| C-\     |                                        |
+| C-RET   |                                        |
+|         |                                        |
+| C-'     |                                        |
+| C-q     | 'quoted-insert                         |
+| C-j     | rf-jump-to-newline                     |
+| C-k     | +cape-prefix-map                       |
+| C-x     | ^ctl-x-map                             |
+| C-b     | ~agent-shell-leader-map                |
+| C-m     | 'newline                               |
+| C-w     | xah-close-current-buffer               |
+| C-v     | xah-paste-or-paste-previous            |
+| C-z     | undo                                   |
+|         |                                        |
+| C-SPC   | ^set-mark-command                      |
 
 *** C-S-
 
@@ -2572,18 +2631,18 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-5      |                                   |
 | C-3      |                                   |
 | C-1      |                                   |
-| C-9      |                                   |
+| C-9      | image-dired                       |
 | C-0      | shell-command                     |
 | C-2      | dired-jump-other-window           |
-| C-4      | image-dired                       |
-| C-6      |                                   |
+| C-4      | ~magit-dispatch                   |
+| C-6      | ~magit-file-dispatch              |
 | C-8      |                                   |
 | C-`      |                                   |
 | C-S-DEL  |                                   |
 |          |                                   |
 | C-S-TAB  | ~yas-expand                       |
 | C-:      |                                   |
-| C-<      |                                   |
+| C-<      | ~embark-act                       |
 | C->      | rf-toggle-xah-narrow-to-region    |
 | C-p      |                                   |
 | C-S-y    |                                   |
@@ -2599,9 +2658,9 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-S-a    |                                   |
 | C-S-o    | xah-open-in-external-app          |
 | C-S-e    | eval-expression                   |
-| C-S-u    |                                   |
+| C-S-u    | +switch-resize-windows-repeat-map |
 | C-S-i    |                                   |
-| C-S-d    | ~mc/mark-previous-like-this       |
+| C-S-d    |                                   |
 | C-S-h    |                                   |
 | C-S-t    | xah-open-last-closed              |
 | C-S-n    | ~consult-buffer-other-window      |
@@ -2612,7 +2671,7 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |          |                                   |
 | C-"      |                                   |
 | C-S-q    | +google-translate-map             |
-| C-S-j    |                                   |
+| C-S-j    | +rectangle-related-map            |
 | C-S-k    |                                   |
 | C-S-x    |                                   |
 | C-S-b    |                                   |
@@ -2657,62 +2716,62 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 
 *** C-c
 
-| C-c ~    |                      |
-| C-c %    |                      |
-| C-c 7    |                      |
-| C-c 5    |                      |
-| C-c 3    |                      |
-| C-c 1    |                      |
-| C-c 9    |                      |
-| C-c 0    |                      |
-| C-c 2    |                      |
-| C-c 4    |                      |
-| C-c 6    |                      |
-| C-c 8    |                      |
-| C-c `    |                      |
-| C-c DEL  |                      |
-|          |                      |
-| C-c TAB  |                      |
-| C-c :    |                      |
-| C-c <    |                      |
-| C-c >    |                      |
-| C-c p    |                      |
-| C-c y    |                      |
-| C-c f    | ~magit-file-dispatch |
-| C-c g    | ~magit-dispatch      |
-| C-c c    |                      |
-| C-c r    |                      |
-| C-c l    |                      |
-| C-c ?    |                      |
-| C-c ^    |                      |
-|          |                      |
-| C-c CAPS |                      |
-| C-c a    |                      |
-| C-c o    |                      |
-| C-c e    |                      |
-| C-c u    |                      |
-| C-c i    |                      |
-| C-c d    | +~dape-key-prefix    |
-| C-c h    |                      |
-| C-c t    |                      |
-| C-c n    |                      |
-| C-c s    |                      |
-| C-c _    |                      |
-| C-c ¦    |                      |
-| C-c RET  |                      |
-|          |                      |
-| C-c "    |                      |
-| C-c q    |                      |
-| C-c j    |                      |
-| C-c k    |                      |
-| C-c x    |                      |
-| C-c b    |                      |
-| C-c m    |                      |
-| C-c w    |                      |
-| C-c v    |                      |
-| C-c z    |                      |
-|          |                      |
-| C-c SPC  |                      |
+| C-c ~    |   |
+| C-c %    |   |
+| C-c 7    |   |
+| C-c 5    |   |
+| C-c 3    |   |
+| C-c 1    |   |
+| C-c 9    |   |
+| C-c 0    |   |
+| C-c 2    |   |
+| C-c 4    |   |
+| C-c 6    |   |
+| C-c 8    |   |
+| C-c `    |   |
+| C-c DEL  |   |
+|          |   |
+| C-c TAB  |   |
+| C-c :    |   |
+| C-c <    |   |
+| C-c >    |   |
+| C-c p    |   |
+| C-c y    |   |
+| C-c f    |   |
+| C-c g    |   |
+| C-c c    |   |
+| C-c r    |   |
+| C-c l    |   |
+| C-c ?    |   |
+| C-c ^    |   |
+|          |   |
+| C-c CAPS |   |
+| C-c a    |   |
+| C-c o    |   |
+| C-c e    |   |
+| C-c u    |   |
+| C-c i    |   |
+| C-c d    |   |
+| C-c h    |   |
+| C-c t    |   |
+| C-c n    |   |
+| C-c s    |   |
+| C-c _    |   |
+| C-c ¦    |   |
+| C-c RET  |   |
+|          |   |
+| C-c "    |   |
+| C-c q    |   |
+| C-c j    |   |
+| C-c k    |   |
+| C-c x    |   |
+| C-c b    |   |
+| C-c m    |   |
+| C-c w    |   |
+| C-c v    |   |
+| C-c z    |   |
+|          |   |
+| C-c SPC  |   |
 
 ** Cluster
 *** <cluster>
@@ -2799,12 +2858,12 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |                   |                                     |
 | <kp-equal>        | ~consult-buffer                     |
 | <kp-divide>       |                                     |
-| <kp-multiply>     |                                     |
+| <kp-multiply>     | kmacro-end-or-call-macro            |
 | <kp-subtract>     | rf-recently-not-visible-buffer      |
 |                   |                                     |
 | <kp-7>            | ~mc/mark-next-like-this             |
-| <kp-8>            | rf-last-interactive-command         |
-| <kp-9>            | kmacro-end-or-call-macro            |
+| <kp-8>            | rf-gptel                            |
+| <kp-9>            | rf-agent-shell                      |
 | <kp-add>          | switch-to-previous-buffer           |
 |                   |                                     |
 | <kp-4>            | rf-find-or-switch-to-tertiary-file  |
@@ -2828,12 +2887,12 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |                     |                                          |
 | S-<kp-equal>        | find-file                                |
 | S-<kp-divide>       |                                          |
-| S-<kp-multiply>     |                                          |
+| S-<kp-multiply>     | kmacro-start-macro                       |
 | S-<kp-subtract>     |                                          |
 |                     |                                          |
 | S-<kp-7>            | ~mc/mark-previous-like-this              |
-| S-<kp-8>            | rf-switch-to-image-dired-screenshots     |
-| S-<kp-9>            | kmacro-start-macro                       |
+| S-<kp-8>            |                                          |
+| S-<kp-9>            |                                          |
 | S-<kp-add>          |                                          |
 |                     |                                          |
 | S-<kp-4>            | rf-find-or-switch-to-tertiary-test-file  |
@@ -2857,11 +2916,11 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |                     |                                         |
 | M-<kp-equal>        | ~consult-buffer-other-window            |
 | M-<kp-divide>       |                                         |
-| M-<kp-multiply>     |                                         |
+| M-<kp-multiply>     | rf-switch-to-image-dired-screenshots    |
 | M-<kp-subtract>     |                                         |
 |                     |                                         |
-| M-<kp-7>            |                                         |
-| M-<kp-8>            | rf-find-or-switch-to-archive            |
+| M-<kp-7>            | rf-find-or-switch-to-archive            |
+| M-<kp-8>            |                                         |
 | M-<kp-9>            |                                         |
 | M-<kp-add>          |                                         |
 |                     |                                         |
@@ -2925,6 +2984,16 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-S-d | cua-resize-rectangle-bol   |
 | C-S-b | cua-resize-rectangle-eol   |
 
+*** comint
+
+| C-S-c | comint-previous-input |
+| C-S-t | comint-next-input     |
+
+*** apropos
+
+| c | apropos-previous-symbol |
+| t | apropos-next-symbol     |
+
 *** ibuffer-mode-map
 
 | M-o   | nil                                        |
@@ -2980,8 +3049,8 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |       |                                  |
 | C-,   | se-take-the-word-at-point        |
 |       |                                  |
-| C-S-h | previous-line-or-history-element |
-| C-S-n | next-history-element             |
+| C-S-C | previous-line-or-history-element |
+| C-S-T | next-history-element             |
 |       |                                  |
 | M-s   | vertico-first                    |
 | M-S   | vertico-last                     |
@@ -2993,6 +3062,12 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | C-S-c | occur-prev               |
 | C-S-t | occur-next               |
 | b     | clone-buffer             |
+
+*** prog-mode-map
+
+| <f6> v | xah-goto-matching-bracket |
+| <f6> m | xah-backward-left-bracket |
+| <f6> w | xah-forward-right-bracket |
 
 *** rectangle-related-map
 
@@ -3074,9 +3149,69 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 
 | M-E | ace-window |
 
+*** agent-shell
+**** agent-shell-mode-map
+
+| nil      | M-n / M-p / C-d / M-r / C-<tab> |
+| nil      | C-<up> / C-<down> / S-<return>  |
+|          |                                 |
+| c        | agent-shell-previous-item       |
+| t        | agent-shell-next-item           |
+| C-S-c    | agent-shell-previous-input      |
+| C-S-t    | agent-shell-next-input          |
+| M-l      | agent-shell-search-history      |
+| M-return | agent-shell-newline             |
+| C-return | agent-shell-cycle-session-mode  |
+
+**** agent-shell-viewport-view-mode-map
+
+| c | agent-shell-viewport-previous-item             |
+| t | agent-shell-viewport-next-item                 |
+| h | agent-shell-viewport-previous-page             |
+| n | agent-shell-viewport-next-page                 |
+| k | agent-shell-viewport-reply-continue            |
+| l | agent-shell-viewport-set-session-thought-level |
+
+**** agent-shell-viewport-edit-mode-map
+
+| nil      | M-n / M-p / M-r / M-tab                 |
+| C-c c    | agent-shell-viewport-compose-peek-last  |
+| C-S-c    | agent-shell-viewport-previous-history   |
+| C-S-t    | agent-shell-viewport-next-history       |
+| M-l      | agent-shell-viewport-search-history     |
+| C-return | agent-shell-viewport-cycle-session-mode |
+
+**** agent-shell-diff-mode-map
+
+| c | diff-hunk-prev |
+| t | diff-hunk-next |
+
+**** acp-traffic-mode-map
+
+| n/t | nil                        |
+| c   | acp-traffic-previous-entry |
+| t   | acp-traffic-next-entry     |
+
+**** acp-traffic-entry-mode-map
+
+| c | scroll-down-command |
+| t | scroll-up-command   |
+
+**** agent-shell-leader-map
+
+| b   | agent-shell                           |
+| s   | agent-shell-switch-buffer             |
+| t   | agent-shell-toggle                    |
+| tab | agent-shell-cycle-session-mode        |
+| m   | agent-shell-set-session-model         |
+| l   | agent-shell-set-session-thought-level |
+| u   | agent-shell-send-dwim                 |
+| o   | agent-shell-other-buffer              |
+| q   | agent-shell-queue-request             |
+
 *** cape
 
-| M-q | cape-prefix-map |
+| C-k | cape-prefix-map |
 
 *** combobulate
 **** prog-mode-map
@@ -3098,10 +3233,10 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | <f6> n   | combobulate-navigate-logical-next                |
 | <f6> g   | combobulate-navigate-up                          |
 | <f6> r   | combobulate-navigate-down                        |
-| <f6> d   | combobulate-navigate-previous                    |
-| <f6> b   | combobulate-navigate-next                        |
-| <f6> m   | combobulate-navigate-beginning-of-defun          |
-| <f6> w   | combobulate-navigate-end-of-defun                |
+| <f6> d   | combobulate-navigate-beginning-of-defun          |
+| <f6> b   | combobulate-navigate-end-of-defun                |
+| <f6> l   | combobulate-navigate-previous                    |
+| <f6> s   | combobulate-navigate-next                        |
 |          |                                                  |
 | <f6> C   | combobulate-drag-up                              |
 | <f6> T   | combobulate-drag-down                            |
@@ -3164,52 +3299,53 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 
 **** consult-goto-map
 
-| u | consult-imenu          |
-| e | consult-imenu-multi    |
-|   |                        |
-| p | consult-outline        |
-| . | consult-org-heading    |
-|   |                        |
-| d | goto-last-change       |
-| f | consult-goto-line      |
-|   |                        |
-| n | consult-project-buffer |
-| r | consult-bookmark       |
-|   |                        |
-| m | consult-mark           |
-| w | consult-global-mark    |
+| p | consult-flycheck         |
+| . | consult-flymake          |
+| , | consult-compile-error    |
+|   |                          |
+| y | consult-mark             |
+| i | consult-global-mark      |
+|   |                          |
+| u | consult-imenu            |
+| e | consult-imenu-multi      |
+|   |                          |
+| h | consult-outline          |
+| t | consult-org-heading      |
+|   |                          |
+| m | goto-last-change         |
+| w | goto-last-change-reverse |
+| v | consult-goto-line        |
+|   |                          |
+| n | consult-bookmark         |
+| r | bookmark-set             |
+|   |                          |
+| f | consult-isearch-history  |
 
 **** consult-search-map
 
-| u | consult-grep            |
-| e | consult-ripgrep         |
-| o | consult-git-grep        |
-|   |                         |
-| h | consult-fd              |
-| g | rf-consult-fd           |
-| t | consult-find            |
-| c | rf-consult-find         |
-| n | consult-locate          |
-|   |                         |
-| d | consult-history         |
-| f | consult-isearch-history |
-| w | consult-complex-command |
-|   |                         |
-| m | consult-minor-mode-menu |
+| . | consult-keep-lines      |
+| p | consult-focus-lines     |
 |   |                         |
 | i | consult-man             |
 | y | consult-info            |
 |   |                         |
-| k | consult-keep-lines      |
-| j | consult-focus-lines     |
+| u | consult-grep            |
+| e | consult-ripgrep         |
+| o | consult-git-grep        |
 |   |                         |
-| p | consult-flycheck        |
-| . | consult-flymake         |
-| , | consult-compile-error   |
+| k | consult-kmacro          |
+| j | consult-complex-command |
 |   |                         |
-| v | consult-kmacro          |
+| h | consult-fd              |
+| t | consult-find            |
+| g | rf-consult-fd           |
+| c | rf-consult-find         |
+| n | consult-locate          |
+| r | consult-project-buffer  |
 |   |                         |
-| } | consult-register        |
+| d | consult-history         |
+| m | consult-minor-mode-menu |
+| { | consult-register        |
 
 *** corfu
 **** corfu-map
@@ -3356,8 +3492,8 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 *** embark
 **** embark
 
-| C-,   | embark-act        |
-| C-.   | embark-dwim       |
+| C-,   | embark-dwim       |
+| C-<   | embark-act        |
 | C-h B | embark-bindings   |
 |       |                   |
 | ,     | *embark-cycle-key |
@@ -3428,7 +3564,7 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | h | outline-backward-same-level      |
 | n | outline-forward-same-level       |
 | g | outline-up-heading               |
-| r | rf-outline-down-heading          |
+| r | rf-org-down-heading          |
 
 **** embark-org-heading-map
 
@@ -3437,7 +3573,7 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 | t   | outline-next-visible-heading       |
 | h   | outline-backward-same-level        |
 | n   | outline-forward-same-level         |
-| r   | rf-outline-down-heading            |
+| r   | rf-org-down-heading            |
 |     |                                    |
 | f   | org-insert-heading-respect-content |
 | o   | org-todo                           |
@@ -3531,6 +3667,27 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 |      |                                          |
 | kp-. | google-translate-at-point (temporary)    |
 
+*** gptel
+**** gptel
+
+| C-{ | rf-gptel |
+
+**** gptel-leader-map
+
+| C-d g | gptel                             |
+| C-d d | gptel-send                        |
+| C-d u | gptel-menu                        |
+| C-d q | gptel-quick                       |
+| C-d r | gptel-rewrite                     |
+| C-d a | gptel-add                         |
+| C-d i | rf-gptel--inspect-fsm-interactive |
+| C-d b | gptel-abort                       |
+|       |                                   |
+| C-d s | gptel-system-prompt               |
+| C-d f | gptel-add-file                    |
+| C-d p | gptel-preset                      |
+| C-d t | gptel-tools                       |
+
 *** helpful-mode-map
 
 | c | previous-line       |
@@ -3549,9 +3706,9 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 *** magit
 **** magit
 
-| C-{   | magit-status        |
-| C-c g | magit-dispatch      |
-| C-c f | magit-file-dispatch |
+| C-+ | magit-status        |
+| C-4 | magit-dispatch      |
+| C-6 | magit-file-dispatch |
 
 **** magit-mode-map
 
@@ -3580,33 +3737,42 @@ Emacs has a lot syntax variations for a given key combination, but the one print
 
 *** markdown-mode
 **** markdown-mode-map
-qwerty
-| C-c C-e | markdown-do |
+
+| M-n | nil |
+
+**** rf-markdown-leader-map
+
+| c | outline-previous-visible-heading |
+| t | outline-next-visible-heading     |
+| h | outline-backward-same-level      |
+| n | outline-forward-same-level       |
+| g | outline-up-heading               |
+| r | qw-outline-down-heading          |
 
 *** multiple-cursors
 
 | <kp-7>        | mc/mark-next-like-this     |
 | S-<kp-7>      | mc/mark-previous-like-this |
-| C-d           | mc/mark-next-like-this     |
-| C-S-d         | mc/mark-previous-like-this |
+| M-d           | mc/mark-next-like-this     |
+| M-D           | mc/mark-previous-like-this |
 | C-S-<mouse-1> | mc/add-cursor-on-click     |
 
 *** org
 **** org-mode-map
 
-| nil             | C-S-up / C-S-down         |
-| nil             | S-<return> / S-RET        |
-| nil             | M-h / M-} / M-{ / C-,     |
-|                 |                           |
-| C-c C-d         | rf-outline-down-heading   |
-|                 |                           |
-| <kp-multiply>   | rf-org-emphasize-bold     |
-| <kp-divide>     | rf-org-emphasize-code     |
-| S-<kp-multiply> | rf-org-emphasize-italic   |
-| S-<kp-divide>   | rf-org-emphasize-verbatim |
-| C-j             | rf-jump-to-newline        |
-|                 |                           |
-| <f6>            | *rf-org-leader-map        |
+| nil           | C-S-up / C-S-down         |
+| nil           | S-<return> / S-RET        |
+| nil           | M-h / M-} / M-{ / C-,     |
+|               |                           |
+| C-c C-d       | rf-org-down-heading       |
+|               |                           |
+| <kp-divide>   | rf-org-emphasize-code     |
+| S-<kp-divide> | rf-org-emphasize-bold     |
+| M-<kp-divide> | rf-org-emphasize-italic   |
+| C-<kp-divide> | rf-org-emphasize-verbatim |
+| C-j           | rf-jump-to-newline        |
+|               |                           |
+| <f6>          | *rf-org-leader-map        |
 
 **** rf-org-leader-map
 
@@ -3621,7 +3787,7 @@ qwerty
 | h  | org-backward-heading-same-level         |
 | n  | org-forward-heading-same-level          |
 | g  | org-up-element                          |
-| r  | rf-outline-down-heading                 |
+| r  | rf-org-down-heading                     |
 |    |                                         |
 | k  | org-cut-subtree                         |
 |    |                                         |
@@ -3638,6 +3804,8 @@ qwerty
 | m  | org-return-and-maybe-indent             |
 |    |                                         |
 | j  | org-table-copy-down                     |
+| i  | org-link-preview                        |
+| s  | org-edit-special                        |
 
 *** prodigy
 **** prodigy-view-mode-map
@@ -3698,7 +3866,7 @@ qwerty
 *** vertico-repeat
 **** vertico-repeat
 
-| C-b | vertico-repeat |
+| M-b | vertico-repeat |
 
 **** vertico-map
 
@@ -12540,6 +12708,90 @@ If you want to manually keep a package updated and ignore upstream updates, you 
 
 ~use-package~ signals an error if you try to pin a package to an archive that is not configured using ~package-archives~ (except from the special ~manual~ archive).
 
+*** Miscellaneous keywords
+
+**** :ensure-system-package
+Allows you to ensure certain executables are available on your system alongside your package declarations.
+
+To use this extension, add this immediately after loading ~use-package~:
+
+#+begin_src emacs-lisp
+
+  (use-package use-package-ensure-system-package)
+
+#+end_src
+
+Now you can use the ~:ensure-system-package~ keyword. Here’s an example usage:
+
+#+begin_src emacs-lisp
+
+  (use-package foo
+    :ensure-system-package foo)
+
+#+end_src
+
+This will expect a global binary package to exist called ~foo~. If it does not, it will use your system package manager to attempt an install of a binary by the same name asynchronously. This requires the GNU ELPA package ‘ ~system-packages~ ’, so for this to work you must install that first.
+
+One way of making sure it is installed is with use-package together with ~:ensure~.
+
+#+begin_src emacs-lisp
+
+  (use-package system-packages
+    :ensure t)
+
+#+end_src
+
+For example, on a Debian GNU/Linux system, this would call ‘ ~apt-get install foo~ ’.
+
+If the package is named differently than the binary, you can use a cons in the form of ~(binary . package-name)~. For example:
+
+#+begin_src emacs-lisp
+
+  (use-package foo
+    :ensure-system-package
+    (foocmd . foo))
+
+#+end_src
+
+On a Debian GNU/Linux system, this would call ~apt install foo~ if Emacs could not locate the executable ~foocmd~.
+
+~:ensure-system-package~ can also take a cons where the ~cdr~ is a string that will get called by ~(async-shell-command)~ to install if it isn’t found. This does not depend on any external package.
+
+#+begin_src emacs-lisp
+
+  (use-package tern
+    :ensure-system-package (tern . "npm i -g tern"))
+
+#+end_src
+
+To install several packages, you can pass in a list of conses:
+
+#+begin_src emacs-lisp
+
+  (use-package ruby-mode
+    :ensure-system-package
+    ((rubocop     . "gem install rubocop")
+     (ruby-lint   . "gem install ruby-lint")
+     (ripper-tags . "gem install ripper-tags")
+     (pry         . "gem install pry")))
+
+#+end_src
+
+Finally, in case the package dependency does not provide a global executable, you can ensure that packages exist by checking the presence of a file by providing a string like so:
+
+#+begin_src emacs-lisp
+
+  (use-package dash-at-point
+    :if (eq system-type 'darwin)
+    :ensure-system-package
+    ("/Applications/Dash.app" . "brew cask install dash"))
+
+#+end_src
+
+:ensure-system-package will use ~system-packages-install~ to install system packages, except where a custom command has been specified, in which case it will be executed verbatim by ~async-shell-command~.
+
+The user options ~system-packages-package-manager~ and ~system-packages-use-sudo~ are honored, but not for custom commands. Custom commands should include the call to sudo in the command if needed.
+
 ** Commands-
 *** Lines-
 **** list-matching-lines (occur)
@@ -13354,6 +13606,1421 @@ The ~etags~ program reads the specified files, and writes a tags table named ~TA
 Toggle highlighting of the current line (Hl-Line mode).
 
 * Subjects
+** AI
+*** Gptel
+**** Brief
+[[https://gptel.org/manual.html][gptel]] is a Large Language Model client for Emacs, with support for multiple models and backends. It works in the spirit of Emacs, available at any time and uniformly in any buffer.
+
+A Large Language Model (LLM) is a neural network trained on a large corpus of information to generate text or audio-visual output data based on input. The input can be in many formats as well, including audio-visual data. In this manual we are primarily interested in textual input and output. A subclass of these models are trained to generate text to convincingly simulate the format of a back-and-forth conversation. gptel provides an Emacs interface to use these so-called “instruct” models. In this manual LLM refers only to “instruct” models.
+
+LLMs are categorized by the information they were trained with, tasks they are trained for, by their capabilities, and by their size. Their size is typically measured in billions of network parameters, where the smallest models (1-120 billion parameters) can run on today’s consumer hardware. The larger models typically consist of hundreds of billions of parameters, and require clusters or supercomputers to run.
+
+Some LLMs – typically the smaller ones – are permissively licensed and free. Most larger models are proprietary and only available as a service that charges by the word.
+
+gptel does not provide or run these models. Instead, it only acts as a client, sending and receiving conversation text over HTTP. To run free models on your hardware, you can use software such as llama.cpp or Ollama. Larger and more capable models typically require paid API access.
+
+Presently, gptel works only with “chat” models, which are trained to respond to input in a manner resembling a conversational reply. Such models (nicknamed “instruct models”) are among the most popular and easy to use without additional tooling, as the interaction format prescribes an interface by itself.
+
+**** Usage
+gptel provides a few powerful, general purpose and flexible commands. You can dynamically tweak their behavior to the needs of your task /with directives/ (system prompts), redirection options and more. There is a [[https://www.youtube.com/watch?v=bsRnh_brggM][video demo]] showing various uses of gptel – but ~gptel-send~ might be all you need.
+
+*In any buffer*:
+1. Call ~M-x gptel-send~ to send the text *up to the cursor*. The response will be inserted below. Continue the conversation by typing below the response.
+2. If a region is selected, the conversation will be limited to its contents.
+3. Call ~M-x gptel-send~ with a prefix argument (~C-u~)
+   - to set chat parameters (model, backend, system message etc) for this buffer,
+   - include quick instructions for the next request only,
+   - to add additional context – regions, buffers or files – to gptel,
+   - to read the prompt from or redirect the response elsewhere,
+   - or to replace the prompt with the response.
+
+*In a dedicated chat buffer*:
+*Note*: gptel works anywhere in Emacs. The dedicated chat buffer only adds some conveniences.
+1. Run ~M-x gptel~ to start or switch to the chat buffer. It will ask you for the key if you skipped the previous step. Run it with a prefix-arg (~C-u M-x gptel~) to start a new session.
+2. In the gptel buffer, send your prompt with ~M-x gptel-send~, bound to ~C-c RET~.
+3. Set chat parameters (LLM provider, model, system prompt etc) for the session by calling ~gptel-send~ with a prefix argument (~C-u C-c RET~).
+
+**** Directives
+In addition to the text in your buffer, LLMs can be prompted with instructions on how they should respond. They are prioritized and treated specially by most LLMs, and is one of the primary levers for configuring its behavior. In popular use these instructions are referred to as the “system message”, “system prompt” or “directives”. gptel refers to them as the “system message” and “directives”.
+
+The system message can be used to specify the LLM’s general tone and tenor, output format, structure or restrictions, as well as general objectives it should work towards in its interactions with the user.
+
+The following is a brief system message describing the tone and proscribing certain common LLM behaviors.
+
+  - To assist: Be terse. Do not offer unprompted advice or clarifications. Speak in specific, topic relevant terminology. Do NOT hedge or qualify. Speak directly and be willing to make creative guesses.
+
+    Explain your reasoning. if you don’t know, say you don’t know. Be willing to reference less reputable sources for ideas.
+
+    Do NOT summarize your answers. Never apologize. Ask questions when unsure.
+
+Here is another example, this time specifying an objective for the LLM to work towards:
+
+  - You are a tutor and domain expert in the domain of my questions. You will lead me to discover the answer myself by providing hints. Your instructions are as follows:
+
+        - If the question or notation is not clear to you, ask for clarifying details.
+        - At first your hints should be general and vague.
+        - If I fail to make progress, provide more explicit hints.
+        - Never provide the answer itself unless I explicitly ask you to. If my answer is wrong, again provide only hints to correct it.
+        - If you use LaTeX notation, enclose math in
+
+or
+delimiters.
+
+**** Presets
+***** Brief
+If you use several LLMs, system messages and tools for different LLM tasks, it can be tedious to set options like the backend, model, system message and included tools repeatedly for each task or in each buffer. This is one of the main points of friction with using gptel interactively.2
+
+gptel allows bundles of compatible options to be to be pre-specified and applied together, making it feasible to switch rapidly between different kinds of LLM tasks. A collection of such options is referred to as a “preset”.
+
+Once defined, there are two ways to use a preset:
+
+ - You can *apply it to just this request* by referring to it anywhere in your prompt, prefixed by the ~@~ key:
+
+#+begin_src
+
+   @editor review the following explanation: ...
+
+#+end_src
+
+where ~editor~ is the name of a preset.
+
+  - You can switch to a preset persistently from gptel’s transient menu ~(gptel-menu)~. This use is described in this section.
+
+When a gptel preset is applied, the gptel options it specifies are set, and the ones it does not specify are simply left untouched. So you can layer several presets on top of each other, with later presets taking precedence over the ones applied earlier.
+
+Presets can be applied globally (across the Emacs session), buffer-locally or for the next request only. This is controlled by the “Scope” option in gptel’s transient menus.
+
+Depending on the task, options in a preset could be
+ - Basic ones like selecting the LLM provider, the model and system message.
+ - Tools to include with requests..
+ - Request parameters like the temperature, the maximum reply size and whether to stream responses,
+ - gptel-specific behavior like whether it should distinguish between user prompts and LLM responses in the prompt ~(gptel-track-response)~, include images and documents with the prompt ~(gptel-track-media)~.
+
+A preset is not limited to these options. You can specify the value of any variable that begins with “gptel-”.
+
+To define a preset, use [[gptel-make-preset]].
+
+***** gptel-make-preset
+A preset is a combination of gptel options intended to be applied and used together. Presets make it convenient to change multiple gptel settings on the fly.
+
+Typically a preset will include a model, backend, system message and perhaps some tools, but any set of gptel options can be set this way.
+
+#+begin_src emacs-lisp
+
+  ;; Arguments:
+  (NAME [KEY1 VALUE1] [KEY2 VALUE2] ...)
+  ;; Register a gptel options preset with NAME.
+
+#+end_src
+
+ Presets can be used to set individual options. An example of a preset to set the system message (and do nothing else):
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'explain
+    :system "Explain what this code does to a novice programmer.")
+
+#+end_src
+
+Specifying the value of a key will set the corresponding gptel option to it. For example,
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'websearch
+    :tools '("search_web" "read_url")
+    :system "Use the provided tools to search the web
+                for up-to-date information")
+
+#+end_src
+
+will replace the currently active option ~gptel-tools~ and the system message.
+
+Here are some more comprehensive examples of presets:
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'coder
+    :description "A preset optimized for coding tasks" ;for your reference
+    :backend     "Claude"                    ;gptel backend or backend name
+    :model       'claude-3-7-sonnet-20250219.1
+    :system      "You are an expert coding assistant. Your role is to
+                 provide high-quality code solutions, refactorings,
+                 and explanations."
+    :tools       '("read_buffer" "modify_buffer")) ;gptel tools or tool names
+
+#+end_src
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'editor ;can also be a string, but symbols are preferred
+    :description  "Preset for proofreading tasks"
+    :backend      "ChatGPT"
+    :system       'proofread  ;system message looked up in gptel-directives
+    :model        'gpt-4.1-mini
+    :tools        '("read_buffer" "spell_check" "grammar_check")
+    :temperature  0.7)
+
+#+end_src
+
+The following is a preset that sets the temperature and max tokens, and specifies how context (attached regions, buffers or files) and “reasoning” text should be handled. Crucially, it does not set the model or the backend, so it is intended to be used as a “parent” of other more specific presets.
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'misc
+    :temperature       0.2                ;sets gptel-temperature
+    :max-tokens        512                ;sets gptel-max-tokens
+    :include-reasoning nil                ;sets gptel-include-reasoning
+    :use-context       'system)           ;sets gptel-use-context
+
+#+end_src
+
+Often it is convenient for a preset to modify the current value of a gptel option instead of setting it.
+
+ - You can require that the value of an option be appended or prepended to the existing value instead of replacing it. This can be done by specifying the value as a plist instead with the keys ~:prepend~ or ~:append~.
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'websearch
+    :tools  '(:append ("search_web" "read_url"))
+    :system '(:prepend "Use the provided tools to search the web
+                        for up-to-date information."))
+#+end_src
+
+  This preset will add the specified tools to the currently selected set in ~gptel-tools~, and prepend the provided string to the system message.
+
+  - You can dynamically compute the value for a key at the time the preset is applied with ~:eval~ or ~:function~. This is mostly useful when using presets in the prompt, as @preset-name.
+
+    An ~:eval~ form is evaluated when the preset is applied:
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'visible-buffers
+    :description "Include the full text of all buffers visible in the
+                 frame."
+    :context '(:eval (mapcar #'window-buffer (window-list))))
+  ; ▲                ▲
+  ; │                ╰╴evaluated when preset is applied
+  ; ╰╴sets `gptel-context'
+
+#+end_src
+
+    ~:function~ should take the current value of the key as an input and return the new value. Here we combine it with ~:append~ in the plist.
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'github-read-only
+    :description "Provide read-only GitHub tools"
+    :pre (lambda () (gptel-mcp-connect '("github") 'sync))
+    :tools
+    '( :append ("mcp-github")       ;Adds all github MCP tools
+       :function (lambda (tools)
+                   (cl-delete-if    ;Remove "write" access to GitHub
+                    (lambda (tool)
+                      (string-match-p "create_" (gptel-tool-name tool)))
+                    tools))))
+#+end_src
+
+ For programmatic use, you can use ~gptel-with-preset~ to send requests with presets temporarily applied.
+
+***** Specifying presets in the prompt
+It is sometimes useful to be able to send a single LLM query with options different from the active ones. One way to do this is to set the scope to oneshot in gptel’s transient menus before changing options (Scope) This makes it so that the previous set of options is restored after the request is sent.
+
+A second, possibly more convenient way is to specify a preset in the prompt text itself, which requires no fiddling with menus or other elisp.
+
+Imagine that you have the following preset defined:
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'websearch
+    :description  "Haiku with basic web search capability."
+    ;; System message with instructions about searching, citations
+    :system       'searcher   ;a symbol: looked up in `gptel-directives'
+    :backend      "Claude"
+    :model        'claude-3-5-haiku-20241022
+    :temperature  0.7
+    :tools        '("search_web" "read_url" "get_youtube_meta"))
+
+#+end_src
+
+This preset includes tools for searching the web, reading URLs and finding YouTube transcripts that the LLM can use. Irrespective of the active gptel settings, you can send a query with this preset applied by including ~@websearch~ in your query:
+
+  - @websearch Are there any 13“ e-ink monitors on the market? Create a table comparing them, sourcing specs and reviews from online sources. Also do the same for ”transreflective-LCD" displays – I’m not sure what exactly they’re called but they’re comparable to e-ink.
+
+This ~@preset-name~ cookie only applies to the final user turn of the coversation that is sent – your latest question/response – and the preset will not be applied if it is present in earlier messages.
+
+The ~@preset-name~ cookie can be anywhere in the prompt. For example:
+
+  -  <long piece of text>
+
+    What do you make of the above description, @editor?
+
+***** Preset cookie modify the request and/or the prompt
+ Presets corresponding to ~@preset-name~ cookies are applied after the cookie itself is stripped from the prompt, with the cursor placed at the cookie location. This can be used to make a preset cookie modify the request and/or the prompt in a context-sensitive manner. For example, we can define a json preset to mandate a specified schema from the LLM response:
+
+#+begin_src emacs-lisp
+
+  (gptel-make-preset 'json
+      :pre (lambda ()
+             (setq-local gptel--schema
+                         (buffer-substring-no-properties
+                          (point) (point-max)))
+             (delete-region (point) (point-max)))
+      :include-reasoning nil)
+
+#+end_src
+
+Then the ~@json~ cookie may be used as follows:
+
+  - @websearch What are three popular GNU projects? Use the provided tools to search for details. Reply in the specified format.
+
+     @json [ name, current_version number, mailing_list_email, start_year int ]
+
+The LLM will search the web (with the tools included via the @websearch preset) and reply with JSON output akin to:
+
+#+begin_src js
+
+  {
+    "items": [
+      {
+        "name": "GNU Compiler Collection (GCC)",
+        "current_version": 13.2,
+        "mailing_list_email": "gcc@gcc.gnu.org",
+        "start_year": 1987
+      },
+      {
+        "name": "GNU Bash (Bourne Again SHell)",
+        "current_version": 5.3,
+        "mailing_list_email": "bug-bash@gnu.org",
+        "start_year": 1989
+      },
+      {
+        "name": "GNU Emacs",
+        "current_version": 29.3,
+        "mailing_list_email": "emacs-devel@gnu.org",
+        "start_year": 1985
+      }
+    ]
+  }
+
+#+end_src
+
+The text following the ~@json~ cookie is used to construct the response JSON schema.
+
+In chat buffers, a valid preset cookie is highlighted automatically and can be completed via completion-at-point. This is Emacs’ familiar tab-completion in buffers.
+
+This method of specifying a preset takes priority over all the other ways of setting gptel request options, including via elisp, from gptel’s transient menus, Org properties in the current buffer, etc.
+
+***** Note
+To use preset in the prompt using the prefix (INS):
+
+This way, only the *@en* directive is applied
+- Can you remove the file that you just created? ~@en~
+
+This way, both the default preset and the *@en* directive are applied
+- ~@en~ Can you remove the file that you just created?
+
+**** Commands
+***** To send queries
+****** gptel-send
+Send all text up to (point), or the selection if region is active. Works anywhere in Emacs.
+
+****** gptel
+Create a new dedicated chat buffer. Not required to use gptel.
+
+****** gptel-rewrite
+Rewrite, refactor or change the selected region. Can diff/ediff changes before merging/applying.
+
+****** C-c gptel-send
+In the gptel buffer, send your prompt
+
+****** C-u C-c gptel-send
+Set chat parameters (LLM provider, model, system prompt etc) for the session
+
+***** To tweak behavior
+****** C-u gptel-send
+Transient menu for preferences, input/output redirection etc.
+
+****** gptel-menu
+(Same)
+
+****** C-u gptel
+Start a new session
+
+***** To add context
+****** gptel-add
+Add/remove a region or buffer to gptel’s context. In Dired, add/remove marked files.
+
+****** gptel-add-file
+Add a file (text or supported media type) to gptel’s context. Also available from the transient menu.
+
+***** Org mode bonuses
+****** gptel-org-set-topic
+Limit conversation context to an Org heading. (For branching conversations see below.)
+
+****** gptel-org-set-properties
+Write gptel configuration as Org properties, for per-heading chat configuration.
+
+You can declare the gptel model, backend, temperature, system message and other parameters as Org properties. gptel queries under the corresponding heading will always use these settings, allowing you to create mostly reproducible LLM chat notebooks, and to have simultaneous chats with different models, model settings and directives (system prompts) under different Org headings.
+
+***** Oauth connections
+****** gptel-gh-login
+Authenticate with GitHub Copilot. (Automatically handled, but can be forced if required.)
+
+****** gptel-openai-oauth-login
+Authenticate with OpenAI (Codex). (Automatically handled, but can be forced if required.)
+
+***** Introspection
+****** gptel-expert-commands
+Set ~gptel-expert-commands~ to ~t~ to display additional options in gptel’s transient menu.
+
+*Examining prompts*: you can examine and edit gptel request payloads before sending them.
+- Pick one of the “dry run” options in the menu to produce a buffer containing the request payload.
+- You can edit this buffer as you would like and send the request.
+- You can also copy a Curl command corresponding to the request and invoke it from the shell.
+
+*Examining responses*: You can turn on logging to examine the full response from an LLM.
+- Set ~gptel-log-level~ to ~info~ or ~debug~.
+- Send a request.
+- Open the log buffer from gptel’s transient menu, or switch to the ~*gptel-log*~ buffer.
+
+***** Miscellaneous
+****** transient-suffix-put
+Edit the suffix at LOC in PREFIX, setting PROP to VALUE.
+
+#+begin_src emacs-lisp
+
+  (transient-suffix-put 'gptel-menu (kbd "-m") :key "M")
+
+#+end_src
+
+**** Variables
+***** gptel-track-media
+Whether links to supported media types should be followed.
+
+Most ways of specifying links to files/URLs are respected by gptel:
+
+In Org mode:
+“Plain” links of the form file:/path/to/file.txt will not be recognized.
+
+#+begin_src org
+
+  [[file:/path/to/file.txt]]
+  [[file:/path/to/file.txt][Description]]
+  <file:/path/to/file.txt>
+  [[attachment:data.txt]]
+
+
+#+end_src
+
+In Markdown mode:
+
+#+begin_src markdown
+
+  [](file:///path/to/file.txt) and [](/path/to/file.txt)
+  [Description](file:///path/to/file.txt) and
+  [Description](/path/to/file.txt)
+  <file:///path/to/file.txt>
+
+#+end_src
+
+***** gptel-include-reasoning
+Some LLMs include in their response a “thinking” or “reasoning” block. This text improves the quality of the LLM’s final output, but may not be interesting to you by itself. You can decide how you would like this “reasoning” content to be handled by gptel by setting the user option ~gptel-include-reasoning~. You can include it in the LLM response (the default), omit it entirely, include it in the buffer but ignore it on subsequent conversation turns, or redirect it to another buffer. As with most options, you can specify this behavior from gptel’s transient menu globally, buffer-locally or for the next request only.
+
+When included with the response, reasoning content will be delimited by Org blocks or markdown backticks.
+
+***** gptel-rewrite-default-action
+Acting on the LLM respons.
+
+*Note*: this variable doesn't appear (IDK).
+
+***** gptel-org-branching-context
+You can have branching conversations in Org mode, where each hierarchical outline path through the document is a separate conversation branch. This is also useful for limiting the context size of each query.
+
+If this variable is non-nil, you should probably edit ~gptel-prompt-prefix-alist~ and ~gptel-response-prefix-alist~ so that the prefix strings for org-mode are not Org headings, e.g.
+
+#+begin_src emacs-lisp
+
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
+
+#+end_src
+
+Otherwise, the default prompt prefix will make successive prompts sibling headings, and therefore on different conversation branches, which probably isn’t what you want.
+
+***** gptel-highlight-methods
+Types of LLM response highlighting used by gptel-highlight-mode.
+
+***** gptel-context-restrict-to-project-files
+By default, files in a version control system that are not project files (“gitignored” files) will not be added to the context. To be able to add these files, set ~gptel-context-restrict-to-project-files~ to ~nil~. Note that remote files are always included, regardless of the value of ~gptel-context-restrict-to-project-files~.
+
+**** Tools
+***** Brief
+gptel can provide the LLM with client-side elisp “tools”, or function specifications, along with the request. If the LLM decides to run the tool, it supplies the tool call arguments, which gptel uses to run the tool in your Emacs session. The result is optionally returned to the LLM to complete the task.
+
+This exchange can be used to equip the LLM with capabilities or knowledge beyond what is available out of the box – for instance, you can get the LLM to control your Emacs frame, create or modify files and directories, or look up information relevant to your request via web search or in a local database. Here is a very simple example:
+
+To use tools in gptel, you need:
+
+- a model that supports this usage. All the flagship models support tool use, as do many of the smaller open models.
+- Tool specifications that gptel understands. gptel does not currently include any tools out of the box.
+
+***** Defining gptel tools
+****** To read the contents of an Emacs buffer
+
+#+begin_src emacs-lisp
+
+  (gptel-make-tool
+   :name "read_buffer"                    ; javascript-style snake_case name
+   :function (lambda (buffer)                  ; the function that will run
+               (unless (buffer-live-p (get-buffer buffer))
+                 (error "error: buffer %s is not live." buffer))
+               (with-current-buffer  buffer
+                 (buffer-substring-no-properties (point-min) (point-max))))
+   :description "return the contents of an emacs buffer"
+   :args (list '(:name "buffer"
+                       :type string            ; :type value must be a symbol
+                       :description "the name of the buffer whose contents are to be retrieved"))
+   :category "emacs")                     ; An arbitrary label for grouping
+
+#+end_src
+
+Besides the function itself, which can be named or anonymous (as above), the tool specification requires a ~:name~, ~:description~ and a list of argument specifications in ~:args~. Each argument specification is a plist with atleast the keys ~:name~, ~:type~ and ~:description~.
+
+****** To create a text file
+
+#+begin_src emacs-lisp
+
+  (gptel-make-tool
+   :name "create_file"                    ; javascript-style  snake_case name
+   :function (lambda (path filename content)   ; the function that runs
+               (let ((full-path (expand-file-name filename path)))
+                 (with-temp-buffer
+                   (insert content)
+                   (write-file full-path))
+                 (format "Created file %s in %s" filename path)))
+   :description "Create a new file with the specified content"
+   :args (list '(:name "path"             ; a list of argument specifications
+                     :type string
+                     :description "The directory where to create the file")
+               '(:name "filename"
+                     :type string
+                     :description "The name of the file to create")
+               '(:name "content"
+                     :type string
+                     :description "The content to write to the file"))
+   :category "filesystem")                ; An arbitrary label for grouping
+
+#+end_src
+
+With some prompting, you can get an LLM to write these tools for you.
+
+Tools can also be asynchronous, use optional arguments and arguments with more structure (enums, arrays, objects etc). See ~gptel-make-tool~ for details.
+
+****** LLM tool collections
+The following repositories provide collections of tools written by gptel users.
+
+https://github.com/karthink/gptel#llm-tool-collections
+
+***** LLM tool collections
+****** gptel-agent
+******* Brief
+This is a collection of tools and prompts to use gptel “agentically” with any LLM, to autonomously perform tasks.
+
+It has access to:
+- the web (via basic web search, URL fetching and YouTube video metadata),
+- local files (read/write/edit),
+- the state of Emacs (documentation and Elisp evaluation),
+- and Bash, if you are in a POSIX-y environment.
+
+By default, all actions except for web search, fetching URLs and reading local files require confirmation. You can change this, add more tools and MCP servers etc as in regular gptel usage.
+
+gptel-agent can also delegate tasks to specialized “sub-agents” which don’t share context with the main session.
+
+*What is an “agent”?*
+“Agent” is the (now common) parlance used to refer to a bundle of configuration, consisting of
+
+- a system prompt (instructions),
+- tools (functions the LLM can call)
+- and the harness used to run or call the LLM.
+
+gptel uses the term “preset” for such configurations. A preset can specify the above and any other behavior, such as the model used, API call parameters and so on.
+
+~gptel-agent~ is implemented as a preset for gptel and can be modified/extended easily.
+
+******* Usage
+There are two ways to use gptel-agent:
+
+*In a dedicated session*
+- Run ~M-x gptel-agent~. This will open a gptel buffer in the current project with the agent preset loaded. Run with a prefix arg for more options.
+- Use gptel as usual, calling ~gptel-send~ etc.
+- If you change the system prompt, tools or other settings in this buffer, you can reset the agent configuration by (re)applying the “gptel-agent” preset from gptel’s menu.
+- You can switch between an agent preset (gptel-agent) and a planning preset (gptel-plan) by applying them from gptel’s menu, or clicking on the backend name in the header line.
+
+The difference between them is just in the tools available to the model – the planning preset *has read-only access to the filesystem and is instructed to create a systematic plan of action*.
+
+*Anywhere in Emacs*
+As with gptel, you can use gptel-agent in any buffer, including read-only buffers and the minibuffer.
+
+- Apply the “gptel-agent” preset in the buffer from gptel’s menu.
+- OR include ~@gptel-agent~ in a prompt to send only that prompt with the agent capabilities.
+
+*Please note*: gptel-agent uses significantly more tokens than the average gptel LLM interaction.
+
+******* Sub-agents
+gptel-agent can delegate tasks to “sub-agents”. Sub-agents can be specified in Markdown or Org files in a directory. You can add your directory of agents to ~gptel-agent-dirs~, which see.
+
+Right now gptel-agent includes three sub-agents:
+
+- executor :: is a copy of the main LLM, directed to work autonomously and noninteractively, returning a final response.
+- researcher :: is read-only and can search the web or through local files for information.
+- introspector :: can examine the state of Emacs, and access or search documentation from your live Emacs session.
+
+The LLM should automatically delegate tasks to them as required, but you can also explicitly request delegation: ” *Use the researcher to find out if…* ” or ” *Use my-custom-agent to…* ”.
+
+*Why?*
+LLMs often run into dead-ends when trying things, and this can both bloat and pollute the context window. Sub-agents don’t share any context with the main session and return relatively concise reports that gptel-agent can refer to.
+
+Sub-agents can be provided with tools specific to their task, which improves the quality of the result. They can also be restricted accordingly by, for example, providing read-only access to resources.
+
+Sub-agents can be configured to use specific models or other API parameters (like the level of reasoning) independent of gptel-agent. They are essentially gptel presets.
+
+******* Agents from Org files
+gptel-agent reads agent specs from files in ~gptel-agent-dirs~, which you can customize.
+
+You can specify the agent name, description and tools used in an Org properties block at the top of an Org file, followed by the system prompt:
+
+#+begin_src org
+
+  :properties:
+  :name:     arxiv-explorer
+  :description: Searches ArXiv and parses results
+  :tools:    mcp-arxiv WebSearch
+  :pre:      (lambda () (gptel-mcp-connect '(arxiv) 'sync))
+  :end:
+
+  You are a specialized research agent with access to ArXiv. Your purpose is to search for and gather information efficiently.
+
+  <core_responsibilites>
+  ...
+  </core_responsibilities>
+
+  ...
+#+end_src
+
+~name~ defaults to the file name, so only the ~description~ is mandatory. ~tools~ is a list of tool names or categories.
+
+You can specify any other keys that gptel recognizes as preset keys – see ~gptel-make-preset~ for details.
+
+In the above example the ~:pre~ key is an elisp function that runs before the agent is called. I am assuming a tool category named “mcp-arxiv” is provided by the “arxiv” MCP server.
+
+**** MCP integration
+The [[https://modelcontextprotocol.io/introduction][Model Context Protocol]] (MCP) is a protocol for providing resources and tools to LLMs, and [[https://github.com/appcypher/awesome-mcp-servers][many MCP servers exist]] that provide LLM tools for file access, database connections, API integrations etc. The mcp.el package for Emacs can act as an MCP client and manage these tool calls for gptel.
+
+To use MCP servers with gptel, you thus need three pieces:
+  1. The [[https://github.com/lizqwerscott/mcp.el][mcp.el]] package for Emacs, available on MELPA.
+  2. MCP servers configured for and running via mcp.el.
+  3. gptel and access to an LLM
+
+gptel includes ~gptel-integrations~, a small library to make this more convenient. This library is not automatically loaded by gptel, so if you would like to use it you have to require it:
+
+#+begin_src emacs-lisp
+
+  (require 'gptel-integrations)
+
+#+end_src
+
+Once loaded, you can run the ~gptel-mcp-connect~ and ~gptel-mcp-disconnect~ commands to register and unregister MCP-provided tools in gptel. These will also show up in the tools menu in gptel, accessed via ~M-x gptel-menu~ or ~M-x gptel-tools~.
+
+MCP-provided tools can be used as normal with gptel. In this example the “github” MCP server is installed separately using npm.
+
+#+begin_src emacs-lisp
+
+  ;; Load gptel-integrations library
+  (require 'gptel-integrations)
+  (setq mcp-hub-servers nil)
+  ;; Register MCP-provided tools
+  (setq mcp-hub-servers
+        '(("github" :command "github-mcp-server" :args ("stdio"))))
+
+
+  ;; The installation of the "GitHub" MCP server can be done by
+  ;; :ensure-system-package
+  ;; (github-mcp-server . "pn add -g github-mcp-server")
+
+#+end_src
+
+**** Miscellaneous
+***** Output in a specified JSON schema
+~gptel-request~ can force the LLM to generate output that follows a specified JSON schema. This can be useful when it is used as part of a data processing pipeline, or when gptel-request needs to be plugged into Elisp code that expects structured data.
+
+NOTE(v0.9.8.5): JSON output is compatible with tool-use for all gptel backends except for Anthropic. Requests to Anthropic models cannot include both tools and a JSON schema.
+
+Here is a frivolous example demonstrating this feature:
+
+#+begin_src emacs-lisp
+
+  (gptel-request "Generate three quirky dogs"
+    :system nil
+    :schema "[name, age int, hobby, short_bio]")
+
+#+end_src
+
+This returns
+
+#+begin_src js
+
+  {
+    "items": [
+      {
+        "name": "Baxter",
+        "age": 5,
+        "hobby": "Chasing shadows and hoarding squeaky toys",
+        "short_bio":
+          "Baxter is the neighborhood's self-declared shadow detective."
+      },
+      {
+        "name": "Peaches",
+        "age": 3,
+        "hobby": "Dancing on hind legs and stealing socks",
+        "short_bio":
+          "Peaches twirls through life with a sock in her mouth."
+      },
+      {
+        "name": "Ziggy",
+        "age": 7,
+        "hobby": "Sniffing out hidden treats and composing symphonies",
+        "short_bio":
+          "Ziggy is a gourmet snack seeker and an opera star in the canine world."
+      }
+    ]
+  }
+
+#+end_src
+
+A more useful example is generating diagnostics for an Emacs buffer. For example:
+
+#+begin_src emacs-lisp
+
+  (save-excursion
+    (goto-char (point-max))
+    (gptel-request nil                    ;send whole buffer
+      :system
+      "Proofread this text buffer for stylistic errors,
+       cliche and purple prose.
+       Ignore parts that look like markup or code.
+       Do NOT report text that is satisfactory."
+      :schema
+      "[start_line int: Starting line number of text to
+        which this diagnostic applies
+        text: Text to which this diagnostic applies
+        problem: Short description of problem
+        replacement: Exact replacement text or fix for diagnostic]"))
+
+#+end_src
+
+The list of diagnostics can be plugged into a linting interface such as Flymake, for example.
+
+The SCHEMA argument may be specified in many ways.
+
+***** The anatomy of gptel-send
+ The following flowchart provides an overview of the most common user options and hooks available for customizing the behavior of ~gptel-send~. The left and right columns show user options and hooks respectively. The central column illustrates the control flow of ~gptel-send~, and where in the pipeline the user options or hooks are applied.
+
+#+begin_src
+
+        (USER OPTIONS, TASKS)                GPTEL-SEND                   (HOOKS)
+              ║                                │                           ║
+              v                                v                           v
+ ╭───────────────────────────╮    ╭────────────┴─────────────╮
+ │      (Org mode only)      │    │       Copy region        │
+ │ gptel-org-ignore-elements │    │ (or buffer above cursor) │
+ │gptel-org-branching-context├───>┤   to a temporary buffer  │
+ ╰───────────────────────────╯    ╰────────────┬─────────────╯
+ ╭──────────────────────────╮                  │·╶─╴·╶─╴·╶─╴gptel-prompt-transform-functions
+ │   gptel-track-response   ├──╮               v                            │
+ ╰──────────────────────────╯  │  ╭────────────┴──────────────╮ ╭───────────┴───────-────╮
+ ╭───────────────────────────╮ │  │  Create messages array,   │ │     Apply @presets     │
+ │ Add base64-encoded media  │ ├─>┤ Assign user and LLM roles │ │                        │
+ │        from links         ├─╯  │         to text           │ │Add regions, buffers and│
+ │     gptel-track-media     │    ╰────────────┬──────────────╯ │files from gptel-context│
+ ╰───────────────────────────╯                 │                │    gptel-use-context   │
+  ╭─────────────────────────╮                  │                ╰────────────────────────╯
+  │      gptel-model        ├──╮               │
+  ╰─────────────────────────╯  │               v
+  ╭─────────────────────────╮  │     ╭─────────┴──────────╮
+  │    Backend parameters   │  │     │                    │
+  │      gptel-backend      ├──┼────>│   Create payload   │
+  │   gptel--request-params │  │     │                    │
+  ╰─────────────────────────╯  │     ╰─────────┬──────────╯
+  ╭─────────────────────────╮  │               v
+  │  Run and add directive  │  │     ╔═════════╧══════════╗
+  │    gptel-directives     ├──┤     ║    Send request    ║
+  │  gptel--system-message  │  │     ╚═════════╤══════════╝
+  │      gptel--schema      │  │               │·╶─╴·╶─╴·╶─╴· gptel-post-request-hook
+  ╰─────────────────────────╯  │               │
+  ╭─────────────────────────╮  │               │
+  │      Prepare tools      │  │               v
+  │     gptel-use-tools     ├──┤            ╶──┴──╴
+  │       gptel-tools       │  │          ╭ ─ ─ ─ ─ ─╮
+  ╰─────────────────────────╯  │           ASYNC WAIT
+  ╭────────────────────────╮   │          ╰ ─ ─ ─ ─  ╯
+╭>┤    Merge available     ├───╯            ╶──┬──╴
+│ │   tool call results    │                   v
+│ ╰────────────────────────╯                   ├·╶─╴·╶─╴·╶─╴· gptel-pre-response-hook
+│ ╭──────────────────────────╮     ╭───────────────────────╮
+│ │    Handle "Reasoning"    ├────>┤                       │
+│ │ gptel-include-reasoning  │ ╭─<─┤ Parse partial response├<─────╮
+│ ╰──────────────────────────╯ │╭<─┤                       │<╮    │
+│                              ││  ╰───────────────────────╯ │    ╵
+│                              ││                            ├·╶─gptel-post-stream-hook
+│                              ││  ╭───────────────────────╮ │    ╷
+│                              │╰──┤ Insert response chunk ├─╯    │
+│                              │   ╰───────────────────────╯      │
+│                              │   ╭───────────────────────╮      │
+│                              ╰──>┤                       │      │
+╰─<───────────────────────────────<┤     Run tool calls    │      │
+ ╭──────────────────────────╮  ╭──>┤                       │      │
+ │ gptel-confirm-tool-calls ├──╯   ╰───────────┬───────────╯      │
+ ╰──────────────────────────╯      ╭───────────┴───────────╮      │
+ ╭──────────────────────────╮  ╭──>┤  Insert tool results  ├>─────╯
+ │gptel-include-tool-results├──╯   ╰───────────┬───────────╯
+ ╰──────────────────────────╯                  │
+                                               v·╶─╴·╶─╴·╶─╴· gptel-post-response-functions
+                                            ╶──┴──╴
+
+#+end_src
+
+***** gptel-send works
+ ~gptel-send~ works by (i) building a backend-appropriate request payload from the provided text, context, tools and active gptel configuration, (ii) sending the request and (iii) inserting or otherwise dispatching on the response as necessary. A detailed description of gptel-send’s processing pipeline and concomitant customization options follows.
+
+
+ 1. Copy the text up to the cursor (or the selected region) from the “request buffer” to a temporary buffer. This serves as the primary prompt to be sent to the LLM.
+
+
+ 2. If the request is sent from an Org mode buffer, this region may be modified in two different ways. If gptel-org-branching-context is non-nil, copy only the lineage of the current Org entry to the temporary buffer. Additionally, remove Org elements of the types in gptel-org-ignore-elements from this text. By default, the latter is used to strip Org PROPERTIES blocks from the text before sending. See 9.2.1 for more details.
+
+
+ 3. Run the hook gptel-prompt-transform-functions in this buffer, with the cursor at the end. This can be used to modify the prompt text or local environment as required. By default, this hook serves a couple of functions:
+     - If gptel-use-context is non-nil, add the contents of regions, buffers and files explicitly added to gptel’s context by the user. How exactly this is added to the request payload depends on the value of gptel-use-context, see 9.6.
+      - Apply any presets specified in the prompt text via the @preset cookie (see 9.8.1).
+
+   gptel-prompt-transform-functions can be used for arbitrarily complex prompt transformations. A typical example would be to search for occurrences of the pattern $(cmd) and replace it with the output of the shell command cmd, making it easy to send dynamically generated shell command output. It is described in more detail in 10.2.
+
+ 4. Parse this buffer and collect text, sorting it into user and LLM role buckets in an array of messages. gptel uses text-properties to track the provenance of buffer text. If the user option gptel-track-response is non-nil, ignore the distinction between user and LLM roles and treat the entire buffer as a user prompt. If the user option gptel-track-media is non-nil, scan hyperlinks to files in this buffer and check if their MIME types are supported by the LLM (see 9.5). If they are, base64-encode them and include them in the messages array.
+
+ 5. Build the payload using parameters specified by gptel-backend and gptel-model. The former can include preferences like response streaming, LLM prompt caching, temperature etc. There are dozens of parameters governing backend API behavior and LLM output, and gptel provides user options for only a few of them, such as gptel-temperature and gptel-cache. To specify arbitrary LLM/backend API parameters, see 9.4.
+
+ 6. Create the system message and possible conversation template from gptel--system-message, and include it in the payload. If this variable is a string, it is included as is. If it is a function, the system message is generated dynamically. If it is a list of strings, the first element is treated as the system message, and the remaining elements are considered alternating user and LLM messages to be prepended to the messages array. See 9.3 for details.
+
+ 7. If gptel-use-tools is non-nil and gptel-tools contains a list of gptel tools (See 9.7), include the tools in the payload.
+
+ 8. Make a HTTP request with this payload. The address, port and API key (if required) for the request are included in the gptel-backend struct. Run gptel-post-request-hook immediately after starting the request. This hook may be used to do any cleanup or resetting – gptel uses this hook to reset user preferences after firing a “oneshot” request, see 8.
+
+ 9. gptel-send then waits for a response. When a response is received, do some basic error handling. If the response has HTTP code 200/201, first run gptel-pre-response-hook in the buffer from which the request was sent. This hook can be used to prepare the buffer for the response however you would like.
+
+ 10. Streaming responses only: Insert each chunk into the request buffer (or elsewhere if the output has been redirected, see 8.) After each insertion, run gptel-post-stream-hook. This hook runs in the request buffer and may be used for immediate actions such as recentering the view or scrolling the window with the response.
+
+ 11. If gptel-include-reasoning is non-nil and the model responds with a “thinking” or reasoning “block” of text, handle it according to this user option. Typically this involves formatting it specially.
+
+ 12. If the LLM responds with a tool call, either run the tool automatically or insert a prompt into the request buffer seeking confirmation from the user. This depends on both the value of gptel-confirm-tool-calls and the tool’s :confirm slot. If the output has been redirected to a non-buffer destination, tool call confirmation is sought from the minibuffer instead.
+
+ 13. If a tool has been run (automatically or after confirmation), conditionally insert the result into the request buffer, depending on the value of gptel-include-tool-results and the tool’s :include slot.
+    If a tool has been run: add the tool call result to the messages array and resend it to the LLM. Goto step 9.
+
+ 14. After the response ends, run the hook gptel-post-response-functions in the request buffer. This hook can be used for cleanup, formatting or modifying the LLM output, etc. Note that this hook always runs, even if the response fails.
+
+After the request ends, you can examine a pretty-printed view of the state and details of the last request sent from the buffer at any time via the function gptel--inspect-fsm. In chat buffers, you can click on the status text in the header-line instead. This is primarily intended for introspection and debugging.
+
+Alternatively, you can inspect the variable gptel--fsm-last, which always contains the last request as a gptel state-machine object
+
+***** Automatically persist chats to disk
+LLM chats can be one-off, transient interactions whose value is limited to the moment, or perhaps to the side effects they produce via tool calls (such as editing code in other files). In this case there is little reason to keep the chat buffers around. But the conversations may also contain information you may want to refer to in the future.
+
+Since they are regular Emacs buffers, they can be written to disk via ~save-buffer~ (~C-x C-s~ by default), but you will have to manually specify a location and a filename. With a little elisp, you can automate this process so the chat buffers are automatically written to a predtermined directory with a timestamped name when you run save-buffer:
+
+#+begin_src emacs-lisp
+
+  (require 'xdg)
+
+  (defvar gptel-mode-chat-directory
+    (file-name-concat (xdg-data-home) "gptel-chat")
+    "Directory in which to store gptel chats")
+
+  (defun gptel-mode-assign-filename ()
+    "If this is a dissociated chat buffer, save it to a predetermined location.
+
+  Intended to be added to `before-save-hook' in gptel chat buffers.  Use a
+  prefix-arg to save manually."
+    (unless (or (buffer-file-name) current-prefix-arg)
+      (make-directory gptel-mode-chat-directory t)
+      (setq buffer-file-name
+            (file-name-concat
+             gptel-mode-chat-directory
+             (concat
+              (format-time-string "%Y%m%d%H%M%2S-")
+              (file-name-sans-extension
+               (replace-regexp-in-string " " "-" (buffer-name)))
+              (pcase major-mode
+                ('org-mode ".org") ('markdown-mode ".md") (_ ".txt")))))
+      (rename-buffer (file-name-nondirectory buffer-file-name) t)))
+
+#+end_src
+
+Unless the chat buffer is already associated with a file, ~gptel-mode-assign-filename~ sets a suitable timestamped file name for a buffer. We ensure that this runs in gptel chat buffers right before ~save-buffer~ is called:
+
+#+begin_src emacs-lisp
+
+  (defun gptel-mode-auto-save-chat ()
+    "Enable saving chat buffers to predetermined location."
+    (add-hook 'before-save-hook #'gptel-mode-assign-filename
+              nil 'local))
+
+  (add-hook 'gptel-mode-hook #'gptel-mode-auto-save-chat)
+
+#+end_src
+
+Note that ~gptel-mode-assign-filename~ does not alter the value of default-directory in the buffer, and the chat buffer will continue to have access to the same environment until it is closed and reopened as a file from the custom location. This is important, for example, if tool calls involving file paths are involved.
+
+***** Resume chat sessions more robustly
+gptel adds metadata to a chat buffer when saving it to a file. Among other information, this metadata includes the model, backend and tools in use, as well as the response boundaries. When opening this file, ~gptel-mode~ is not automatically enabled, so modifying the buffer can cause the recorded response boundaries to go out of sync.
+
+~gptel-mode~ can be automatically enabled on opening the file by adding a property-line at the top of the file, like
+
+#+begin_src emacs-lisp
+
+  # -*- eval: (gptel-mode 1) -*-
+
+#+end_src
+
+We can get gptel to include this line automatically as follows:
+
+#+begin_src emacs-lisp
+
+  (defun gptel-mode-auto-enable ()
+    "Ensure that this file opens with `gptel-mode' enabled."
+    (save-excursion
+      (let ((enable-local-variables t))  ; Ensure we can modify local variables
+        (if (and (save-excursion
+                   (goto-char (point-min))
+                   (looking-at ".*-\\*-")))  ; If there's a -*- line
+          ;; First remove any existing eval, then add the new one
+          (modify-file-local-variable-prop-line
+            'eval nil 'delete))
+        ;; Always add our eval
+        (add-file-local-variable-prop-line
+          'eval '(and (fboundp 'gptel-mode) (gptel-mode 1))))))
+
+  (add-hook 'gptel-save-state-hook #'gptel-mode-auto-enable)
+
+#+end_src
+
+~gptel-save-state-hook~ runs just before gptel updates its metadata in the file.
+
+Note that this function will overwrite any other eval local variable specification already present on the line.
+
+***** Save and restore your chat sessions
+Saving the file will save the state of the conversation as well. To resume the chat, open the file and turn on ~gptel-mode~ before editing the buffer.
+
+***** Extra Org mode conveniences
+****** Limit conversation context to an Org heading
+You can limit the conversation context to an Org heading with the command ~gptel-org-set-topic~.
+
+(This sets an Org property (~GPTEL_TOPIC~) under the heading. You can also add this property manually instead.)
+
+****** Use branching context in Org mode (tree of conversations)
+You can have branching conversations in Org mode, where each hierarchical outline path through the document is a separate conversation branch. This is also useful for limiting the context size of each query. See the variable ~gptel-org-branching-context~.
+
+If this variable is non-nil, you should probably edit ~gptel-prompt-prefix-alist~ and ~gptel-response-prefix-alist~ so that the prefix strings for org-mode are not Org headings, e.g.
+
+#+begin_src emacs-lisp
+
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
+
+#+end_src
+
+Otherwise, the default prompt prefix will make successive prompts sibling headings, and therefore on different conversation branches, which probably isn’t what you want.
+
+****** Save gptel parameters to Org headings (reproducible chats)
+You can declare the gptel model, backend, temperature, system message and other parameters as Org properties with the command ~gptel-org-set-properties~. gptel queries under the corresponding heading will always use these settings, allowing you to create mostly reproducible LLM chat notebooks, and to have simultaneous chats with different models, model settings and directives (system prompts) under different Org headings.
+
+***** Introspection (examine, debug or modify requests)
+Set ~gptel-expert-commands~ to ~t~ to display additional options in gptel’s transient menu.
+
+*Examining prompts*: you can examine and edit gptel request payloads before sending them.
+
+- Pick one of the “dry run” options in the menu to produce a buffer containing the request payload.
+- You can edit this buffer as you would like and send the request.
+- You can also copy a Curl command corresponding to the request and invoke it from the shell.
+
+*Examining responses*: You can turn on logging to examine the full response from an LLM.
+
+- Set ~gptel-log-level~ to ~info~ or ~debug~.
+- Send a request.
+- Open the log buffer from gptel’s transient menu, or switch to the ~*gptel-log*~ buffer.
+
+***** Securing API keys with authinfo
+You can use Emacs’ built-in support for ~authinfo~ to store API keys required by gptel. Add your API keys to ~~/.authinfo~, and leave ~gptel-api-key~ set to its default. By default, the API endpoint DNS name (e.g. “api.openai.com”) is used as HOST and “apikey” as USER.
+
+#+begin_src sh
+
+  machine api.openai.com login apikey password sk-secret-openai-api-key
+  machine api.anthropic.com login apikey password sk-secret-anthropic-api-key
+
+#+end_src
+
+***** Commands and variables
+
+|   | gptel-org-branching-context      |
+|   | gptel-prompt-prefix-alist        |
+|   | gptel-response-prefix-alist      |
+|   | gptel-org-set-properties         |
+|   |                                  |
+|   | gptel-org-ignore-elements        |
+|   | gptel-prompt-transform-functions |
+|   |                                  |
+|   | gptel-use-context                |
+|   |                                  |
+|   | gptel-track-response             |
+|   | gptel-track-media                |
+|   |                                  |
+|   | gptel-backend                    |
+|   | gptel-model                      |
+|   | gptel-temperature                |
+|   | gptel-cache                      |
+|   |                                  |
+|   | gptel-system-prompt              |
+|   |                                  |
+|   | gptel-use-tools                  |
+|   | gptel-tools                      |
+|   |                                  |
+|   | gptel-post-request-hook          |
+|   | gptel-pre-response-hook          |
+|   | gptel-post-stream-hook           |
+|   |                                  |
+|   | gptel-include-reasoning          |
+|   |                                  |
+|   | gptel-confirm-tool-calls         |
+|   | gptel-include-tool-results       |
+|   |                                  |
+|   | gptel-post-response-functions    |
+|   |                                  |
+|   | gptel--inspect-fsm               |
+|   | gptel--fsm-last                  |
+|   | gptel-expert-commands            |
+
+*** Agent shell
+**** Customizations
+
+| /agent-shell-display-action/                                     |
+| Display action for agent shell buffers.                        |
+|                                                                |
+| /agent-shell-google-gemini-acp-command/                          |
+| Command and parameters for the Gemini client.                  |
+|                                                                |
+| /agent-shell-google-gemini-environment/                          |
+| Environment variables for the Google Gemini client.            |
+|                                                                |
+| /agent-shell-header-style/                                       |
+| Style for agent shell buffer headers.                          |
+|                                                                |
+| /agent-shell-highlight-blocks/                                   |
+| Whether or not to highlight source blocks.                     |
+|                                                                |
+| /agent-shell-mcp-servers/                                        |
+| List of MCP servers to initialize when creating a new session. |
+|                                                                |
+| /agent-shell-opencode-acp-command/                               |
+| Command and parameters for the OpenCode client.                |
+|                                                                |
+| /agent-shell-opencode-authentication/                            |
+| Configuration for OpenCode authentication.                     |
+|                                                                |
+| /agent-shell-opencode-default-model-id/                          |
+| Default OpenCode model ID.                                     |
+|                                                                |
+| /agent-shell-opencode-default-session-mode-id/                   |
+| Default OpenCode session mode ID.                              |
+|                                                                |
+| /agent-shell-opencode-environment/                               |
+| Environment variables for the OpenCode client.                 |
+|                                                                |
+| /agent-shell-prefer-viewport-interaction/                        |
+| Non-nil makes ‘agent-shell’ prefer viewport interaction over   |
+| shell interaction.                                             |
+|                                                                |
+| /agent-shell-preferred-agent-config/                             |
+| Default agent to use for all new shells.                       |
+|                                                                |
+| /agent-shell-session-restore-verbosity/                          |
+| How much prior context to show when restoring a session.       |
+|                                                                |
+| /agent-shell-screenshot-command/                                 |
+| The program to use for capturing screenshots.                  |
+|                                                                |
+| /agent-shell-session-strategy/                                   |
+| How to handle sessions when starting a new shell.              |
+|                                                                |
+| /agent-shell-show-busy-indicator/                                |
+| Non-nil to show the busy indicator animation in the            |
+| header and mode line.                                          |
+|                                                                |
+| /agent-shell-show-config-icons/                                  |
+| Whether to show icons in agent config selection.               |
+|                                                                |
+| /agent-shell-show-context-usage-indicator/                       |
+| Non-nil to show the context usage indicator in                 |
+| the header and mode line.                                      |
+|                                                                |
+| /agent-shell-show-usage-at-turn-end/                             |
+| Whether to display usage information when agent turn ends.     |
+|                                                                |
+| /agent-shell-show-welcome-message/                               |
+| Non-nil to show welcome message.                               |
+|                                                                |
+| /agent-shell-text-file-capabilities/                             |
+| Whether agents are initialized with read/write                 |
+| text file capabilities.                                        |
+|                                                                |
+| /agent-shell-thought-process-expand-by-default/                  |
+| Whether thought process sections should be expanded            |
+| by default.                                                    |
+|                                                                |
+| /agent-shell-thought-process-icon/                               |
+| Icon displayed during the AI’s thought process.                |
+|                                                                |
+| /agent-shell-tool-use-expand-by-default/                         |
+| Whether tool use sections should be expanded by default.       |
+|                                                                |
+| /agent-shell-user-message-expand-by-default/                     |
+| Whether user message sections should be expanded by default.   |
+|                                                                |
+| /agent-shell-write-inhibit-minor-modes/                          |
+| List of minor mode commands to inhibit during                  |
+| ‘fs/write_text_file’ edits.                                    |
+
+**** Commands
+
+| /agent-shell/                                             |
+| Start or reuse an existing agent shell.                 |
+|                                                         |
+| /agent-shell-display-buffer/                              |
+| Toggle agent SHELL-BUFFER display.                      |
+|                                                         |
+| /agent-shell-clear-buffer/                                |
+| Clear the current shell buffer.                         |
+|                                                         |
+| /agent-shell-completion-mode/                             |
+| Toggle agent shell completion with @ or / prefix.       |
+|                                                         |
+| /agent-shell-cycle-session-mode/                          |
+| Cycle through available session modes for the           |
+| current `agent-shell' session.                          |
+|                                                         |
+| /agent-shell-delete-interaction-at-point/                 |
+| Delete interaction (request and response) at point.     |
+|                                                         |
+| /agent-shell-fakes-load-session/                          |
+| Load and replay a traffic session from file.            |
+|                                                         |
+| /agent-shell-google-start-gemini/                         |
+| Start an interactive Gemini CLI agent shell.            |
+|                                                         |
+| /agent-shell-help-menu/                                   |
+| Transient menu for `agent-shell' commands.              |
+|                                                         |
+| /agent-shell-insert-file/                                 |
+| Insert a file into `agent-shell'.                       |
+|                                                         |
+| /agent-shell-insert-shell-command-output/                 |
+| Execute a shell command and insert output as a          |
+| code block.                                             |
+|                                                         |
+| /agent-shell-interrupt/                                   |
+| Interrupt in-progress request and reject all            |
+| pending permissions.                                    |
+|                                                         |
+| /agent-shell-jump-to-latest-permission-button-row/        |
+| Jump to the latest permission button row.               |
+|                                                         |
+| /agent-shell-mode/                                        |
+| Major mode for agent shell.                             |
+|                                                         |
+| /agent-shell-new-shell/                                   |
+| Start a new agent shell.                                |
+|                                                         |
+| /agent-shell-newline/                                     |
+| Insert a newline, and move to left margin of the        |
+| new line.                                               |
+|                                                         |
+| /agent-shell-next-input/                                  |
+| Cycle forwards through input history.                   |
+|                                                         |
+| /agent-shell-next-item/                                   |
+| Go to next item.                                        |
+|                                                         |
+| /agent-shell-next-permission-button/                      |
+| Jump to the next button.                                |
+|                                                         |
+| /agent-shell-open-transcript/                             |
+| Open the transcript file for the current `agent-shell'  |
+| buffer.                                                 |
+|                                                         |
+| /agent-shell-opencode-start-agent/                        |
+| Start an interactive OpenCode agent shell.              |
+|                                                         |
+| /agent-shell-other-buffer/                                |
+| Switch to other associated buffer (viewport vs          |
+| shell).                                                 |
+|                                                         |
+| /agent-shell-previous-input/                              |
+| Cycle backwards through input history, saving           |
+| input.                                                  |
+|                                                         |
+| /agent-shell-previous-item/                               |
+| Go to previous item.                                    |
+|                                                         |
+| /agent-shell-previous-permission-button/                  |
+| Jump to the previous button.                            |
+|                                                         |
+| /agent-shell-prompt-compose/                              |
+| Compose an `agent-shell' prompt in a dedicated          |
+| buffer.                                                 |
+|                                                         |
+| /agent-shell-remove-pending-request/                      |
+| Remove all pending requests or a specific request       |
+| by REMOVE-INDEX.                                        |
+|                                                         |
+| /agent-shell-rename-buffer/                               |
+| Rename current shell buffer.                            |
+|                                                         |
+| /agent-shell-reset-logs/                                  |
+| Reset all log buffers.                                  |
+|                                                         |
+| /agent-shell-resume-pending-requests/                     |
+| Resume processing pending requests in the queue.        |
+|                                                         |
+| /agent-shell-run-all-tests/                               |
+| Run all agent-shell tests in batch mode.                |
+|                                                         |
+| /agent-shell-search-history/                              |
+| Search previous input history.                          |
+|                                                         |
+| /agent-shell-send-current-file/                           |
+| Insert a file into `agent-shell'.                       |
+|                                                         |
+| /agent-shell-send-dwim/                                   |
+| Send region or error at point to last accessed          |
+| shell buffer in project.                                |
+|                                                         |
+| /agent-shell-send-file/                                   |
+| Insert a file into `agent-shell'.                       |
+|                                                         |
+| /agent-shell-send-other-file/                             |
+| Prompt to send a file into `agent-shell'.               |
+|                                                         |
+| /agent-shell-send-region/                                 |
+| Send region to last accessed shell buffer in            |
+| project.                                                |
+|                                                         |
+| /agent-shell-send-screenshot/                             |
+| Capture a screenshot and insert it into                 |
+| `agent-shell'.                                          |
+|                                                         |
+| /agent-shell-set-session-mode/                            |
+| Set session mode (if any available).                    |
+|                                                         |
+| /agent-shell-set-session-model/                           |
+| Set session model.                                      |
+|                                                         |
+| /agent-shell-submit/                                      |
+| Submit current input.                                   |
+|                                                         |
+| /agent-shell-toggle/                                      |
+| Toggle agent shell display.                             |
+|                                                         |
+| /agent-shell-toggle-logging/                              |
+| Toggle logging.                                         |
+|                                                         |
+| /agent-shell-ui-backward-block/                           |
+| Jump to the previous block.                             |
+|                                                         |
+| /agent-shell-ui-forward-block/                            |
+| Jump to the next block.                                 |
+|                                                         |
+| /agent-shell-ui-mode/                                     |
+| Minor mode for SUI block navigation.                    |
+|                                                         |
+| /agent-shell-ui-toggle-fragment/                          |
+| Toggle fragment fold at or near point.                  |
+|                                                         |
+| /agent-shell-ui-toggle-all-fragments/                     |
+| Toggle global fold state: all-expanded ↔                |
+| all-collapsed.                                          |
+|                                                         |
+| /agent-shell-version/                                     |
+| Show `agent-shell' mode version.                        |
+|                                                         |
+| /agent-shell-view-acp-logs/                               |
+| View agent shell ACP logs buffer.                       |
+|                                                         |
+| /agent-shell-view-traffic/                                |
+| View agent shell traffic buffer.                        |
+|                                                         |
+| /agent-shell-viewport-compose-cancel/                     |
+| Cancel prompt composition.                              |
+|                                                         |
+| /agent-shell-viewport-compose-send/                       |
+| Send the viewport composed prompt to the agent          |
+| shell.                                                  |
+|                                                         |
+| /agent-shell-viewport-compose-send-and-kill/              |
+| Send the viewport composed prompt to the agent          |
+| shell and kill compose buffer.                          |
+|                                                         |
+| /agent-shell-viewport-compose-send-and-wait-for-response/ |
+| Send the viewport composed prompt and display           |
+| response in viewport.                                   |
+|                                                         |
+| /agent-shell-viewport-cycle-session-mode/                 |
+| Cycle through available session modes.                  |
+|                                                         |
+| /agent-shell-viewport-edit-mode/                          |
+| Major mode for composing agent shell prompts.           |
+|                                                         |
+| /agent-shell-viewport-interrupt/                          |
+| Interrupt active agent shell request.                   |
+|                                                         |
+| /agent-shell-viewport-next-item/                          |
+| Go to next item.                                        |
+|                                                         |
+| /agent-shell-viewport-next-page/                          |
+| Show next interaction (request / response).             |
+|                                                         |
+| /agent-shell-viewport-previous-item/                      |
+| Go to previous item.                                    |
+|                                                         |
+| /agent-shell-viewport-previous-page/                      |
+| Show previous interaction (request / response).         |
+|                                                         |
+| /agent-shell-viewport-refresh/                            |
+| Refresh viewport buffer content with current item       |
+| from shell.                                             |
+|                                                         |
+| /agent-shell-viewport-reply/                              |
+| Reply as a follow-up and compose another prompt/        |
+| query.                                                  |
+|                                                         |
+| /agent-shell-viewport-quote-reply/                        |
+| Reply with the entire response block-quoted.            |
+|                                                         |
+| /agent-shell-viewport-set-session-mode/                   |
+| Set session mode.                                       |
+|                                                         |
+| /agent-shell-viewport-set-session-model/                  |
+| Set session model.                                      |
+|                                                         |
+| /agent-shell-viewport-view-last/                          |
+| Display the last request/response interaction.          |
+|                                                         |
+| /agent-shell-viewport-view-mode/                          |
+| Major mode for viewing agent shell prompts (read-only). |
+
+**** Miscellaneous
+***** How do I view/get Agent Client Protocol traffic?
+
+1. M-x agent-shell-toggle-logging (make sure logging is ON).
+2. Reproduce the issue
+3. M-x agent-shell-view-traffic
+***** Enabling trusted folder
+When open a project in Gemini, it asks you to confirm wheter you want to enable the current folder as trusted. This doesn't happen in the ~agent-shell~. I don't know why. The solution is configure the ~.json~ file as follow:
+
+#+begin_src js
+
+  // ~/.gemini/trustedFolders.json
+  {
+    "/home/rich/projects/practice/test1": "TRUST_FOLDER",
+    "/home/rich/projects/practice/test2": "TRUST_FOLDER"
+  }
+
+#+end_src
+
+This will make the folder trusted. This must be done before opening the project in the ~agent-shell~, or, if it is already open, close it and reopen it.
+***** Image rendering
+Markdown images:
+
+#+begin_src sh
+
+  ![alt text](/path/to/image.png)
+
+#+end_src
+
+Any of the following in a line of their own are supported also:
+
+#+begin_src sh
+
+  /path/to/image.png
+
+  file:///path/to/image.png
+
+  ./output/chart.png
+  ~/screenshots/demo.png
+
+#+end_src
+
+Recognized image formats depend on what your Emacs was built with (typically png, jpeg, gif, svg, webp, tiff, etc. via ~image-file-name-extensions~).
+
+*** Miscellaneous
+**** Example of installing an MCP server
+Installing "Graphlit" in the Emacs mcp package:
+
+#+begin_src emacs-lisp
+
+  (use-package mcp
+    :ensure t
+    :after gptel
+    :custom (mcp-hub-servers
+             `(("filesystem" . (:command "npx"
+                                         :args ("-y" "@modelcontextprotocol/server-filesystem")
+                                         :roots ("/home/lizqwer/MyProject/")))
+               ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
+               ("qdrant" . (:url "http://localhost:8000/sse"))
+               ("graphlit" .
+                (
+                 :command "npx"
+                 :args ("-y" "graphlit-mcp-server")
+                 :env (
+                       :GRAPHLIT_ORGANIZATION_ID "your-organization-id"
+                       :GRAPHLIT_ENVIRONMENT_ID "your-environment-id"
+                       :GRAPHLIT_JWT_SECRET "your-jwt-secret")))))
+    :config (require 'mcp-hub)
+    :hook (after-init . mcp-hub-start-all-server))
+
+#+end_src
+
+*Installing manually*
+To use the Graphlit MCP Server in any MCP client application, use:
+
+#+begin_src js
+
+    {
+      "mcpServers": {
+        "graphlit-mcp-server": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "graphlit-mcp-server"
+          ],
+          "env": {
+            "GRAPHLIT_ORGANIZATION_ID": "your-organization-id",
+            "GRAPHLIT_ENVIRONMENT_ID": "your-environment-id",
+            "GRAPHLIT_JWT_SECRET": "your-jwt-secret",
+          }
+        }
+      }
+    }
+
+#+end_src
+
 ** LSP
 *** Background
 To implement support for language features in a code editor, for example VS Code, we found three common problems:
@@ -15206,6 +16873,15 @@ Outside of editing a buffer, one of the most common user interface in Emacs is c
 
 #+end_src
 
+Example of ~completing-read~ command and its use to built an ~eshell/~ command:
+
+#+begin_src emacs-lisp
+
+  (completing-read "Select: "
+                   (string-split (shell-command-to-string "ls -1 ../") "\n"))
+
+#+end_src
+
 * How to
 ** Configure the init file
 *** Initialization
@@ -16454,6 +18130,13 @@ Cape provides Completion At Point Extensions which can be used in combination wi
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
 
+
+  ;; Add the following to the function `re-embark-kill-buffer’ so
+  ;; that the listed buffers are not deleted (it does not allow
+  ;; deleteing buffers <number> (*<2>))
+  (string-match-p
+   "^\\*\\(scratch\\|gptel\\|eshell\\)\\*\\(<[[:digit:]]>\\)?$" buffer)
+
 #+end_src
 
 **** Bind key
@@ -16466,7 +18149,7 @@ A simple way to manage personal keybindings.
 
 #+end_src
 
-**** Repeat
+**** Repeat and maps
 Convenient way to repeat previous commands.
 
 #+begin_src emacs-lisp
@@ -16476,6 +18159,10 @@ Convenient way to repeat previous commands.
     :repeat t
     "d" #'xah-beginning-of-line-or-block
     "b" #'xah-end-of-line-or-block)
+
+
+  ;; Disable the "repeat suggest" message when repeat-mode is active
+  (custom-set-variables '(repeat-echo-function 'ignore))
 
 #+end_src
 
@@ -16889,7 +18576,7 @@ Manage local org bindings unsing ~org-mode-map~.
   (defun rf-org-bindings ()
     "Wrapper that manage and enables all `org-mode-map' bindings."
 
-    (keymap-set org-mode-map "C-c C-d" 'rf-outline-down-heading)
+    (keymap-set org-mode-map "C-c C-d" 'rf-org-down-heading)
 
 
     (keymap-unset org-mode-map "C-S-<up>")
@@ -16934,6 +18621,10 @@ Code block evaluation and management in ‘org-mode’ documents
 
   ;; Don't ask for confirmation before executing code blocks.
   (setq org-confirm-babel-evaluate nil)
+
+  ;; Add mermaid to the languages which can be evaluated in Org buffers
+  ;; I think this is not necessary
+  (add-to-list 'org-babel-load-languages '(mermaid . t))
 
 #+end_src
 
@@ -17975,7 +19666,155 @@ Customization variables for TypeScript mode.
 ***** Lisp
 Lisp support, including Emacs Lisp.
 
+#+begin_src emacs-lisp
+
+  ;; DeepSeek: Force enable in all future scratch buffers
+  (defun ai-enable-electric-pair-in-scratch ()
+    "Enable electric-pair-mode in scratch buffer."
+    (when (string= (buffer-name) "*scratch*")
+      (electric-pair-local-mode 1)))
+  (add-hook 'after-init-hook 'ai-enable-electric-pair-in-scratch)
+
+#+end_src
+
 *** Applications
+**** AI
+***** Gptel
+Interact with LLMs from anywhere in Emacs.
+
+#+begin_src emacs-lisp
+
+  ;; System prompts or directives for the LLM.
+  (setf (alist-get 'default gptel-directives)
+        "You're a LLM living in Emacs and a helpful assistant.")
+
+
+  ;; Set presets:
+  (gptel-make-preset 'explain
+    :system "Explain what this code does to a novice programmer.")
+  (gptel-make-preset 'coder
+    :description "A preset optimized for coding tasks" ;for your reference
+    :backend     "Claude"                    ;gptel backend or backend name
+    :model       'claude-3-7-sonnet-20250219.1
+    :system      "You are an expert coding assistant. Your role is to provide
+                 high-quality code solutions,refactorings,and explanations."
+    :tools       '("read_buffer" "modify_buffer")) ;gptel tools or tool names
+
+
+  ;; Add a model to the list of models in the above backend
+  (push 'qwen3/qwen3-coder
+        (gptel-backend-models (gptel-get-backend "Openrouter-example")))
+
+
+  ;; Log request and response bodies
+  (setq gptel-log-level 'info)
+  ;; Send text, images or other media from links?
+  (setq gptel-track-media t)
+
+
+  ;; Defining custom gptel commands
+  ;; To define a command that accepts a prompt in the minibuffer
+  ;; and pops up a window with the response
+  (defvar gptel-lookup--history nil)
+
+  (defun gptel-lookup (prompt)
+    (interactive (list (read-string "Ask ChatGPT: " nil gptel-lookup--history)))
+    (when (string= prompt "") (user-error "A prompt is required."))
+    (gptel-request
+        prompt
+      :callback
+      (lambda (response info)
+        (if (not response)
+            (message "gptel-lookup failed with message: %s" (plist-get info :status))
+          (with-current-buffer (get-buffer-create "*gptel-lookup*")
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (insert response))
+            (special-mode)
+            (display-buffer (current-buffer)
+                            `((display-buffer-in-side-window)
+                              (side . bottom)
+                              (window-height . ,#'fit-window-to-buffer))))))))
+
+#+end_src
+***** Mpc
+Emacs client for interfacing with MCP,supporting connections to MCP servers.
+
+#+begin_src emacs-lisp
+
+  ;; Config credential to github (INS)
+  (use-package mcp
+    :after gptel
+    :custom (mcp-hub-servers
+             '(("github" .
+                (:command "npx"
+                          :args ("-y"
+                                 "@modelcontextprotocol/server-github")
+                          :env ,(list
+                                 (format "GITHUB_TOKEN=%s"
+                                         (auth-source-pick-first-password
+                                          :host "://github.com"
+                                          :user "rich"))
+                                 "GITHUB_OWNER=your_actual_username")))))
+    :config (require 'mcp-hub))
+  ;; Add this line to your ~/.authinfo or ~/.authinfo.gpg file:
+  ;; machine ://github.com login rich password ghp_YourActualSecretTokenHere
+
+#+end_src
+***** Agent shell
+A native Emacs buffer to interact with LLM agents powered by ACP
+
+#+begin_src emacs-lisp
+
+  ;; Configuring MCP servers
+  (setq agent-shell-mcp-servers
+        '(((name . "notion")
+           (type . "http")
+           (headers . [])
+           (url . "https://mcp.notion.com/mcp"))))
+
+
+  ;; Inhibiting minor modes during file writes
+  ;; Some minor modes (for example, aggressive-indent-mode) can interfere
+  ;; with an agent’s edits. Agent Shell can temporarily disable selected
+  ;; per-buffer minor modes while applying edits.
+  (setopt agent-shell-write-inhibit-minor-modes '(aggressive-indent-mode))
+
+
+  ;; Enable the root dir as a trusted folder in Gemini (another way)
+  (setq agent-shell-google-gemini-environment
+        (agent-shell-make-environment-variables
+         "GEMINI_CLI_TRUST_WORKSPACE" "true"))
+
+
+    (defun rf-agent-shell-gemini-trusted (&optional arg)
+      "Set the current directory as trusted folder in gemini.
+      With C-u prefix ARG, select the directory from minibuffer."
+      (interactive "P")
+      (let* ((dir (directory-file-name
+                   (expand-file-name (if (equal arg '(4))
+                                         (read-directory-name "Select dir: ")
+                                       default-directory))))
+             (file (if (file-exists-p "~/.gemini/trustedFolders.json")
+                       "~/.gemini/trustedFolders.json"
+                     (with-temp-file "~/.gemini/trustedFolders.json"
+                       (insert "{}"))))
+             ;; (file "~/.gemini/trustedFolders.json")
+             (data (with-temp-buffer
+                     (insert-file-contents file)
+                     ;; Parse the JSON buffer into a hash-table
+                     (json-parse-string (buffer-string)
+                                        :object-type 'hash-table))))
+        ;; Add your new path and trust mapping
+        (puthash dir "TRUST_FOLDER" data)
+        ;; Save the hash table structure back to the file cleanly
+        (with-temp-file file
+          (insert (json-serialize data))
+          (json-pretty-print (point-min) (point-max))
+          (buffer-string))))
+
+#+end_src
+
 **** Eshell
 Command shell implemented entirely in Emacs Lisp.
 
@@ -18009,6 +19848,17 @@ The coffee-brewing, all singing, all dancing, kitchen sink newsreader.
 
 **** Calendar
 Calendar and time management support.
+
+**** Mermaid
+Mermaid lets you create diagrams and visualizations using text and code. It is a JavaScript based diagramming and charting tool that renders Markdown-inspired text definitions to create and modify diagrams dynamically.
+
+#+begin_src emacs-lisp
+
+  ;; Generate mermaid diagrams using org-mode, org-babel and mermaid-cli.
+  (use-package ob-mermaid
+    :defer t)
+
+#+end_src
 
 *** External
 **** Vterm
@@ -18475,6 +20325,39 @@ Then, just bind this command to a key.
 
 #+end_src
 
+*** Add a function to the init.el to retrieve an API key
+Add this in the ~init.el~:
+
+#+begin_src emacs-lisp
+
+  (string-trim
+   (shell-command-to-string "$SHELL --login -c 'echo $OPENAI_API_KEY'"))
+
+#+end_src
+
+and add this in the ~~/.zshrc~:
+
+#+begin_src sh
+
+  # Set your OpenAI API key
+  export OPENAI_API_KEY="sk-abc123xyz789"
+
+#+end_src
+
+or for more security
+
+#+begin_src sh
+
+  # Inside ~/.zshrc
+  if [ -f ~/.env_secrets ]; then
+      source ~/.env_secrets
+  fi
+
+  # Inside ~/.env_secrets
+  export OPENAI_API_KEY="sk-abc123xyz789"
+
+#+end_src
+
 ** Edit column text, rectangle commands
 [[http://xahlee.info/emacs/emacs/emacs_string-rectangle_ascii-art.html][Xah]]
 
@@ -18505,6 +20388,40 @@ ExampIe, insert A to Z Vertically:
 5- Now, ~M-x rectangle-number-lines~. It will prompt you to enter arguments.
 6- Type ~65~ (Letter ~A~ has Unicode codepoint ~65~. ~a~ is ~97~).
 7- Remove the default ~%2d~ , type ~%c~. (the ~%c~ is for character format)
+
+** Create drawer window
+https://skyefreeman.com/blog/2026/04/15/how-im-using-llms-with-emacs
+
+Function to create a drawer window for working with ~agent-shell~ by Skye Freeman:
+
+Similar to ~agent-shell~, I've bound the creation of new gptel buffers to a global hotkey. The only difference is that I prefer to have these be sub-windows that I call "drawers". These drawers can be popped open and closed quickly as needed with a single key stroke:
+
+#+begin_src elisp
+
+  (defun create-drawer-window (buffer-name &optional focus height mode)
+    (split-window-vertically (if height height -10))
+    (other-window 1)
+    (let ((buf (switch-to-buffer buffer-name)))
+      (if (not focus) (other-window -1))
+      (with-current-buffer buf
+        (if mode
+            (funcall mode)))
+      buf))
+
+  (defun skye/toggle-gptel-drawer ()
+    (interactive)
+    (let ((buffer (gptel "*gpt*")))
+      ;; It only removes it if it is the current window
+      ;; (if (string-equal (buffer-name buffer) (buffer-name (current-buffer)))
+      ;;   (delete-window)
+      ;; Modified to remove it if the window is one of the visible windows
+      (if (get-buffer-window buffer (selected-frame))
+          (delete-window (get-buffer-window buffer))
+        (create-drawer-window (buffer-name buffer) t -20))))
+
+  (global-set-key (kbd "<M-return>") 'skye/toggle-gptel-drawer)
+
+#+end_src
 
 ** Writing scripts
 1. Create ~some.el~ file
@@ -18924,6 +20841,35 @@ First, need to turn on the  LaTeX letters in Org in the Emacs init file.
   #+latex: \closing{Sincerely,}
   #+latex: \ps{P.S.  I need not tell you this is a secret.  Good-night again.}
   #+latex: \end{letter}
+
+#+end_src
+
+*** Mermaid
+Example of usage in org babel blocks:
+
+#+begin_src mermaid :file test.png :theme dark :background-color transparent
+
+  graph TD
+    A[Start] --> B(Verify Mermaid)
+    B --> C{Does it work?}
+    C -->|Yes| D[Success!]
+
+#+end_src
+
+#+begin_src mermaid :file test.png :cmdline -t dark -b transparent
+
+  graph TD
+    A[Start] --> B(Verify Mermaid)
+    B --> C{Does it work?}
+    C -->|Yes| D[Success!]
+
+#+end_src
+
+In the CLI:
+
+#+begin_src sh
+
+    mmdc -i input.mmd -o output.png -t dark -b transparent
 
 #+end_src
 
