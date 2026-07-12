@@ -19,7 +19,7 @@ All the information collected and compressed here is completely free and accessi
 
 This was created for personal use, and self-documentation. It's shared here to keep a public backup, and in case someone might find it helful to see how to collect free resources, and how to structure, and organize the information using the powerful [[https://www.gnu.org/software/emacs/][GNU Emacs]] editor along with [[https://orgmode.org/][Org mode]].
 
-* Some interesting files
+* Interesting files
 ** [[file:init.org][Init]]
 Emacs initialization file that containing personal EmacsLisp code for customizing [[https://www.gnu.org/software/emacs/][Emacs]]. The file is created using an approach similar to literate programming, which is more like self-documentation, and is organized into sections similar to those found in the builtin [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Easy-Customization.html][Customize interface]]. It also includes some additional functions, as well as many of the most useful packages, specially the Minad Stack ([[https://github.com/minad/vertico][vertico]], [[https://github.com/minad/consult][consult]], [[https://github.com/minad/corfu][corfu]], [[https://github.com/minad/cape][cape]], [[https://github.com/minad/tempel][tempel]], [[https://github.com/minad/marginalia][marginalia]]), wich are amazing, and very well-designed packages.
 
@@ -42,8 +42,6 @@ Broad overview and summary of the JS language, covering generic aspects, logical
 
 ** [[file:emacs-elisp.org][Emacs Elisp]]
 A great summary of the Elisp programming language, along with an overview of the main features and builtin modes of the [[https://www.gnu.org/software/emacs/][Emacs]] editor. Elisp is primarily used to customize and extend the functionality of Emacs. Additionaly, it includes a list of the most useful commands, functions, and packages, each accompained by a brief explanation. This content is based on primarily on the  [[https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html][An Introduction to Programming in Emacs Lisp]] book, and [[https://www.gnu.org/software/emacs/manual/html_node/emacs/index.html][GNU Emacs Manual]].
-
-[[file:docs/images/emacs-elisp-file.png]]
 
 ** [[file:html-css-seo.org][HTML-CSS]]
 Basic overview and examples of HTML, CSS, and other topics, based primarily on [[https://developer.mozilla.org][MDN]] website.
@@ -69,3 +67,6 @@ Set of templates for both text and programming languages. Made possible by the a
   //=============================================================
 
 #+end_src
+
+** [[file:devices/default.conf][Keyd]]
+[[https://github.com/rvaiya/keyd][Keyd]] configuration file. Keyd is a mapping tool, not only for the keyboard, but also for the mouse and other devices. It's useful for modifying the behavior of individual keys, setting up layouts like Dvorak, creating macros, and enabling sticky keys.
