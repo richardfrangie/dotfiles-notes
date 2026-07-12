@@ -1,0 +1,3358 @@
+#+date: 2025-05-12
+#+title: Settings
+
+* Keybindings
+** Gnome
+*** Navigation
+
+| /DESCRIPTION/                          | /MY KEY/     | /DEFAUTL/      |
+|--------------------------------------+------------+--------------|
+| Switch to application 1              | /F5/         | /s-1/          |
+| Switch to application 2              | /F9/         | /s-2/          |
+| Switch to application 3              | /F12/        | /s-3/          |
+| Switch to application 4              | /S-Kp_2/     | /s-4/          |
+|--------------------------------------+------------+--------------|
+| &Switch applications                 | /C-<f7>/     | /s-tab/        |
+| &Switch windows                      | /M-<f6>/     | /Disable/      |
+| Switch windows of an application     | /M-<f7>/     | /Disable/      |
+|                                      |            |              |
+| Move window one monitor to the left  | /s-left/     | /S-s-left/     |
+| Move window one monitor to the right | /s-right/    | /S-s-right/    |
+|--------------------------------------+------------+--------------|
+| Hide all normal windows              | /f14/        | /Disable/      |
+|--------------------------------------+------------+--------------|
+| Move to workspace on the left        | /s-up/       | /s-pageup/     |
+| Move to workspace on the right       | /s-down/     | /s-pagedown/   |
+|                                      |            |              |
+| Move window one workspace to left    | /s-pageup/   | /S-s-pageup/   |
+| Move window one workspace to right   | /s-pagedown/ | /S-s-pagedown/ |
+|--------------------------------------+------------+--------------|
+| Switch windows directly (slow)       | /Disable/    | /M-esc/        |
+| Switch windows of an app directly    | /Disable/    | /M-f6/         |
+|--------------------------------------+------------+--------------|
+| Switch to last workspace             | /Disable/    | /s-end/        |
+|--------------------------------------+------------+--------------|
+| Move to workspace above              | /Disable/    | /C-M-up/       |
+| Move to workspace below              | /Disable/    | /C-M-down/     |
+|--------------------------------------+------------+--------------|
+| Switch system controls               | /Disable/    | /C-M-tab/      |
+| Switch system controls directly      | /Disable/    | /C-M-esc/      |
+
++ keymaps
+^ default commands
+~ use-package commands
+' literal key
+,# system bindings
+& held down commands
+- check commands
+
+*Notes*:
+- *Switch windows* (or Switch applications or Switch windows of an application)  must be ~M-f6~ (or any other ~modifier-key~ combination) and mapped through ~keyd~ and not just ~f1~ (or any other single key) because ~f1~ is a single key and when you try to switch windows, a pop-up window appears with all available windows (you want to change windows directly)
+- *Switch windows* allows to switch between windows of the same application (e.g. terminal <-> terminal), but not between windows in different workspaces
+- *Switch applications* allows to switch between windows in different workspaces, but not between windows of the same application
+
+#+begin_src sh
+
+  # Set through gsettings because Gnome -> Settings doesn't have them
+  gsettings set org.gnome.shell.keybindings switch-to-application-1 "['F5']"
+  gsettings set org.gnome.shell.keybindings switch-to-application-2 "['F9']"
+  gsettings set org.gnome.shell.keybindings switch-to-application-3 "['F12']"
+  gsettings set org.gnome.shell.keybindings switch-to-application-4 "['<Shift>KP_2']"
+
+  # Disable these commands so they don't interfere with Emacs commands
+  gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "[]"
+  gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "[]"
+
+  # Disable the shortcut to go to the virtual terminal (TTY) ['<Primary><Alt>F6']
+  # org.gnome.mutter.wayland.keybindings switch-to-session-6 ['']
+
+  # Use 'Super' instead of 'Control' for 'unicode-hotkey'
+  gsettings set org.freedesktop.ibus.panel.emoji unicode-hotkey "['<Super><Shift>u']"
+
+#+end_src
+
+*** Windows
+
+| /DESCRIPTION/               | /MY KEY/    | /DEFAUTL/ |
+|---------------------------+-----------+---------|
+| Close window              |           | /M-f4/    |
+| Toggle maximization state | /s-z/       | /M-f10/   |
+|---------------------------+-----------+---------|
+| View split on left        | /S-s-left/  | /s-left/  |
+| View split on right       | /S-s-right/ | /s-right/ |
+|                           |           |         |
+| Move window               | /s-v/       | /M-f7/    |
+| Resize window             | /S-b/       | /M-f8/    |
+|---------------------------+-----------+---------|
+| Hide window               | /s-d/       | /s-h/     |
+| Activate the window menu  | /Disable/   | /M-spc/   |
+
+*** System
+
+| /DESCRIPTION/                    | /MY KEY/  | /DEFAUTL/    |
+|--------------------------------+---------+------------|
+| Show the overview (windows)    | /pause/   | /Super-s/s/  |
+| Show all applications          | /S-pause/ | /s-a/        |
+|--------------------------------+---------+------------|
+| Focus the active notification  | /disable/ | /s-n/        |
+| Lock screen                    | /disable/ | /s-l/        |
+| Log out                        | /disable/ | /C-M-delete/ |
+| Restore the keyboard shortcuts | /disable/ | /s-esc/      |
+|--------------------------------+---------+------------|
+| Switch to next input source    |         | /s-spc/      |
+| Open the quick settings menu   | /disable/ | /s-s/        |
+
+*** Sound and media
+
+| /DESCRIPTION/          | /MY KEY/ | /DEFAUTL/ |
+|----------------------+--------+---------|
+| &Volumen up          | /s-m/    | /Disable/ |
+| &Volumen down        | /s-w/    | /Disable/ |
+|----------------------+--------+---------|
+| Launch Media player  | /s-l/    | /Disable/ |
+| Previous track       | /s-h/    | /Disable/ |
+| Next track           | /s-n/    | /Disable/ |
+| Play (or play/pause) | /s-RET/  | /Disable/ |
+| Volumen mute/unmute  |        | /Disable/ |
+
+*** Custom
+
+| /DESCRIPTION/                  | /MY KEY/   | /COMMAND/             |
+|------------------------------+----------+---------------------|
+| Launch emacs                 | /s-e/      | emacs-startup.sh    |
+| Launch terminal              | /s-y/      | gnome-terminal      |
+| Take a screenshots named     | /S-s-s/    | gnome-screenshot -i |
+| Kill unresponsive programs   | /C-S-s-k/  | xkill               |
+| Toggle dwell auto click      | /S-s-z/    |                     |
+| Keypad design layer noti     | /M-S-s-d/  | notify-send "Key... |
+| Keypad english layer noti    | /M-S-s-e/  | notify-send "Key... |
+|                              |          |                     |
+| -Kill all instances of copyq | C-SL-S-c | kcopyq              |
+| -Start copyq                 | C-SL-c   | copyqs              |
+
+#+begin_src sh
+
+  # Toggle dwell
+
+  # Command version:
+  # Gnome -> Settings -> Keyboard -> Keyboard Shortcuts -> Custom Shortcuts
+  bash -c 'if [ "$(gsettings get org.gnome.desktop.a11y.mouse dwell-click-enabled)" = "true" ]; then gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled false; else gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true; fi'
+
+
+  # Script version:
+  #!/bin/bash
+  current=$(gsettings get org.gnome.desktop.a11y.mouse dwell-click-enabled)
+  new=$( [ "$current" = "true" ] && echo "false" || echo "true" )
+  gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled $new
+  notify-send "Dwell Click $new"
+
+  # Keypad design layer notification (to use CIDOO V21)
+  notify-send "Keypad layer" "3 DESIGN"
+
+  # Keypad englsih layer notification (to use CIDOO V21)
+  notify-send "Keypad layer" "2 ENGLISH"
+
+#+end_src
+
+*** Screenshos
+
+| /DESCRIPTION/                       | /MY KEY/ | /DEFAUTL/ |
+|-----------------------------------+--------+---------|
+| Take a screenshot interactively   | /s-s/    | /print/   |
+|-----------------------------------+--------+---------|
+| Take a screenshot of a window     | /s--/    | /M-print/ |
+| Take a screenshot                 | /S-s--/  | /S-print/ |
+|-----------------------------------+--------+---------|
+| Record a screencast interactively |        | /C-S-M-r/ |
+
+*** Launchers
+
+| /DESCRIPTION/       | /MY KEY/ | /DEFAUTL/ |
+|-------------------+--------+---------|
+| Home folder       | /s-TAB/  | /Disable/ |
+| Launch calculator | /s-q/    | /Disable/ |
+| Settings          | /s-o/    | /Disable/ |
+
+#+begin_src sh
+
+  # rotate-video-lock-static has these bindings ['<Super>o',
+  # 'XF86RotationLockToggle'] that overwrite the Launch Settings
+  # command, so we need to remove the '<Super>o' binding.
+  gsettings set org.gnome.settings-daemon.plugins.media-keys rotate-video-lock-static "['XF86RotationLockToggle']"
+
+#+end_src
+
+*** Accessibility
+
+| /DESCRIPTION/                  | /MY KEY/  | /DEFAUTL/ |
+|------------------------------+---------+---------|
+| Turn screen reader on or off | /Disable/ | /M-s-s/   |
+| Turn zoom on or off          | /Disable/ | /M-s-8/   |
+
+*** Extensions
+
+| /DESCRIPTION/                    | /MY KEY/  | /DEFAUTL/ |
+|--------------------------------+---------+---------|
+| Caffeine (Disable autosuspend) | /s-end/   |         |
+|                                |         |         |
+| Clipboard Previous             | /s-c/     |         |
+| Clipboard Next                 | /s-t/     |         |
+| Clipboard Menu                 | /s-r/     |         |
+| Clipboard Clear history        | /Disable/ |         |
+| Clipboard Private mode         | /Disable/ |         |
+|                                |         |         |
+| Color Picker                   | /s-p/     |         |
+
+*Note*: If you want to set a clipboard shortcut using the =super= key modifier, you must disable any keyboard daemons, then enable the =super= key via gnome settings, and then press the =super= key twice (locked) followed by the key you want (~s-s-<key>~)
+
+*** GoogleTranslate
+
+| /DESCRIPTION/                     | /CHANGE/ |     |
+|---------------------------------+--------+-----|
+| Listen (google speaks)          | /M-k/    |     |
+| Speach (user speaks microphone) | /M-x/    |     |
+| Copy                            | /M-j/    |     |
+|                                 |        |     |
+| Swap                            | /M-e/    | /M-{/ |
+| Focus                           | /M-u/    |     |
+| Clear                           | /M-i/    |     |
+|                                 |        |     |
+| Listen other                    | /M-K/    |     |
+|                                 |        |     |
+| Lang1                           | /M-e/    |     |
+| Lang2                           | /M-./    |     |
+
+** Super
+*** s-
+
+| s-$    |                                 |
+| s-&    |                                 |
+| s-[    |                                 |
+| s-{    |                                 |
+| s-}    |                                 |
+| s-(    |                                 |
+| s-=    |                                 |
+| s-*    |                                 |
+| s-)    |                                 |
+| s-+    |                                 |
+| s-]    |                                 |
+| s-!    |                                 |
+| s-#    |                                 |
+| s-DEL  |                                 |
+|        |                                 |
+| s-TAB  |                                 |
+| s-;    |                                 |
+| s-,    |                                 |
+| s-.    |                                 |
+| s-p    | Color Picker                    |
+| s-y    | Launch terminal tty             |
+| s-f    |                                 |
+| s-g    |                                 |
+| s-c    | Clipboard Previous              |
+| s-r    | Clipboard Menu                  |
+| s-l    | Launch Media player             |
+| s-/    | Home folder                     |
+| s-@    |                                 |
+|        |                                 |
+| s-caps |                                 |
+| s-a    |                                 |
+| s-o    | Settings                        |
+| s-e    | Launch emacs                    |
+| s-u    |                                 |
+| s-i    |                                 |
+| s-d    | Hide window                     |
+| s-h    | Previous track                  |
+| s-t    | Clipboard Next                  |
+| s-n    | Next track                      |
+| s-s    | Take a screenshot interactively |
+| s--    | Take a screenshot of a window   |
+| s-\    |                                 |
+| s-RET  |                                 |
+|        |                                 |
+| s-'    |                                 |
+| s-q    | Launch calculator               |
+| s-j    |                                 |
+| s-k    |                                 |
+| s-x    |                                 |
+| s-b    | Resize window                   |
+| s-m    | Move window                     |
+| s-w    | Volumen down                    |
+| s-v    | Volumen up                      |
+| s-z    | Toggle maximization state       |
+|        |                                 |
+| s-SPC  |                                 |
+
+*** s-S-
+
+| s-~      |                           |
+| s-%      |                           |
+| s-7      |                           |
+| s-5      |                           |
+| s-3      |                           |
+| s-1      |                           |
+| s-9      |                           |
+| s-0      |                           |
+| s-2      |                           |
+| s-4      |                           |
+| s-6      |                           |
+| s-8      |                           |
+| s-`      |                           |
+| s-S-DEL  |                           |
+|          |                           |
+| s-S-TAB  |                           |
+| s-:      |                           |
+| s-<      |                           |
+| s->      |                           |
+| s-P      |                           |
+| s-Y      |                           |
+| s-F      |                           |
+| s-G      |                           |
+| s-C      |                           |
+| s-R      |                           |
+| s-L      |                           |
+| s-?      |                           |
+| s-^      |                           |
+|          |                           |
+|          |                           |
+| s-S-CAPS |                           |
+| s-A      |                           |
+| s-O      |                           |
+| s-E      |                           |
+| s-U      | Unicode hotkey            |
+| s-I      |                           |
+| s-D      |                           |
+| s-H      |                           |
+| s-T      |                           |
+| s-N      |                           |
+| s-S      | Take a screenshot named   |
+| s-_      | Take a screenshot         |
+| s-¦      |                           |
+| s-S-RET  |                           |
+|          |                           |
+| s-"      |                           |
+| s-Q      |                           |
+| s-J      |                           |
+| s-K      |                           |
+| s-X      |                           |
+| s-B      |                           |
+| s-M      |                           |
+| s-W      |                           |
+| s-V      |                           |
+| s-Z      | #Toggles dwell auto click |
+|          |                           |
+| s-S-SPC  |                           |
+
+*** s-<cluster>
+
+| s-<up>     | Move to workspace on the left        |
+| s-<down>   | Move to workspace on the right       |
+| s-<left>   | Move window one monitor to the left  |
+| s-<right>  | Move window one monitor to the right |
+|            |                                      |
+| s-<home>   |                                      |
+| s-<end>    | Auto suspend                         |
+| s-<prior>  | Move window one workspace to left    |
+| s-<next>   | Move window one workspace to right   |
+|            |                                      |
+| s-<insert> |                                      |
+| s-<delete> |                                      |
+
+*** s-S-<cluster>
+
+| s-S-<up>     |                     |
+| s-S-<down>   |                     |
+| s-S-<left>   | View split on left  |
+| s-S-<right>  | View split on right |
+|              |                     |
+| s-S-<home>   |                     |
+| s-S-<end>    |                     |
+| s-S-<prior>  |                     |
+| s-S-<next>   |                     |
+|              |                     |
+| s-S-<insert> |                     |
+| s-S-<delete> |                     |
+
+** X-bows
+*** Layer 0
+
+| /ENTRY/  | /CHANGE/        | /DESCRIPTION/                |
+|--------+---------------+----------------------------|
+| Esc    | LCTL(w)       | Close windows              |
+| Tab    | F7            | F7                         |
+| Caps   | LGUI_T(Menu)  | Super/Menu                 |
+| LShift | Home          | Home                       |
+| LCtrl  | LT1(Esc)      | layer 1/Esc                |
+|        |               |                            |
+| LSuper | LSFT_T(Pause) | Shift/Show overview        |
+| LAlt   | Ctrl          | Ctrl                       |
+| LSpc   | Alt           | Alt                        |
+| LCtrl  | F6            | Emacs local modes          |
+| Shift  | Shift         | Shift                      |
+| RSpc   | Spc           | Spc                        |
+| RAlt   | Tab           | Tab                        |
+| Fn     | Super         | Super                      |
+|        |               |                            |
+| Del    | OSL(1)        | activate central layer     |
+| PrtSc  | Del           | Del                        |
+| RShift | LCtl_T(End)   | Control/End                |
+| RCtrl  | LSFT_T(Tab)   | Shift/Tab                  |
+|        |               |                            |
+| -      | [             | to setup num/sym as Dvorak |
+| [      | /             | to setup num/sym as Dvorak |
+| '      | -             | to setup num/sym as Dvorak |
+
+- LCTL(kc) :: control + kc
+- LT1(kc) :: kc on tap, switch to layer 1 while held
+- LSFT_T(kc) :: shift when held, kc when tapped
+- OSL(1) :: momentarily activates layer until a key is pressed
+
+*** Layer 1
+
+| /ENTRY/ | /CHANGE/       | /DESCRIPTION/              |
+|-------+--------------+--------------------------|
+| f1    | f1           | f1                       |
+| f2    | f2           | f2                       |
+| f3    | f3           | f3                       |
+| f4    | f4           | f4                       |
+|       |              |                          |
+| f6    | f6           | f6                       |
+| f7    | f7           | f7                       |
+| f8    | f8           | f8                       |
+|       |              |                          |
+| f10   | f10          | f10                      |
+| f11   | f11          | f11                      |
+| f12   | f12          | f12                      |
+|       |              |                          |
+| Del   | RALT(')      | compose + ' (e.g. á)     |
+| PrtSc | RALT(Shift)  | compose + shift (e.g. ñ) |
+|       |              |                          |
+| 4     | TO(3)        | Turn on layer 3          |
+| 5     | TO(1)        | Turn on layer 1          |
+|       |              |                          |
+| 7     | TO(0)        | Turn on layer 0          |
+| 8     | TO(2)        | Turn on layer 2          |
+|       |              |                          |
+| '-    | Mouse 1      | leftmouse                |
+| '+    | Mouse 2      | rightmouse               |
+|       |              |                          |
+| Bksp  | Print Screen | keyd central OSLayer     |
+|       |              |                          |
+| e     | Mouse Up     | Mouse Up                 |
+| s     | Mouse Left   | Mouse Left               |
+| d     | Mouse Down   | Mouse Down               |
+| f     | Mouse Right  | Mouse Right              |
+|       |              |                          |
+| Bksp  | Del          | Del                      |
+| Enter | Mouse 1      | leftmouse                |
+|       |              |                          |
+| u     | Home         | Home                     |
+| i     | Up           | Up                       |
+| o     | End          | End                      |
+| j     | Left         | Left                     |
+| k     | Down         | Down                     |
+| l     | Right        | Right                    |
+|       |              |                          |
+| fn    | RAlt         | compose key              |
+
+*** Layer 2
+
+| /ENTRY/ | /CHANGE/ | /DESCRIPTION/ |
+|-------+--------+-------------|
+| '8    | /      |      divide |
+| '9    | 7      |    multiply |
+| '0    | -      |    subtract |
+| 'p    | 9      |         add |
+| ';    | 9      |         add |
+| '/    | .      |     decimal |
+|       |        |             |
+| u     | @      |           7 |
+| i     | {      |           8 |
+| o     | ^      |           9 |
+| j     | (      |           4 |
+| k     | #      |           5 |
+| l     | )      |           6 |
+| m     | %      |           1 |
+| ,     | *      |           2 |
+| .     | $      |           3 |
+| Spc   | &      |           0 |
+| Ralt  | Spc    |         Spc |
+| Fn    | Ret    |         Ret |
+
+*** Function keys
+
+| /ENTRY/ | /CHANGE/         |            | /DESCRIPTION/            |
+|-------+----------------+------------+------------------------|
+| f1    | LCLT(f7)       | C-f7       | Switch to last window  |
+| f2    | LCTL(insert)   | C-insert   | Copy                   |
+| f3    | LSFT(delete)   | S-delete   | Cut                    |
+| f4    | LSFT(insert)   | S-insert   | Paste                  |
+|       |                |            |                        |
+| f5    |                |            | Switch emacs           |
+| f6    | LCTL(g)        | C-g        | Cancel                 |
+| f7    | LCTL(z)        | C-z        | Undo                   |
+| f8    | LCTL(t)        | C-t        | New tab                |
+|       |                |            |                        |
+| f9    |                |            | Switch/Launch firefox  |
+| f10   | LCTL(pageup)   | C-pageup   | Switch to previous tab |
+| f11   | LCTL(pagedown) | C-pagedown | Switch to next tab     |
+| f12   |                |            | Switch/Launch chromium |
+
+- *Switch to last window* must be ~M-f6~ (or any other ~modifier-key~ combination) and mapped through ~keyd~ and not just ~f1~ (or any other single key) because ~f1~ is a single key and when you try to switch windows, a pop-up window appears with all available windows (you want to change windows directly)
+
+*** Misc
+**** Mix keys
+
+| Fn-Delete⌫  | Num Lock                                    |
+|             | Slow wave wash, Fash, Keystroke radiation   |
+| Fn-PrintSc  | Resets EEPROM state                         |
+|             | Breathing, slow color cycle, steady 1 color |
+| Fn-Esc      | Reset the keyboard                          |
+| Fn-Delete⌦  | Switch N-Key Rollver                        |
+| Fn-PageUp   | Home                                        |
+| Fn-PageDown | End                                         |
+
+**** Media keys
+
+| Fn-↑             | sound volume up   |
+| Fn-↓             | sound volume down |
+| Fn-right shift   | mute              |
+| Fn-→             | next song         |
+| Fn-←             | previous song     |
+| Fn-right control | multimedia play   |
+
+**** Launch keys
+
+| Fn-f9  | Launch calculator   |
+| Fn-f10 | Launch my computer  |
+| Fn-f11 | Launch media player |
+| Fn-f12 | Launch mail         |
+
+**** Change light effect
+
+| Fn-Tab | turn key lights off/on.        |
+| Fn-q   | switch lighting effect         |
+| Fn-e   | switch color                   |
+| Fn-w   | increase brightness            |
+| Fn-s   | decrease brightness            |
+| Fn-d   | increase lighting effect speed |
+| Fn-a   | decrease lighting effect speed |
+
+Note: switch lighting effect (press 17 times to cycle back)
+
+**** Adjust key light brightness
+
+| Fn-↑           | Increase brightness                |
+| Fn-↓           | Decrease brightness. Lowest is off |
+| Fn-→           | Change color                       |
+| Fn-right_space | Cycle modes for the logo light     |
+
+- Colors Fn-→ :: red, yellow, cyan, blue, violet
+
+- Colors Fn-right_space :: • Cyan • Red • Purple • Blue • Bright green • Yellowish white • White • Slow color cycle • Breathing • Off.
+
+**** Switch key lighting effect modes
+
+|             | Cycle thru 3 different lighting modes             |
+|-------------+---------------------------------------------------|
+| Fn-Delete⌫ | Num Lock                                          |
+|             | Slow wave wash, Fash, Keystroke radiation         |
+| Fn-PrintSc  | Resets EEPROM state                               |
+|             | Breathing, slow color cycle, steady 1 color       |
+| Fn-PageUp   | Randomish, Moving sine, Keystroke radiation row   |
+| Fn-PageDown | Keystroke slow fade,Solid color,Rainbow neon sign |
+
+** Keypad Cidoo V21
+*** Layer 0 (keypad)
+
+| /KEY/ | /CHANGE/               | /DESCRIPTION/                      |
+|-----+----------------------+----------------------------------|
+|     | rotate-press         | #KC_VOLD/VOLU - KC_SLEP          |
+| FN  | TO(1)                | #Turn on layer 1                 |
+| TAB | C(KC_GRV)            | Switch to last window            |
+| DEL | <XF86Launch5>/f14    | #Hide all normal windows         |
+|     |                      |                                  |
+| NL  | <kp-equal>           |                                  |
+| '/  | <kp-divide>          |                                  |
+| '*  | <kp-multiply>        |                                  |
+| '-  | MT(MOD_LCTL,KC_PMNS) | Ctl/~consult-buffer              |
+|     |                      |                                  |
+| '7  | <kp-7>               | ~mc/mark-next-like-this          |
+| '8  | <kp-8>               | rf/last-interactive-command      |
+| '9  | <kp-9>               | kmacro-end-or-call-macro         |
+| '+  | MT(MOD_LSFT,KC_PPLS) | Shift/switch-to-previous-buffer  |
+|     |                      |                                  |
+| '4  | <kp-4>               | rf/find-or-switch-to-javascript  |
+| '5  | <kp-5>               | rf/find-or-switch-to-shell       |
+| '6  | <kp-6>               | rf/find-or-switch-to-emacs-elisp |
+|     |                      |                                  |
+| '1  | <kp-1>               | rf/find-or-switch-to-todo        |
+| '2  | <kp-2>               | eshell                           |
+| '3  | <kp-3>               | scratch-buffer                   |
+|     |                      |                                  |
+| '0  | MT(MOD_LALT,KC_P0)   | Alt/other-window                 |
+| '.  | <kp-decimal>         | #Temporarily most used command   |
+| RET | <kp-enter>           | #Left click                      |
+
+*** Layer 1 (numbers)
+
+| /KEY/ | /CHANGE/       | /DESCRIPTION/             |
+|-----+--------------+-------------------------|
+|     | rotate-press | #KC_VOLD/VOLU - KC_MUTE |
+| FN  | TO(0)        | #Turn on layer 0        |
+| TAB | TO(2)        | #Turn on layer 2        |
+| DEL | KC_TRNS      | ▽ Pass-through          |
+|     |              |                         |
+| NL  | TO(3)        | #Turn on layer 3        |
+| '/  | '/           | '/                      |
+| '*  | '7           | '*                      |
+| '-  | '-           | '-                      |
+|     |              |                         |
+| '7  | '@           | '7                      |
+| '8  | '{           | '8                      |
+| '9  | '^           | '9                      |
+| '+  | '9           | '+                      |
+|     |              |                         |
+| '4  | '(           | '4                      |
+| '5  | '#           | '5                      |
+| '6  | ')           | '6                      |
+|     |              |                         |
+| '1  | '%           | '1                      |
+| '2  | '*           | '2                      |
+| '3  | '$           | '3                      |
+|     |              |                         |
+| '0  | '&           | '0                      |
+| '.  | '.           | '.                      |
+| RET | RET          | RET                     |
+
+*** Layer 2 (english)
+
+| /KEY/ | /CHANGE/       | /DESCRIPTION/                       |
+|-----+--------------+-----------------------------------|
+|     | rotate-press | #KC_VOLD/VOLU - KC_MUTE           |
+| FN  | TO(0)        | #Turn on layer 0                  |
+| TAB | C(KC_GRV)    | Switch to last window             |
+| DEL | KC_TRNS      | ▽ Pass-through                    |
+|     |              |                                   |
+| NL  | C(KC_PGUP)   | Switch to previous tab            |
+| '/  | C(KC_PGDN)   | Switch to next tab                |
+| '*  | S(KC_DEL)    | Cut / Paste                       |
+| '-  | S(KC_INS)    | Paste / #GoogleTranslate lang2    |
+|     |              |                                   |
+| '7  | MEH(KC_F)    | rf/fold-org-english-headers       |
+| '8  | MEH(KC_S)    | rf/swap-org-header-with-text      |
+| '9  | M4={KC_F6}K  | org-cut-subtree                   |
+| '+  | A(KC_E)      | #GoogleTranslate swap / lang1     |
+|     |              |                                   |
+| '4  | A(KC_J)      | #GoogleTranslate copy             |
+| '5  | A(KC_U)      | #GoogleTranslate focus            |
+| '6  | A(KC_I)      | #GoogleTranslate clear            |
+|     |              |                                   |
+| '1  | M0           | #Speaks, switch Emacs, fold       |
+| '2  | M1           | #Speaks, switch Emacs, fold next  |
+| '3  | M2           | #Copy, paste in Emacs (chrome)    |
+|     |              |                                   |
+| '0  | A(KC_K)      | #GoogleTranslate listen           |
+| '.  | A(KC_X)      | #GoogleTranslate speak microphone |
+| RET | Mouse Btn1   | #Left click                       |
+
+#+begin_src sh
+
+  # M0 -> GoogleTranslate speaks, switches to Emacs and fold the header
+  {+KC_LALT}k{-KC_LALT}{50}{KC_F5}{100}{KC_TAB}
+
+  # M1 -> GoogleTranslate speaks, switches to Emacs, folds the header,
+  # moves to the next, folds it, and places the cursor at the beginning
+  {+KC_LALT}k{-KC_LALT}{50}{KC_F5}{100}{KC_TAB}{50}{KC_LCTL,KC_C}{KC_LCTL,KC_N}{50}{KC_TAB}{50}{KC_LCTL,KC_RGHT}{50}{KC_LCTL,KC_LEFT}
+
+  # M2 -> Copy from GoogleTranslate and paste in Org header (Chrome)
+  {KC_F5}{100}{KC_LCTL,KC_ENT}{50}{KC_LCTL,KC_V}{100}{KC_LGUI,KC_LSFT,KC_2}{200}{KC_LALT,KC_U}{200}{KC_F5}{100}{KC_LCTL,KC_C}{KC_LCTL,KC_B}{50}{KC_LCTL,KC_C}{KC_LCTL,KC_F}{50}{KC_LCTL,KC_RGHT}{50}{KC_LCTL,KC_LEFT}{50}{KC_LCTL,KC_V}{50}{KC_ENT}
+
+  # M3 -> Copy from GoogleTranslate and paste in Org header (Chromium)
+  {KC_F5}{100}{KC_LCTL,KC_ENT}{50}{KC_LCTL,KC_V}{100}{KC_F12}{200}{KC_LALT,KC_U}{200}{KC_F5}{100}{KC_LCTL,KC_C}{KC_LCTL,KC_B}{50}{KC_LCTL,KC_C}{KC_LCTL,KC_F}{50}{KC_LCTL,KC_RGHT}{50}{KC_LCTL,KC_LEFT}{50}{KC_LCTL,KC_V}{50}{KC_ENT}
+
+#+end_src
+
+*** Layer 3 (design)
+
+| /KEY/ | /CHANGE/       | /DESCRIPTION/                 |
+|-----+--------------+-----------------------------|
+|     | rotate-press | #KC_MS_WH_DOWN/UP - KC_MUTE |
+| FN  | TO(0)        | #Turn on layer 0            |
+| TAB | QK_BAT       | Querying Battery Status     |
+| DEL | KC_TRNS      | ▽ Pass-through              |
+|     |              |                             |
+| NL  | KC_LCTL      | #Control                    |
+| '/  | KC_LSFT      | #Shift                      |
+| '*  | '            |                             |
+| '-  | '            |                             |
+|     |              |                             |
+| '7  | '            |                             |
+| '8  | '            |                             |
+| '9  | '            |                             |
+| '+  | '            |                             |
+|     |              |                             |
+| '4  | '            |                             |
+| '5  | '            |                             |
+| '6  | '            |                             |
+|     |              |                             |
+| '1  | '            |                             |
+| '2  | '            |                             |
+| '3  | '            |                             |
+|     |              |                             |
+| '0  | Mouse Btn1   | #Left click                 |
+| '.  | '            |                             |
+| RET | Mouse Btn2   | #Right click                |
+
+*** Misc
+**** LED keys
+
+| FN-+         | LED backlight brightness Increase           |
+| FN--         | LED backlight brightness decrease           |
+|              |                                             |
+| FN-7         | LED backlight speed decrease                |
+| FN-8         | LED backlight speed increase                |
+|              |                                             |
+| FN-ENTER     | Toggle LED backlight mode                   |
+| FN-Backspace | Turn off/on the backlight (Number key zone) |
+|              |                                             |
+| FN-*         | LED backlight hue increase                  |
+| FN-/         | LED backlight hue decrease                  |
+|              |                                             |
+| FN-5         | LED backlight saturation increase           |
+| FN-6         | LED backlight saturation decrease           |
+|              |                                             |
+| FN-0         | Long press FN-0 for 3 secs to reset         |
+|              | the keyboard to the factory setting         |
+
+**** Media keys
+
+| FN-9  | Window system                 |
+| FN-+  | Mac system                    |
+|       |                               |
+| +FN-1 | Bluetooth Pairing mode/switch |
+| +FN-2 | Bluetooth Pairing mode/switch |
+| +FN-3 | Bluetooth Pairing mode/switch |
+|       |                               |
+| +FN-4 | To enter 2.4g pairing mode    |
+
+- + Long press
+
+- The upper left knob switch rotates clockwise to increase volume, counterclockwise to decrease volume, and presses down to mute
+
+**** Bluetooth® Pairing Instructions
+Perform the following steps to pair this keyboard with your device(s).
+
+1. CIDOO V21 mechanical keyboard can connect up to 3 devices at the same time . Please toggle the mode switch to the Bluetooth mode. And long press FN + 1 or FN+2 or FN+3 for 3~5 seconds to enter pairing mode. At this time, the 1/2/3 key flashes blue quickly indicate that its ready to connect .
+
+2. Open the Bluetooth settings on your device and scan for available devices. Locate and select any device name of three group " CIDOO V21-1 " “CIDOO V21-2”, “CIDOO V21-3 ”
+
+3. Once the keyboard has connected to your device, the 1/2/3 key will cease flashing, and indicating that Bluetooth pairing was successful. Short press "FN + 1" or “FN+2" or “FN+3” to switch paired Bluetooth device.
+
+The Bluetooth connection has memory . It will disconnect when power
+off the keyboard ,and the keyboard will re-connect to the last device
+when power on the keyboard again
+
+**** Note
+To recognize CIDOO in VIA program, do the following:
+
+- go to DESIGN
+
+- Load Draft Definition
+
+- Load ~CIDOO V21 V2.JSON~
+
+*Note*: if it doesn't work, try playing around with the switch that changes the state (Bluetooth, USB, wired)
+
+** Mouse Logitech G502
+*** Layer 0
+
+|  /#/ | /DEFAULT/         | /LOGITECH/       | /KEYD/       | /DESCRIPTION/  |
+|----+-----------------+----------------+------------+--------------|
+|  1 | G1 Left click   | Left mouse     |            | Leftmouse    |
+|  4 | G2 Right click  | *Right mouse   | rightmouse | Tripleclick  |
+| 11 | G3 Middle click | M(S-s-z)       |            | Autoclick    |
+|    |                 |                |            |              |
+|  2 | G4 Back         | Middle mouse   |            | Middleclick  |
+|  3 | G5 Forward      | Backward       |            | Backward     |
+|    |                 |                |            |              |
+|  7 | G6 DPI shift    | Macro(C-w)     |            | Close winds  |
+|    |                 |                |            |              |
+|  9 | G7 DPI down     | *Button 5 clic | mouseforwa | Rightmouse   |
+|  8 | G8 DPI up       | Macro(S-enter) |            | -Enter/C-t   |
+|    |                 |                |            |              |
+| 10 | G9 Profile cycl | Cycle profile  |            | Cycle profil |
+|    |                 |                |            |              |
+|  6 | G10 Scroll left | M(C-pageup)    |            | Prev tab     |
+|  5 | G11 Scroll righ | M(C-pagedown)  |            | Next tab     |
+|    |                 |                |            |              |
+|    | DPI             |                |            | 2200         |
+|    | Report rate     |                |            | 125          |
+
+(#) button rating
+(*) some buttons cannot be configured using Logitech firmware, so they are configured by placing a common mouse button and then mapping them using /KEYD/
+
+*Note*: to setup, use the Piper program. To setup complex commands such as "Toggle dwell auto click"  ~M-S-s-z~, first set the command in the Piper program, and only then set it on the Gnome system (otherwise Piper crashes).
+
+- when mapping the =G8= button to the ~enter~ key using the Piper program, it adds an extra ~Shift~ key, I don't know why. So you have to add another ~Shift~ key to the macro to remove that one, i.e., ~Macro(S-enter)~
+
+- Piper doesn't allow to bind the command start with ~Super~ key (I think it's because Gnome automatically maps that key to Show Overview command), so the trick is to bind using other or two modifiers, e.g. ~Super~ + ~key~ -> ~Shift~ + ~Super~ + ~key~
+
+- a nice DPI is 5000 with the keyd off , and 2400 with the keyd on
+
+#+begin_src conf
+
+  # G2: Triple click
+  rightmouse = macro(rightmouse 100ms rightmouse 100ms rightmouse)
+  # G7: Right click
+  mouseforward = rightmouse
+
+  # First focus the window and then close it.
+  button = macro(rightmouse C-w)
+
+#+end_src
+
+*** Layer 1
+
+|  /#/ | /DEFAULT/         | /LOGITECH/       | /KEYD/       | /DESCRIPTION/  |
+|----+-----------------+----------------+------------+--------------|
+|  1 | G1 Left click   | Left mouse     |            | Leftmouse    |
+|  4 | G2 Right click  | *Right mouse   | rightmouse | Tripleclick  |
+| 11 | G3 Middle click | M(S-s-\)       |            | Autoclick    |
+|    |                 |                |            |              |
+|  2 | G4 Back         | Middle mouse   |            | Middleclick  |
+|  3 | G5 Forward      | Backward       |            | Backward     |
+|    |                 |                |            |              |
+|  7 | G6 DPI shift    | Macro(C-w)     |            | Close winds  |
+|    |                 |                |            |              |
+|  9 | G7 DPI down     | *Button 5 clic | mouseforwa | Rightmouse   |
+|  8 | G8 DPI up       | Macro(M-e)     |            | Swap(englis) |
+|    |                 |                |            |              |
+| 10 | G9 Profile cycl | Cycle profile  |            | Cycle profil |
+|    |                 |                |            |              |
+|  6 | G10 Scroll left | M(C-pageup)    |            | Prev tab     |
+|  5 | G11 Scroll righ | M(C-pagedown)  |            | Next tab     |
+|    |                 |                |            |              |
+|    | DPI             |                |            | 2200         |
+|    | Report rate     |                |            | 125          |
+
+** Trackball Kensington
+
+| /#/ | /ENTRY/             | /CHANGE/      |
+|---+-------------------+-------------|
+| 2 | Primary (left)    | middlemouse |
+| 1 | Secondary (right) | leftmouse   |
+
+(#) button rating
+
+** Firefox
+*** Windows & Tabs
+
+| /DESCRIPTION/                   | /DEFAUTL/            |
+|-------------------------------+--------------------|
+| New tab                       | /C-t/                |
+| Close tab                     | /C-w/ / /C-f4/         |
+| Cycle tab                     | /C-TAB/ / /C-Pagedown/ |
+| Cycle tab Reverse             | /C-S-TAB/ / /C-Pageup/ |
+| Reopen last closed tab/window | /C-S-t/              |
+| Go last tab                   | /M-9/                |
+|-------------------------------+--------------------|
+| New private window            | /C-S-p/              |
+| New window                    | /C-n/                |
+| Close window                  | /C-S-w/ / /M-f4/       |
+
+*Note*: reopens last closed tab or window, in the order closed. If there aren't any tabs or windows to reopen, this command restores the previous session.
+
+*** Current Page
+
+| /DESCRIPTION/                        | /DEFAUTL/        |
+|------------------------------------+----------------|
+| Focus next link or input field     | /tab/            |
+| Focus previous link or input field | /S-tab/          |
+| Go down a screen                   | /SPC/ / /Pagedown/ |
+| Go up a screen                     | /S-SPC/ / /Pageup/ |
+| Go to bottom of page               | /C-down/ / /end/   |
+| Go to Top of Page                  | /C-up/ / /home/    |
+|------------------------------------+----------------|
+| Zoom in                            | /C-+/            |
+| Zoom out                           | /C--/            |
+| Zoom reset                         | /C-0/            |
+| Go address bar                     | /M-d / C-l/      |
+
+*** Navigation
+
+| /DESCRIPTION/             | /DEFAUTL/                     |
+|-------------------------+-----------------------------|
+| Back                    | /Backspace/ / /M-left/ / /C-[/    |
+| Forward                 | /S-Backspace/ / /M-right/ / /C-]/ |
+| Reload                  | /C-r/ / /f5/                    |
+| Reload (override cache) | /C-S-r/                       |
+| Stop                    | /esc/                         |
+| Open file               | /C-o/                         |
+|-------------------------+-----------------------------|
+| Find text               | /C-f/                         |
+| Find link               | /'/                           |
+
+*** Search
+
+| /DESCRIPTION/                          | /DEFAUTL/   |
+|--------------------------------------+-----------|
+| Quick find                           | ///         |
+| Find in this page                    | /C-f/       |
+| Find again                           | /C-g/       |
+| Find previous                        | /C-S-g/     |
+| Close find                           | /Esc/       |
+| Quick find within link-text only     | /'/         |
+|--------------------------------------+-----------|
+| Focus the search bar                 | /C-k/j/l/   |
+| Switch search engine (in search bar) | /M-up/down/ |
+
+*** History & Bookmarks
+
+| /DESCRIPTION/                     | /DEFAUTL/ |
+|---------------------------------+---------|
+| History sidebar                 | /C-h/     |
+| Bookmark sidebar                | /C-b/     |
+| Show/hide the bookmarks toolbar | /C-S-b/   |
+
+*** Tools
+
+| /DESCRIPTION/            | /DEFAUTL/ |
+|------------------------+---------|
+| Take a screenshot      | /C-S-s/   |
+| Task manager           | /S-Esc/   |
+| Page source            | /C-u/     |
+| Page info              | /C-i/     |
+| Toggle context menu    | /S-f10/   |
+| Parent browser console | /C-S-j/   |
+
+*** PDF Viewer
+
+| /DESCRIPTION/                     | /DEFAUTL/   |
+|---------------------------------+-----------|
+| Next page                       | /n/j/right/ |
+| Previous page                   | /p/k/left/  |
+| Rotate the document clockwise   | /r/         |
+| Switch to presentation mode     | /C-M-p/     |
+| Choose text selection tool      | /s/         |
+| Choose hand tool                | /h/         |
+| Focus the page number input box | /C-M-g/     |
+
+*** Developer tools
+
+| /DESCRIPTION/                          | /DEFAUTL/ |
+|--------------------------------------+---------|
+| Toggle developer tools               | /C-S-i/   |
+| Web console                          | /C-S-k/   |
+| Inspector                            | /C-S-c/   |
+| Search                               | /C-f/     |
+|--------------------------------------+---------|
+| /CONSOLE/                              |         |
+|--------------------------------------+---------|
+| Switch inline/multiline (in console) | /C-b/     |
+| Close split console                  | /Esc/     |
+| Execute the current expression       | /C-enter/ |
+|--------------------------------------+---------|
+| /DEBUGGER/                             |         |
+|--------------------------------------+---------|
+| Toggle breakpoint on line            | /C-b/     |
+| Toggle conditional breakpoint        | /C-S-b/   |
+| Resume execution (at breakpoint)     | /f8/      |
+| Step over                            | /f10/     |
+| Step into                            | /f11/     |
+| Step out                             | /S-f11/   |
+
+** Terminal
+*** Edit
+
+| /DESCRIPTION/                    | /MY KEY/  | /DEFAUTL/ |
+|--------------------------------+---------+---------|
+| Copy                           |         | /C-S-c/   |
+| Copy as HTML                   |         |         |
+| Paste                          | /Disable/ | /C-S-v/   |
+| Select all                     |         | /C-S-a/   |
+| Preferences                    |         |         |
+|--------------------------------+---------+---------|
+| Yank text from the kill-ring   |         | /C-y/     |
+| Paste all current files (zsh)  |         | /* tab/   |
+| Paste all current files (bash) |         | /M-*/     |
+| Undo                           |         | /C-//     |
+
+| /DESCRIPTION/                                        | /DEFAUTL/ |
+|----------------------------------------------------+---------|
+| Transpose the char at the cursor with preceding    | /C-t/     |
+| Transpose the word at the cursor with preceding    | /M-t/     |
+| Convert chars from cursor to end of word lowercase | /M-l/     |
+| Convert chars from cursor to end of word uppercase | /M-u/     |
+
+*** Move cursor
+
+| /DESCRIPTION/           | /MY KEY/ | /DEFAUTL/ |
+|-----------------------+--------+---------|
+| Move left             |        | /C-b/     |
+| Move right            |        | /C-f/     |
+| Move back one word    |        | /M-b/     |
+| Move forward one word |        | /M-f/     |
+| Move beginning line   |        | /C-a/     |
+| Move end line         |        | /C-e/     |
+
+*** Kill text
+
+| /DESCRIPTION/                           | /MY KEY/ | /DEFAUTL/ |
+|---------------------------------------+--------+---------|
+| Kill the preceding character          |        | /C-h/     |
+| Kill the next character               |        | /C-d/     |
+| Kill the preceding word               |        | /C-w/     |
+| Kill the next word                    |        | /M-d/     |
+|---------------------------------------+--------+---------|
+| Erase a line                          |        | /C-u/     |
+| Kill from cursor to beginning of line |        | /C-u/     |
+| Kill from cursor to the end of line   |        | /C-k/     |
+| Delete previous word                  |        | /M-DEL/   |
+
+*** Tab - File
+
+| /DESCRIPTION/            | /MY KEY/  | /DEFAUTL/       |
+|------------------------+---------+---------------|
+| New tab                | /C-t/     | /C-S-t/         |
+| New window             |         | /C-S-n/         |
+| *Close tab             | /C-w/     | /C-S-w/         |
+| *Close window          | /disable/ | /C-S-q/         |
+|------------------------+---------+---------------|
+| Switch to Previous Tab |         | /C-Page Up/     |
+| Switch to Next Tab     |         | /C-Page Down/   |
+| Move Tab to the Left   |         | /C-S-Page Up/   |
+| Move Tab to the Right  |         | /C-S-Page Down/ |
+| Detach Tab             |         | /Disable/       |
+| Switch to Tab 1        |         | /M-1/           |
+| Switch to Tab 2        |         | /M-2/           |
+| Switch to Tab 3        |         | /M-3/           |
+|------------------------+---------+---------------|
+| Move next              |         | /C-S-m/         |
+| Move previous          |         | /C-S-p/         |
+| Move right             |         | /C-S-r/         |
+| Move left              |         | /C-S-l/         |
+| Detach                 |         | /C-S-d/         |
+
+( * ) it's necessary to disable ~Close window~ for ~Close tab~ to work. This will close each tab, and when there are no more tabs left, it will close the window.
+
+*** History commands
+
+| /DESCRIPTION/                                        | /DEFAUTL/    |
+|----------------------------------------------------+------------|
+| Move to the previous history entry (or up arrow)   | /C-p/        |
+| Move to the next history entry (or down arrow)     | /C-n/        |
+| Move to the beginning (top) of the history list    | /M-</        |
+| Move to the end (bottom) of the history list       | /M->/        |
+|----------------------------------------------------+------------|
+| Reverse search, nonincremental                     | /M-p/ / /up/   |
+| Forward search, nonincremental                     | /M-n/ / /down/ |
+| Execute the current and advance to next (sequence) | /C-o/        |
+
+*** Search commands
+
+| /DESCRIPTION/                            | /MY KEY/ | /DEFAUTL/ |
+|----------------------------------------+--------+---------|
+| Reverse incremental search             |        | /C-r/     |
+| Find the next occurrence (moving “up”) |        | /C-r C-r/ |
+| Forward incremental search             |        | /C-s/     |
+| Quit searching                         |        | /C-g/     |
+
+*** Search text
+
+| /DESCRIPTION/     | /MY KEY/ | /DEFAUTL/ |
+|-----------------+--------+---------|
+| Find            |        | /C-S-f/   |
+| Find next       |        | /C-S-g/   |
+| Find Previous   |        | /C-S-h/   |
+| Clear Highlight |        | /C-S-j/   |
+
+*** Scroll
+
+| /DESCRIPTION/             | /MY KEY/ | /DEFAUTL/     |
+|-------------------------+--------+-------------|
+| Scroll up by one line   |        | /C-S-Up/      |
+| Scroll down by one line |        | /C-S-Down/    |
+| Scroll up by one page   |        | /S-Page Up/   |
+| Scroll down by one page |        | /S-Page Down/ |
+| Scroll to the top       |        | /S-Home/      |
+| Scroll to the bottom    |        | /S-End/       |
+
+*** View
+
+| /DESCRIPTION/ | /MY KEY/ | /DEFAUTL/ |
+|-------------+--------+---------|
+| Full Screen |        | /F11/     |
+| Zoom In     |        | /C-+/     |
+| Zoom Out    |        | /C--/     |
+| Normal Size |        | /C-0/     |
+
+*** Signals
+
+| /DESCRIPTION/                 | /MY KEY/ | /DEFAUTL/ |
+|-----------------------------+--------+---------|
+| Stop current standard input |        | /C-d/     |
+| Kill Process                |        | /C-c/     |
+| Send Process Background     |        | /C-z/     |
+
+*** Miscellaneous
+
+| /DESCRIPTION/                    | /MY KEY/ | /DEFAUTL/ |
+|--------------------------------+--------+---------|
+| Open Terminal                  | /s-t/    | /f8/s-t/  |
+| Redraw the entire screen shell |        | /C-l/     |
+|--------------------------------+--------+---------|
+| Switch to virtual terminal     |        | /C-M-f3/  |
+| Exit back to desktop (X11)     |        | /C-M-f1/  |
+| Shutdown in virtual system     |        | /C-M-del/ |
+
+** Folder
+*** Navigation
+
+| /DESCRIPTION/            | /DEFAUTL/ |
+|------------------------+---------|
+| Go back                | /M-left/  |
+| Go forward             | /M-right/ |
+| Go up                  | /M-up/    |
+| Go down                | /M-down/  |
+| Go to home folder      | /M-home/  |
+| Enter location         | /C-l/     |
+| Location bar with root | ///       |
+| Location bar with home | /~/       |
+
+*** Editing
+
+| /DESCRIPTION/           | /DEFAUTL/     |
+|-----------------------+-------------|
+| Rename                | /F2/          |
+| Create folder         | /C-S-n/       |
+| Move to trash         | /delete/      |
+| Invert selection      | /C-S-i/       |
+| Select items matching | /C-s/         |
+| Show item properties  | /C-i/ / /M-ret/ |
+
+*** General
+
+| /DESCRIPTION/         | /DEFAUTL/ |
+|---------------------+---------|
+| New window          | /C-n/     |
+| Close window or tab | /C-w/     |
+| Undo                | /C-z/     |
+| Redo                | /C-S-z/   |
+| Search              | /C-s/     |
+| Quit                | /C-q/     |
+
+*** View
+
+| /DESCRIPTION/      | /DEFAUTL/ |
+|------------------+---------|
+| Refresh view     | /C-r/     |
+| Show/hiden files | /C-h/     |
+| List view        | /C-1/     |
+| Grid view        | /C-2/     |
+
+*** Tabs
+
+| /DESCRIPTION/        | /DEFAUTL/      |
+|--------------------+--------------|
+| New tab            | /C-t/          |
+| Restore tab        | /C-S-t/        |
+| Go to previous tab | /C-pageup/     |
+| Go to next tab     | /C-pagedown/   |
+| Open tab           | /M-0 ... 8/    |
+| Move tab left      | /C-S-pageup/   |
+| Move tab right     | /C-S-pagedown/ |
+
+*** Opening
+
+| /DESCRIPTION/        | /DEFAUTL/   |
+|--------------------+-----------|
+| Open               | /ret/ / /C-o/ |
+| Open in new tab    | /C-ret/     |
+| Open in new window | /S-ret/     |
+
+** Vlc
+
+| /DESCRIPTION/            | /DEFAUTL/ |
+|------------------------+---------|
+| Play/Pause             | /SPC/     |
+| Next                   | /n/       |
+| Previous               | /p/       |
+| Volume up              | /C-up/    |
+| Volume down            | /C-down/  |
+| Mute                   | /m/       |
+|                        |         |
+| Short backwards jumps  | /left/    |
+| Short backwards jumps  | /right/   |
+| Medium backwards jumps | /M-left/  |
+| Medium backwards jumps | /M-right/ |
+| Long backwards jumps   | /C-left/  |
+| Long backwards jumps   | /C-right/ |
+|                        |         |
+| Fullscreen             | /f/       |
+| Exit fullscreen        | /ESC/     |
+| Sub delay up           | /h/       |
+| Sub delay down         | /g/       |
+| Random                 | /r/       |
+| Normal/Loop/Repeat     | /l/       |
+
+** Annotations
+*** Keyboard main keys
+
+- Initial modifiers :: =Ctrl=, =Alt=, =Super=
+- Secondary modifier :: =Shift=
+
+|   | F1 | F2 | F3 | F4 | F5 | F6 |
+| ` |    |    |    |    |    |    |
+|   |    |    |    |    |    |    |
+|   |    |    |    |    |    |    |
+|   | \  |    |    |    |    |    |
+|   |    |    |    |    |    |    |
+
+| F7 | F8 | F9 | F10 | F11  | F12 |   |
+|    |    |    |     | -    | /=/   |   |
+|    |    |    |     | [    | ]   |   |
+|    |    |    | ;   | '    | \   |   |
+|    |    |    | ,   | .    | /   |   |
+|    |    |    |     | Menu |     |   |
+
+| Print  |   | Pause |      |      |      |      |
+|        |   |       | KP = | KP / | KP * | KP - |
+| Insert |   |       | KP 7 | KP 8 | KP 9 | KP + |
+| Delete |   |       | KP 4 | KP 5 | KP 6 |      |
+|        |   |       | KP 1 | KP 2 | KP 3 |      |
+|        |   |       | KP 0 |      | KP . |      |
+
+*** Keyboard special keys
+
+| /KEYBOARD/ | /DEBIAN/ | /EMACS/ |
+|----------+--------+-------|
+| F1       | F1     | <f1>  |
+| F2       | F2     | <f2>  |
+| F3       | F3     | <f3>  |
+| F4       | F4     | <f4>  |
+| F5       | F5     | <f5>  |
+| F6       | F6     | <f6>  |
+| F7       | F7     | <f7>  |
+| F8       | F8     | <f8>  |
+| F9       | F9     | <f9>  |
+| F10      | F10    | <f10> |
+| F11      | F11    | <f11> |
+| F12      | F12    | <f12> |
+
+| /KEYBOARD/ | /DEBIAN/         | /EMACS/         |
+|----------+----------------+---------------|
+| F13      | Tools          |               |
+| F14      | Launch5        | <XF86Launch5> |
+| F15      | Launch6        | <XF86Launch6> |
+| F16      | Launch7        | <XF86Launch7> |
+| F17      | Launch8        | <XF86Launch8> |
+| F18      | Launch9        | <XF86Launch9> |
+| F19      |                |               |
+| F20      | AudioMicMute   |               |
+| F21      | TouchpadToggle |               |
+| F22      | TouchpadOn     |               |
+| F23      | TouchpadOff    |               |
+
+| /KEYBOARD/  | /DEBIAN/  | /EMACS/         |
+|-----------+---------+---------------|
+| KEY_PROG1 | Launch1 | <XF86Launch1> |
+| KEY_PROG2 | Launch2 | <XF86Launch2> |
+| KEY_PROG3 | Launch3 | <XF86Launch3> |
+| KEY_PROG4 | Launch4 | <XF86Launch4> |
+
+| /KEYBOARD/   | /DEBIAN/         | /EMACS/          |
+|------------+----------------+----------------|
+| scrolllock |                | <Scroll_Lock>  |
+| Print      | Print          | <print>        |
+|            |                |                |
+| Home       |                | <home>         |
+| HomePage   | XF86HomePage   | <XF86HomePage> |
+| Help       | Help           | <help>         |
+|            |                |                |
+| Cancel     | Cancel         | <cancel>       |
+| Eject      | *Eject         |                |
+| Mail       | *Mail          |                |
+| Email      | *Email or Mail |                |
+| Audio Stop | *AudioStop     |                |
+|            |                |                |
+| Undo       | Undo           | <undo>         |
+| Redo       | Redo           | <redo>         |
+| XF86Cut    | XF86Cut        | <XF86Cut>      |
+
+*** Mouse keys
+
+| /LOGITECH/       | /KEYD/         | /XEV/       | /EVTEST/      |
+|----------------+--------------+-----------+-------------|
+| Left mouse     | leftmouse    | button 1  | BTN_LEFT    |
+| Right mouse    | lerightmouse | button 2  | BTN_RIGHT   |
+| Middle mouse   | middlemouse  | button 3  | BTN_MIDDLE  |
+|                |              |           |             |
+| Back           | mouse1       | button 8  | BTN_SIDE    |
+| Forward        | mouse2       | button 9  | BTN_EXTRA   |
+|                |              |           |             |
+| Button 5 click | mouseforward | button 10 | BTN_FORWARD |
+| Button 6 click | mouseback    | button 11 | BTN_BACK    |
+
+*** cut-copy-paste bindings
+
+| /PASTE/ | C-v | S-insert | C-v    | <paste> | XF86Paste |
+| /COPY/  | C-c | C-insert |        | <copy>  | XF86Copy  |
+| /CUT/   | C-x | S-delete | delete | <cut>   | XF86Cut   |
+
+*** System key behavior
+
+- Some special keys are recognized in some places but not in others. For example the key =SunProps= is recognized by Gnome as ~0x10~, but doesn't work if bound to any Gnome command. However, if you bind it in Emacs, e.g. ~(keymap-global-set "<SunProps>" 'kill-line)~ it works perfectly. In ~xev~ it's recognized as =SunProps= , and in ~evtest~ as =KEY_PROPS=.
+
+- Commands set with the GNOME interface take priority on the system. For example, a command configured in Gnome with the shortcut =C-M-down= which is ~switch-to-workspace-down~ will disable this shortcut in Emacs.
+
+* Programs
+** Gnome
+*** Tweaks
+**** Appearance
+*Themes*
+| Cursor      | Sweet-cursors (~/local/share/icons)    |
+| Icons       | Kora (~/local/share/icons)             |
+| Legacy Apps | Orchis-orange-dark-compact (~/.themes) |
+
+**** Keyboard & Mouse
+*Keyboard*
+  - [X] *Show Extended input Sources* (IDK if this is really necessary)
+
+  *Additional Layout Options*
+    *Caps Lock behavior*
+    - [X] Make Cpas Lock an additional Menu key
+    *Compatibility options*
+    - [X] Numeric keypad always enters digits (as in macOS)
+
+*Mouse*
+- [X] Middle Click Paste
+
+**** Window
+*Titlebar Actions*
+| Double-Click    | Toggle Maximize |
+| Middle-Click    | Toggle Maximize |
+| Secondary-Click | Menu            |
+
+*Titlebar Buttons*
+- [X] Maximize
+- [X] Minimize
+
+*Window Focus*
+- [X] Focus on Hover
+- [X] Raise Windows When Focused
+
+*** Settings
+**** Sound
+*Alert Sound*
+Hum
+
+**** Power
+*Power Saving Options*
+- [X] Dim Screen
+Screen Blank 4 minutes
+- [X] Automatic Power Saver
+- [X] Automatic Suspend
+
+Change the automatic suspend time to 6.30 minutes:
+~gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 420~
+~gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 420~
+
+**** Multitasking
+*General*
+- [X] Hot Corner
+- [X] Active Screen Edges
+
+*Workspaces*
+- [X] Dynamic workspaces
+
+  *Multi-Monitor*
+  - [X] Workspaces on primary display only
+
+*Application Switching*
+- [X]  Include applications from all workspaces
+
+**** Appearance
+*Accent Color*
+Purple
+
+**** Mouse & Touchpad
+*Touchpad*
+- [X] Touchpad
+- [ ] Natural Scrolling
+- [X] Tap to Click
+- [X] Two-finger Scrolling
+
+**** Keyboard
+*Input Sources*
+- English (intl., with AltGr dead keys)
+- Spanish
+- English (US, intl., with dead keys)
+
+*Especial Character Entry*
+- [ ] Alternate Character Key
+- [X] Compose Key
+  - [X] Right Alt
+
+*Keyboard Shortcuts*
+
+**** Accessibility
+*Seeing*
+- [X] Enable Animations (stopwatch when dwell is on)
+
+*Typing*
+  *Repeat Keys*
+  ~gsettings set org.gnome.desktop.peripherals.keyboard delay 350~
+  ~gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 35~
+  *Typing Assist (AccessX)*
+  - [X] *Sticky Keys*
+  - [X] Beep when a modifier key is pressed
+
+
+*Pointing & Clicking*
+  *Click Assist*
+    - [X] Activate Windows on Hover
+    - [X] Hoover Click
+    Turn on hover click:
+    ~gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true~
+    To configure ~dwell-time~ which is the delay:
+    ~gsettings set org.gnome.desktop.a11y.mouse dwell-time 1.0~
+    To configure ~dwell-threshold~ which is the pixels movement allowed:
+    ~gsettings set org.gnome.desktop.a11y.mouse dwell-threshold 1~
+
+  Double-Click Delay
+  ~gsettings set org.gnome.desktop.peripherals.mouse double-click 400~
+
+**** Default Applications
+
+| Web    | Firefox |
+| Music  | VLC     |
+| Video  | VLC     |
+| Photos | Eog     |
+
+**** System
+***** Users
+- [X] Automatic Login
+
+***** About
+
+| OS Name          | Debian GNU/Linux 12/13 (bookworm/trixie) |
+| Hardware Model   | Hewlett-Packard HP ProBook 4530s         |
+| Processor        | Intel Core i3-2310M x 4                  |
+| Memory           | 8.0 GiB                                  |
+| Disk Capacity    | 240.1 GB                                 |
+|                  |                                          |
+| Firmware Version | 68SRR Ver. F.50                          |
+| OS Type          | 64-bit                                   |
+| GNOME Shell      | 43.9/48                                  |
+| Window System    | Wayland                                  |
+| Linux            | 6.12.48+deb13-amd64                      |
+|                  |                                          |
+| GNOME Tweaks     | 42.beta/46.1                             |
+| gtk-launch       | 3.24.38/3.24.49                          |
+| gtk4-launch      | 4.8.3/4.18.6                             |
+
+*** Extensions
+**** Manually Installed
+
+- [ ] Application Tabs
+- [ ] App menu is back
+- [- ] Blur my Shell (adds a blur look to different parts of gnome)
+  - [ ] Panel blur
+- [X] Caffeine (disable the screensaver and auto suspend)
+- [X] Clipboard indicator (clipboard manager)
+- [X] Color Picker
+- [X] Force Quit (adds a force quit button)
+- [X] Just Perfection (customize gnome shell, behavior and disable ui elements)
+  - [X] Customize -> Accent Color for Icons
+- [X] Keyboard Modifiers Status (useful for sticky keys)
+- [X] Removable Drive Menu
+- [X] Tasks in panel
+- [X] TopHat (it doesn't work when Lilypad is installed)
+- [ ] Vitals (shows ram, conection, cpu,...)
+- [ ] Transparent Window Moving
+
+**** Built-In
+
+- [ ] Apps Menu
+- [X] Launch New Instance
+- [X] Place Status Indicator
+- [ ] Window List (might be useful with hover auto click)
+
+*** Miscellaneous
+
+- [ ] Activate open folders and files with one click
+
+** Devian
+*** Systemd services
+**** python3-server.service
+
+#+begin_src conf
+
+  [Unit]
+  Description=Local File Server
+  After=network.target
+
+  [Service]
+  ExecStart=/usr/bin/python3 -m http.server 9000 -d /home/rich/projects/
+  Restart=always
+  RestartSec=5
+
+  [Install]
+  WantedBy=multi-user.target
+
+#+end_src
+
+*** Anacrontab
+
+#+begin_src sh
+
+  # /etc/anacrontab: configuration file for anacron
+
+  # See anacron(8) and anacrontab(5) for details.
+
+  SHELL=/bin/sh
+  PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+  HOME=/root
+  LOGNAME=root
+
+  # These replace cron's entries
+  1	5	cron.daily	run-parts --report /etc/cron.daily
+  7	10	cron.weekly	run-parts --report /etc/cron.weekly
+  @monthly	15	cron.monthly	run-parts --report /etc/cron.monthly
+
+  # Personal anacrons
+  1	5	backup-Documents	/home/rich/.local/bin/backfold -e ltximg /home/rich/Documents @.com @.com
+  7	5	init-to-Documents	cp /home/rich/.emacs.d/init.org /home/rich/Documents/
+  1	5	restart-keylogger	systemctl restart logkeys-keylogger.service
+
+  # Personal anacrons
+  1	5	backup-Documents	/home/rich/.local/bin/backfold -e ltximg /home/rich/Documents @.com @.com
+  7	5	init-to-Documents	cp /home/rich/.emacs.d/init.org /home/rich/Documents/
+  1	5	restart-keylogger	systemctl restart logkeys-keylogger.service
+
+#+end_src
+
+*** Scripts
+**** emacs-startup.sh
+
+#+begin_src sh
+
+  #!/usr/bin/env bash
+
+  # Add sbin programs to the path. This fixes the problem of coloring
+  # sbin commands in green (IDK). And add path for personal software.
+  export PATH="$HOME/.local/bin:$PATH:/sbin"
+
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+  # pnpm
+  export PNPM_HOME="/home/rich/.local/share/pnpm"
+  case ":$PATH:" in
+    ,*":$PNPM_HOME:"*) ;;
+    ,*) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
+  # pnpm end
+
+  exec emacs
+
+#+end_src
+
+**** KeepBackupUpdate
+
+#+begin_src sh
+
+  #!/bin/sh
+
+  # DESCRIPTION
+  # keepBackupUpdate is a script used to keep an update backup folder
+  # of all important files, such as 'index.html', 'index.css', 'index.js',
+  # 'modules/' or 'components/', in a single large file, in the
+  # destination, such as '~/Document/' directory.
+
+  # Intended primarily for use in combination with 'backfold' program.
+
+  # EXAMPLE
+  # bwp /home/user/path
+
+  # Directory passed by argument
+  DIR="$1"
+
+  if [ -z "$DIR" ];then
+      echo "No directory specified."
+      exit 1
+  fi
+  if [ ! -d "$DIR" ]; then
+      echo "Directory doesn't exist."
+      exit 1
+  fi
+
+  if [ "$DIR" = "." ] || [ "$DIR" = "./" ]; then
+      DIR_BASENAME="$(basename "$PWD")"
+      DIR="$PWD"
+  else
+      DIR_BASENAME="$(basename "$DIR")"
+  fi
+
+
+  # Directories
+  CURRENT_DIR="$PWD"
+  BACKUP="Backup_${DIR_BASENAME}.gz"
+
+  # Destination directory for backup files
+  DESTINATION_DIR="/home/rich/Documents"
+
+
+  cd $DIR
+
+  # Files to backup
+  FILES=""
+  for file in index.html index.css index.js; do
+      if [ -f "$file" ]; then
+          FILES="${FILES} ${DIR}/$file"
+      fi
+  done
+
+  # Directories to back up all the content inside
+  for directory in components modules; do
+      if [ -d "${DIR}/$directory" ] &&
+             [ "$(ls -A -- ${DIR}/$directory)" ]; then
+          FILES="${FILES} ${DIR}/$directory/*"
+      fi
+  done
+
+
+  if [ -z "$FILES" ]; then
+      echo "None of the specified files were found in the directory."
+      exit 1
+  fi
+
+  cat > /tmp/header.txt << EOF
+  This is a backup of many files combined:
+
+  ================
+  $(date)
+  DIRECTORY:$DIR
+  DESTINATION:$DESTINATION_DIR
+  ================
+
+  EOF
+
+  cat /tmp/header.txt $FILES | gzip > "$BACKUP"
+
+
+  if [ -e "${DESTINATION_DIR}/${BACKUP}" ]; then
+      if cmp -s "$BACKUP" "${DESTINATION_DIR}/${BACKUP}";then
+          echo "→ No changes detected. Backup skipped."
+          rm -f -- "$BACKUP"
+          exit 2
+      else
+          mv -- "$BACKUP" "${DESTINATION_DIR}/${BACKUP}"
+          echo "✓ Backup updated: ${DESTINATION_DIR}/${BACKUP}"
+      fi
+  else
+      mv -- "$BACKUP" "${DESTINATION_DIR}/${BACKUP}"
+      echo "✓ Backup created: ${DESTINATION_DIR}/${BACKUP}"
+  fi
+  exit 0
+
+#+end_src
+
+** Chromium
+*** Extensions
+
+- [X] uBlock Origin Lite (an efficient content blocker)
+- [X] Dark Reader (use dark theme for night and daily browsing)
+- [X] Simple Translate
+- [X] Keyboard Shortcuts for Google Translate
+- [ ] Chromium PDF Viewer
+- [ ] uBlock Origin (no longer supported)
+
+*** Themes
+
+1. Night City 4 1440p
+2. OneMonokai80s
+3. Universe 3 1440p
+
+*** Path to backup folder
+~.config/chromium/Default
+
+** Firefox
+*** Extensions
+
+- [X] uBlock Origin Lite (an efficient content blocker)
+- [X] Dark Reader (use dark theme for night and daily browsing)
+- [X] Simple Translate
+- [X] Undo Close Tab (reopens the last closed tab)
+- [X] Download Manager (S3) (view and manage downloads)
+- [X] Brave search (adds brave search as a search engine)
+- [X] OneTab (group tab and reduce tab clutter)
+- [X] Tabliss (new tab page with customizable backgrounds and widgets)
+- [X] Checkmarks (load favicons bookmarks (useful when formatting comp))
+- [X] CanvasBlocker (alter some js apis to prevent fingerprinting)
+- [X] Decentraleyes (protects against tracking through "free", centralized, content delivery)
+
+*** Themes
+
+- Alpenglow dark
+- Electric night
+
+*** Dictionary
+Enable Spanish (Mexico) dictionary
+
+*** Path to backup-folder
+~/.mozill/firefox
+
+*** Toolbar
+
+- [X] undo close tab
+- [X] sidebars (shows bookmarks or history)
+- [X] bookmarks menu
+- [X] extensions (shows all extensions)
+- [X] firefox view (shows recent browsing (tabs, close tab, history,...))
+- [X] reload
+
+** Zsh
+*** Brief
+Zsh is a UNIX command interpreter (shell) usable as an interactive  login  shell  and  as  a shell script command processor.
+
+*** Theme
+The ~bureauco.zsh-theme~ is a zsh theme created, because it has the colorful option to the default ~bureau.zsh-theme~ theme.
+
+*Note*: use GNOME dark theme in the emulator terminal for better color balance.
+
+*** Installation
+**** Installtion zsh and Oh-My-Zsh
+
+1. install zsh
+
+#+begin_src sh
+
+  sudo apt install zsh
+
+#+end_src
+
+2. mark option ~0~
+
+3. ~exit~ (to exit this session and return to the previous one)
+
+4. change shell
+
+#+begin_src sh
+
+  chsh manz -s /bin/zsh
+
+#+end_src
+
+5. install Oh-My-Zsh Framework
+
+6. download the official Oh-my-zsh! installation script
+
+#+begin_src sh
+
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+#+end_src
+
+**** Plugins
+
+- zsh-syntax-highlighting
+- zsh-autosuggestions
+- zsh-completions
+
+To install these plugins, all we have to do is simply copy and paste the following commands. In them, we're downloading (cloning the plugin repository from Git) and saving it to our home folder, in a custom plugins section of oh-my-zsh.
+
+#+begin_src sh
+
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+  git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
+
+#+end_src
+
+Once done, we edit the ~~/.zshrc~ file and scroll down to the line where the plugins are loaded, usually with this configuration ~plugins=(git)~. We expand that list of plugins by typing the following:
+
+#+begin_src sh
+
+  plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
+  autoload -U compinit && compinit
+
+#+end_src
+
+With this, we'll load those four plugins and have these additional features ready the next time we open a new terminal.
+
+It's possible that the autocompletion plugin isn't applying the correct color. You can fix this by editing the ~~/.zshrc~ file and adding the line export ~ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=5"~. This will allow you to change the autocompletion color from the history, where 5 is the color (purple in this case).
+
+**** Troubleshooting
+***** Strange characteres
+Some characters may be displayed incorrectly (such as squares or similar). This often occurs when using a font that isn't capable of displaying the special characters we need. To resolve this, we recommend installing and using a font of [[https://www.nerdfonts.com/font-downloads][NerdFonts]].
+
+***** (anon):12: character not in range
+This issue occurs due to conflicts in reading Unicode characters, as it's possible that you're trying to read one that doesn't exist in the installed character set (this is very common in Docker, where locales aren't preinstalled). To resolve this, simply install the localization packages by typing ~sudo apt install locales-all~ and restarting the user session.
+
+** CopyQ
+CopyQ is a program that is used to synchronize the selection with the clipboard.
+
+*To sync at startup*
+Use the autostart feature.
+
+1. create the ~copyq.desktop~ file
+2. save it to the ~~/.config/autostart~ folder
+
+#+begin_src conf
+
+  [Desktop Entry]
+  Type=Application
+  Name=CopyQ
+  Exec=env QT_QPA_PLATFORM=xcb copyq
+  Icon=copyq
+  Comment=Clipboard Manager
+  X-GNOME-Autostart-enabled=true
+
+#+end_src
+
+*To sync and enable settings via the GUI*
+1. open *CopyQ*
+2. select tab *File*
+3. select *Preferences*
+4. select *General*
+5. mark the following
+   - [X] Autostart
+   - [X] (1) Store clipboard
+   - [X] (2) Store text selected using mouse
+   - [X] (3) Paste clipboard with mouse
+   - [X] (4) Paste mouse selection with keyboard
+
+** Keyd
+~/etc/keyd/default.conf~
+
+#+begin_src conf
+
+  [ids]
+
+  ,*
+
+  [main]
+
+  # Used as a hold key that enables an extra layer, and as a one
+  # key (pause), binding it to a gnome command (Show overview)
+  capslock = overload(holdlayer, pause)
+
+  # Switches to other layers and other useful keys
+  insert = oneshot(layers)
+
+
+  # Switch to last window
+  f1 = M-grave
+  # Cut (works almost universally like C-x)
+  f2 = S-delete
+  # Copy (works almost universally like C-c)
+  f3 = C-insert
+  # Paste (works almost universally like C-v)
+  f4 = S-insert
+
+  # Cancel
+  f6 = C-g
+  # Undo
+  f7 = C-z
+  # New tab
+  f8 = C-t
+
+  # Switch to previous tab
+  f10 = C-pageup
+  # Switch to next tab
+  f11 = C-pagedown
+
+
+  # Close windows
+  numlock = C-w
+
+  # Click
+  kpenter = rightmouse
+
+
+  # Enable sticky keys
+  # Latching (first press activates modifier's layer for next key)
+  control = oneshot(control)
+  shift = oneshot(shift)
+  meta = oneshot(meta)
+  alt = oneshot(alt)
+
+  # Locking (second press locks modifier until pressed again)
+  [control]
+
+  control = toggle(control)
+
+  [shift]
+
+  shift = toggle(shift)
+  [meta]
+
+  meta = toggle(meta)
+
+  [alt]
+
+  alt = toggle(alt)
+
+
+  # Switches to other layers and other useful keys
+  [layers]
+
+  n = toggle(numbers)
+  d = toggle(design)
+  e = toggle(english)
+
+  # Enable the menu key (menu = compose)
+  m = compose
+  l = leftmouse
+  2 = f2
+
+
+  # Extra layer for numbers and other quick tricks (using by holding)
+  [holdlayer]
+
+  u = 7
+  i = 8
+  o = 9
+  j = 4
+  k = 5
+  l = 6
+  m = 1
+  , = 2
+  . = 3
+  space = 0
+  n = space
+
+  # Function keys
+  2 = f2
+
+  # Toggle to numbers layer (capslock+tab)
+  tab = toggle(numbers)
+  e = toggle(english)
+  d = toggle(design)
+
+
+  # Enable numbers using the right hand
+  [numbers]
+
+  u = 7
+  i = 8
+  o = 9
+  j = 4
+  k = 5
+  l = 6
+  m = 1
+  , = 2
+  . = 3
+  space = 0
+  n = space
+
+
+  # To practice with Google Translate
+  [english]
+
+  # Google Translate speaks
+  x = A-x
+  # Google Translate listens
+  z = A-z
+
+  # Copy a sentence from GoogleTranslate and paste in a new Emacs Org header
+  kp0 = macro(f5 100ms C-enter 50ms C-y 50ms f12 100ms A-c 50ms f5 100ms C-c C-b 50ms C-c C-f 50ms C-right 50ms C-left 50ms C-y 50ms enter)
+
+  # GoogleTranslate speaks a sentence, switches to Emacs, folds the header,
+  # moves to the next, folds it, and places the cursor at the beginning
+  kp1 = macro(A-x 50ms f5 100ms tab 50ms C-c C-n 50ms tab 50ms C-right 50ms C-left)
+
+  # GoogleTranslate speaks a sentence, and switches to Emacs and fold the header
+  kp2 = macro(A-x 50ms f5 100ms tab)
+
+
+  # To use design programs with default modifier behavior
+  [design]
+
+  control = layer(controlmod)
+  shift = layer(shiftmod)
+
+  [controlmod:C]
+
+  [shiftmod:S]
+
+#+end_src
+
+** Rclone
+Rclone config file ~/.config/rclone~.
+
+#+begin_src conf
+
+  [rf-drive]
+  type = drive
+  scope = drive
+  token =
+  team_drive =
+
+  [rf-mega]
+  type = mega
+  user = @.com
+  pass =
+
+#+end_src
+
+** List
+List of the most useful programs.
+
+- Emacs
+- Firefox
+- Chromium
+- Tor
+- Keyd
+- VIA
+- Vial
+- Piper
+- Input-remapper
+- Copyq
+- HydraPaper (background images for multiple monitor)
+- KDEConnect
+- Eog (image viewer)
+- Eog-plugins
+- Tweaks
+- Nautilus-kdeconnect
+- Inkscape
+- Gimp
+- Wireshark
+- VLC
+- gnome-boxes
+- gh
+- pnpm
+- uv
+- wl-clipboard (wl-paste)
+- gnuplot
+* How to
+** Linux
+*** Unicode hex codes composition
+1. Hold down [Left Ctrl] + [Shift] + [u] keys (at the same time).
+2. Release the keys.
+3. Enter Unicode symbol's hex code.
+4. Press [SPACE] key
+
+For example: Left Ctrl + Shift + u + 1F494 ---->  💔
+For example: Left Ctrl + Shift + u +  2014 ---->   —
+
+*** Find Command Name of App
+**** Method 1, Use xprop
+[[http://xahlee.info/linux/linux_gui_command_line_names.html][Xah]]
+
+1. In terminal, type ~xprop~
+2. then click the window
+3. then read the line “WM_CLASS” and “_NET_WM_PID”.
+
+**** Method 2: Use ps
+launch the app by mouse. Then, in terminal type ~ps -ef | grep string~, where ~string~ is what you think the name contains, for example, {gnome, kde, xfce, unity, setting, viewer}.
+
+**** Method 3: Use top
+type ~top~ first, then launch the app, and watch it appear in top.
+
+*** How to Find keycode / keysym of a Key?
+In terminal, type ~xev~, then press key to find that key's X11 keycode and keysym.
+
+*** How find the scancode of a key?
+
+1. Switch to [[How to use Virtual Terminal?][Linux: Virtual Terminal]], by =Ctrl+Alt+F1=.
+2. Type ~showkey --scancodes~.
+3. Type any key, it'll print its scancode in hexadecimal.
+4. To exit, just wait for 10 seconds.
+
+*Note*: you must switch to virtual console for this to work. Normal terminal won't work.
+
+*** How to use Virtual Terminal?
+What is the use of Virtual Terminal? Why not just the terminal?
+
+Virtual Terminal is useful in situations when you need to bypass the GUI (X11) system.
+
+For example, when X11 crashed or frozen.
+
+For example, for getting scancode of a key press, ~showkey --scancodes~ works only when in virtual terminal.
+
+| /C-M-F1/       | Switch to virtual terminal                      |
+| /C-M-F1/F6/    | are all virtual terminals                       |
+| /C-M-F7/       | Exit back to desktop (X11)                      |
+| /C-M-←/        | Switch to previous virtual terminal, or to X11. |
+| /C-M-→/        | Switch to next virtual terminal, or to X11.     |
+
+*** Install a .deb package manually
+*DeepSeek-V3*
+
+*Note*: not yet tested.
+
+Download the project
+
+Look for a .deb file (e.g., package-name_1.0.0_amd64.deb).
+
+#+begin_src sh
+
+  sudo mkdir -p /opt/local-debs/
+  sudo cp /ruta/al/deb /opt/local-debs/
+  sudo apt install /opt/local-debs/paquete.deb
+
+#+end_src
+
+Using dpkg
+
+#+begin_src sh
+
+  # Install the .deb file
+  sudo dpkg -i copyq_10.0.0_Debian_12-1_amd64.deb
+  # or
+  sudo dpkg -i ~/Downloads/copyq_10.0.0_Debian_12-1_amd64.deb
+
+  # Fix any dependency issues
+  sudo apt --fix-broken install
+
+#+end_src
+
+*** Install Google Chrome on Debian 13 “Trixie”
+**** Import Google’s Signed Key
+First, import the Google signed key into your Trixie system to ensure the authenticity of the software we install from this repo.
+
+#+begin_src sh
+
+  sudo wget -q -O /etc/apt/keyrings/linux_signing_key.pub https://dl-ssl.google.com/linux/linux_signing_key.pub
+
+#+end_src
+
+**** Add the Official Google Chrome Repository
+Then, add the official Google Chrome repository to your Debian 13 system. This implies that the update package will be made available with the rest of your system’s regular updates if a new version is released.
+
+#+begin_src sh
+
+  sudo tee /etc/apt/sources.list.d/google-chrome.sources > /dev/null <<'EOF'
+  Types: deb
+  URIs: http://dl.google.com/linux/chrome/deb/
+  Suites: stable
+  Components: main
+  Architectures: amd64
+  Signed-By: /etc/apt/keyrings/linux_signing_key.pub
+  EOF
+
+#+end_src
+
+**** Refresh Package Base
+Before we proceed with Chrome installation on our Trixie system, we should refresh the list of available packages. Run the command below to update the APT repositories index.
+
+#+begin_src sh
+
+  sudo apt update
+
+#+end_src
+
+As you can see, our new Google Chrome repository is now available and ready for use.
+
+**** Install Google Chrome
+We’re all set to install the most up-to-date version of Google’s browser on our Debian 13 system. Run the following commands:
+
+#+begin_src sh
+
+  sudo apt install google-chrome-stable
+
+#+end_src
+
+Something to keep in mind is that when you install Chrome this way, it automatically adds its own repository file called “google-chrome.list” to the “/etc/apt/sources.list.d/ ” directory. Since we already set up the Google repo manually earlier, that extra file isn’t needed, so it’s totally fine to delete it.
+
+#+begin_src sh
+
+  sudo rm /etc/apt/sources.list.d/google-chrome.list
+
+#+end_src
+
+If you skip this step, APT will throw up a bunch of warnings about duplicate repository configurations the next time you refresh the package database.
+
+*** Install AppImage
+**** Installation
+1. Download the program, e.g. Vial
+
+Hop over to the [[https://get.vial.today/download/][download]] page to make sure you have the latest build.
+
+2. Run Vial
+
+Make sure that your downloaded file can be executed. You can either do this through your graphical file explorer or use the following command:
+
+#+begin_src sh
+
+  chmod +x ~/Downloads/Vial*.AppImage
+
+#+end_src
+
+After that simply launch the application by either double clicking on it or executing the following command:
+
+#+begin_src sh
+
+  ~/Downloads/Vial*.AppImage
+
+#+end_src
+
+Place in
+
+#+begin_src sh
+
+  ~/.local/bin/Vial.AppImage
+  # or
+  ~/Applications/Vial.AppImage
+  # or
+  ~/apps/Vial.AppImage
+
+#+end_src
+
+**** Creating desktop entries
+Creating desktop entries for AppImages ensures quick access from the GUI menus. First things first, we need a ~.desktop~ file, which serves as a shortcut.
+
+Here’s a simple example of a ~.desktop~ file layout:
+
+#+begin_src conf
+
+  [Desktop Entry]
+  Name=AppName
+  Exec=/fullpath/to/your/app.AppImage # use full path
+  Icon=/fullpath/to/icon.png
+  Type=Application
+  Categories=Utility;
+
+#+end_src
+
+Saving this file in either ~~/.local/share/applications/~ or ~/usr/share/applications/~ (requires root permission) will add the entry.
+
+#+begin_src sh
+
+  chmod +x app.desktop
+
+#+end_src
+
+Validate the desktop file:
+
+#+begin_src sh
+
+  desktop-file-validate ~/.local/share/applications/app.desktop
+
+#+end_src
+
+Update desktop database:
+
+#+begin_src sh
+
+  update-desktop-database ~/.local/share/applications/
+
+#+end_src
+
+Test the entry:
+
+#+begin_src sh
+
+  gtk-launch app.desktop
+  # or
+  gtk-launch app
+
+#+end_src
+
+*** Install software not available in Debian (Building from source)
+[[https://wiki.debian.org/DontBreakDebian#Building_from_source][wiki.debian]]
+
+If you are building software from source obtained otherwise than from Debian, it's a good idea to build and run it as a normal user, within that user's home directory. If you keep sensitive, valuable, or non-replaceable data in your home directory, it might be a good idea to create another user account for this purpose.
+
+automake and other build systems can install self-built software in non-standard locations. It is a bad idea to be root or use "sudo" to install self-built software into ~/usr/bin~ or the other standard locations where regular packages place files. It is almost always possible to instead install into your home directory instead. (Using ~./configure --prefix=~/.local~ or similar.) If you understand how to edit Makefiles, then you can alter the makefile in such a way as to render make install useful for your system or add a ~prefix=~/.local~ option.
+
+If you want to make the software available to all users, do not allow it to install itself to the ~/usr~ directory hierarchy, as only Debian packages are meant to create files there. Installing software to the ~/usr/local~ will make it available to all users, and will not interfere with the package manager. The stow package can be useful for managing software installed to ~/usr/local~.
+
+*** Expand wildcard immediately (paste all file names at once)
+To paste all files in the current directory into the CLI:
+
+- zsh :: pressing =Tab= after ~*~ will directly expand all filenames
+- bash :: press =Alt+*= (or =Esc= then =*=) to expand * into all filenames before executing
+
+Examples:
+
+- zsh :: type ~cat *.org~ then press =Tab= → Expands to ~cat file1.org file2.org~
+- bash :: type ~cat~ then pres =Alt+*= → Expands to ~cat file1 file2 file3~
+
+*** Enable CopyQ to sync selection and clipboard
+**** In Wayland using the Autostart
+in Linux's Windowing, there are 2 different copy/paste mechanism in popular use.
+
+1. Primary selection. (mouse to select, middle-click to paste)
+2. clipboard. (Ctrl+c to copy, Ctrl+v to paste)
+
+these two are independent. If you want to sync them always, so you can use both ways to copy/paste, then ~sudo apt install copyq~
+
+then, start it in command line by ~copyq &~.
+
+*Note*: on Linux, global shortcuts, pasting or clipboard monitoring may not work
+
+This can be caused by running CopyQ under a Wayland window manager instead of the X11 server.
+
+Workaround: try using the Wayland Support command mentioned below or set ~QT_QPA_PLATFORM~ environment variable to run the app under Xwayland mode:
+
+For example, launch CopyQ with:
+
+#+begin_src sh
+
+  env QT_QPA_PLATFORM=xcb copyq
+
+#+end_src
+
+If CopyQ autostarts, you can change ~Exec=...~ line in ~~/.config/autostart/copyq.desktop~:
+
+#+begin_src sh
+
+  Exec=env QT_QPA_PLATFORM=xcb copyq
+
+#+end_src
+
+*To setup sync using autostart*
+To make a program or script run automatically when the Debian 11 operating system starts up, you can use the autostart feature. This can be accomplished by creating a .desktop file in the ~~/.config/autostart~ or ~/etc/xdg/autostart~ directory.
+
+This runs the program when you log in to your desktop, not when the computer boots.
+
+*deepseek*
+Key advantages of autostart approach:
+
+1. *Better GUI integration*: Starts with your desktop environment's session
+2. *Automatic environment*: Inherits the correct display environment variables
+3. *Simpler management*: No need for systemd commands to enable/disable
+
+Consider using a desktop entry (~.desktop~ file) with autostart instead of a systemd service for GUI applications
+
+Using a ~.desktop~ file for autostart is often simpler for GUI applications like CopyQ, especially in Wayland. Here's how to set it up:
+
+1. Create the desktop entry file
+
+#+begin_src sh
+
+  ~/.config/autostart/copyq.desktop
+
+#+end_src
+
+With this content:
+
+#+begin_src conf
+
+  [Desktop Entry]
+  Type=Application
+  Name=CopyQ
+  Exec=env QT_QPA_PLATFORM=xcb copyq
+  # Exec=env GDK_BACKEND=x11 copyq (IDK if it works)
+  Icon=copyq
+  Comment=Clipboard Manager
+  X-GNOME-Autostart-enabled=true
+
+#+end_src
+
+2. (Optional) Make it executable
+
+#+begin_src sh
+
+  chmod +x ~/.config/autostart/copyq.desktop
+
+#+end_src
+
+3. (Optional) Verify the desktop file works
+
+First test it by running:
+
+#+begin_src sh
+
+  env QT_QPA_PLATFORM=xcb copyq
+
+#+end_src
+
+If that works, then the desktop entry should work too.
+
+If you need to disable it, simply remove or rename the file:
+
+#+begin_src sh
+
+  mv ~/.config/autostart/copyq.desktop ~/.config/autostart/copyq.desktop.disabled
+
+#+end_src
+
+For system-wide installation (all users), create the file at:
+
+#+begin_src sh
+
+  /etc/xdg/autostart/copyq.desktop
+
+#+end_src
+
+But you'll need root privileges and the file should be owned by root.
+
+This method is generally more reliable for GUI applications in Wayland because:
+
+- It starts with the correct session environment
+- It's managed by your desktop environment
+- It works consistently across different display managers
+
+The application will automatically start when you log into your graphical session.
+
+**** In X11 launching the daemon
+in Linux's Windowing System (X11), there are 2 different copy/paste mechanism in popular use.
+
+1. Primary selection. (mouse to select, middle-click to paste)
+2. clipboard. (Ctrl+c to copy, Ctrl+v to paste)
+
+these two are independent. If you want to sync them always, so you can use both ways to copy/paste, then ~sudo apt install copyq~
+
+then, start it in command line by ~copyq &~.
+
+to setup sync:
+
+1. go to apps menu
+2. open ~copyq~ app
+3. go to =Preferences=
+4. go to =General=
+5. in the =Clipboard Manipulation= box check the following
+   - store clipboard
+   - store text selected using mouse
+   - paste clipboard with mouse
+   - paste mouse selection with keyboard
+
+note: if you do this, then you can't select something then paste over, because after you select, that will be the content of your clipboard. You'll need to paste first then delete the parts you don't want.
+
+start as a daemon:
+
+#+begin_src conf
+
+  [Unit]
+  Description=Copyq Clipboard Manager
+  After=graphical.target
+
+  [Service]
+  ExecStart=/usr/bin/copyq
+  Restart=on-failure
+  User=rich
+  Environment=DISPLAY=:0
+  Environment=XDG_RUNTIME_DIR=/run/user/1000
+  # Environment=XAUTHORITY=/home/rich/.Xauthority
+
+  [Install]
+  WantedBy=multi-user.target
+  # WantedBy=default.target
+
+#+end_src
+
+*Note*: this may not work.
+
+*** Configuring the Postfix Mail Transport Agent
+1. Instalar Postfix, para enviar correos electrónicos desde la cuenta de Gmail. ~sudo apt-get install postfix~
+
+2. La primera parte de la instalación de Postfix es una interfaz de usuario basada en texto. Se usa el teclado para seleccionar ~Internet Site~ para el tipo de configuración de correo.
+
+3. En las siguientes indicaciones se dejan en blanco o se deja la opción por defecto.
+
+4. Se obtiene una contraseña /Google App Password/ , esto es para asegurar que se permita enviar los correos, si no se coloca, los correos probablemente no llegarán ya que se descartaran como spam.
+
+5. Configurar SASL con las credenciales de Gmail.
+
+SASL, que significa Autenticación simple y capa de seguridad, es básicamente lo que parece. SASL facilita la autenticación de las aplicaciones con diversas tecnologías de Internet.
+
+Se crea un archivo ~/etc/postfix/sasl/sasl_passwd~ y se agrega el correo Gmail y la contraseña de aplicación /Google App Password/ de la siguienet manera:
+
+~[smtp.gmail.com]:587 juenperez@gmail.com:qodjkozoaqdmyqll~
+
+En este caso, /smtp.gmail.com/ es la dirección del servidor SMTP de Gmail y /587/ es el puerto SMTP.
+
+6. Se crea un archivo de base de datos hash con el siguiente comando postmap ~sudo postmap /etc/postfix/sasl/sasl_passwd~ .
+
+7. Para proteger la contraseña de texto sin formato, cambie el propietario y el permiso de los archivos SASL de la siguiente manera:
+
+#+begin_src shell
+
+  sudo chown root:root /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
+  sudo chmod 0600 /etc/postfix/sasl/sasl_passwd /etc/postfix/sasl/sasl_passwd.db
+
+#+end_src
+
+8. Un archivo de configuración más para editar aquí. Para decirle a Postfix que use los servidores de Gmail para enviar correo, se configura el valor de retransmisión(relay) en ~/etc/postfix/main.cf~ colocando ~[smtp.gmail.com]:587~ .
+
+#+begin_src shell
+
+  # mydestination = $myhostname, localhost, localhost.localdomain
+  relayhost = [smtp.gmail.com]:587
+  # mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+
+#+end_src
+
+9. Además, agregue lo siguiente al final de ~/etc/postfix/main.cf~
+
+#+begin_src shell
+
+  # Enable SASL authentication
+  smtp_sasl_auth_enable = yes
+  smtp_sasl_security_options = noanonymous
+  smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd
+  smtp_tls_security_level = encrypt
+  smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+
+#+end_src
+
+10. Finalmente, reinicie Postfix para aplicar nuestros cambios de configuración ~sudo systemctl restart postfix~ .
+
+Prueba de envío de correo electrónico desde Gmail
+
+#+begin_src shell
+
+  sendmail tony@tonytravels.com
+  To: tony@tonytravels.com
+  Subject: Test mail 1
+  This is just a test email
+  <Ctrl+D>
+
+#+end_src
+
+*** How to type all files in a folder in terminal CLI at once?
+Let's say you want to open all the files in a folder with the ~cat~ command. Instead of typing each one manually, you can type asterisk =*= followed by =tab=, that's it.
+
+If you only want the files ending in ~.org~, type =*.org= followed by a =tab=.
+
+#+begin_src sh
+
+  # cat *tab
+  cat file1 file2 file3
+
+#+end_src
+
+*** Remap keyboard and mouse buttons (input-remapper)
+Using ~input-remapper~.
+
+1. open the ~input-remapper~ app (or via CLI type ~input-remapper-gtk~)
+2. select the device (e.g. Logitech K230)
+3. press =Change Key= (Record a button of your device that should be remapped)
+4. then type the key (e.g. =k=)
+5. fill in the box (e.g. ~Control_L + v~)
+6. press =Apply=
+7. toggle =Autoload= if you want automatically apply the preset after your login or when it connects
+
+*** Configuring udev rules for VIA
+**** Brief
+https://get.vial.today/manual/linux-udev.html
+
+In order for your keyboard to be detected by the VIA and Vial apps on Linux, you need to set up a custom udev rule. Both use the hidraw linux driver to directly communicate configurations to your keyboard. In most situations it should be safe to use a generalized udev rule for all hidraw devices, but in other cases where you prefer or are required to restrict access on a device basis, it is possible to create a udev rule specifically for your keyboard.
+
+Vial has a magic number that is inserted into the USB serial attribute, so you will only need one rule for all Vial keyboards that will be safe to use in conjunction with other hidraw device rules.
+
+The following guides will show you how to implement these udev rules. You will require root access to create the files that are necessary.
+
+**** Universal Vial udev rule
+***** Manually
+Write this text to ~/etc/udev/rules.d/59-vial.rules~ in a text editor:
+
+#+begin_src sh
+
+  KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{serial}=="*vial:f64c2b3c*", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
+
+#+end_src
+
+You can replace the group with any that you require on your operating system, but the users group should work on most distributions of Linux.
+
+Notice: to account for changes in the linux kernel https://github.com/systemd/systemd/issues/39056, the order of operation for the udev rules has been changed from 99-vial.rules too 59-vial.rules as this manual previously instructed. If you have implemented this rule before, and recently have started to have problems, change this accordingly.
+
+In order for your new udev rules to take effect, you must reload the udev rules. The standard way to do this is to run the following command as root:
+
+#+begin_src sh
+
+  udevadm control --reload-rules && udevadm trigger
+
+#+end_src
+
+If this command doesn’t work, or it’s not available, check that you are root or using a privilege escalation tool like sudo, and make sure to read your distribution’s handbook/manual.
+
+***** Directly using the CLI
+For a universal access rule for any device with Vial firmware, run this in your shell while logged in as your user (this will only work with sudo installed):
+
+#+begin_src sh
+
+  export USER_GID=`id -g`; sudo --preserve-env=USER_GID sh -c 'echo "KERNEL==\"hidraw*\", SUBSYSTEM==\"hidraw\", ATTRS{serial}==\"*vial:f64c2b3c*\", MODE=\"0660\", GROUP=\"$USER_GID\", TAG+=\"uaccess\", TAG+=\"udev-acl\"" > /etc/udev/rules.d/59-vial.rules && udevadm control --reload && udevadm trigger'
+
+#+end_src
+
+This command will automatically create a udev rule and reload the udev system.
+
+*** How to to flash the firmware in X-Bows keyboard
+If the keyboard was bought before July 2022 (sometimes also after that date), please download above firmware and [[https://github.com/qmk/qmk_toolbox/releases/tag/0.3.3][QMK Toolbox]] (or in debian ~apt install dfu-programmer~). Follow the linux tutorial [[https://www.youtube.com/watch?v=TRGFOgTVinA][video]] to flash the firmware.
+
+*Note*: you may first need to [[Configuring udev rules for VIA][configure udev rules for VIA]] or Vial
+
+1. Download the firmware file from X-Bows webpage ([[https://drive.google.com/file/d/1MoT7xGUBC0EcmMkhyIhLESwPoxNeHZP7/view?usp=drive_link][X-Bows Nature]])
+2. Open the terminal
+3. Go to download directory, where the file is located (~xbows_nature_vial.hex~)
+4. For debian-base linux distro, run
+
+#+begin_src sh
+
+  sudo apt install dfu-programmer
+
+#+end_src
+
+5. The rule file (~50-qmk.rules~) is required to communicate with the bootloader device
+   https://docs.qmk.fm/\#/faq_build\?id\=linux-udev-rules
+   You'll need properprivileges to communicate with the bootloader device
+   You can either use sudo when flashing firmware (not recommended), or place this file into ~/etc/udev/rules.d/~ and reload
+
+#+begin_src sh
+
+  sudo mv 50-qmk.rules /etc/udev/rules.d/
+  sudo udevadm control --reload-rules
+  sudo udevadm trigger
+
+#+end_src
+
+6. Connect another keyboard or setup an on screen keyboard before continue, because the X-Bows keyboard stops sending keystrokes in bootloader mode
+
+7. If we run ~dfu-programmer atmega32u4 get~ we get no device present because we haven't put the keyboard into bootloader mode yet
+
+#+begin_src sh
+
+  dfu-programmer atmega32u4 get
+  # dfu-programmer: no device present.
+
+#+end_src
+
+8. Put the X-Bows keyboard into bootloader by pressing =Fn= + =esc= and wait for 3 seconds. Then the output should be bootloader version and something which means the computer can communicate with the keyboard bootloader
+
+#+begin_src sh
+
+  dfu-programmer atmega32u4 get
+  # Bootloader Version: 0x00 (0)
+
+#+end_src
+
+9. DO NOT disconnectg the USB cable or interrupt the ~dfu-programmer~ process during flash, otherwise the keyboard may be damaged (if the keyboard is not nature, replace the firmware filename)
+
+#+begin_src sh
+
+  dfu-programmer atmega32u4 erase
+  dfu-programmer atmega32u4 flash xbows_nature_vial.hex
+  dfu-programmer atmega32u4 reset
+
+#+end_src
+
+*NOTE*: in the youtube tutorial they put this command ~dfu-programmer atmega32u4 erase --force~ with the new version of ~dfu-programmer~ the ~--force~ option is not necessary, it work simply by placing ~dfu-programmer atmega32u4 erase~.
+
+*** How to exit the virtual terminal (TTY)?
+To exit the black screen showing Debian GNU/Linux tty6 with the login: prompt, you can follow these steps:
+
+1. Switch Back to the Graphical Interface:
+Try pressing =Ctrl + Alt + F2= you should be back to your desktop, or =Ctrl + Alt + F1= you should be go to the logging session
+
+2. Reboot if Necessary:
+If you cannot get back to the graphical environment, you can reboot your system by pressing =Ctrl + Alt + Del= (or press =Ctrl + D= ). If that doesn't work, log in at the login: prompt and type ~sudo reboot~.
+
+** Gnome
+*** Change Automatic Suspend time 15 to 6.30 minutes:
+In ~gnome -> Settings -> Power -> Power Saving Options~ you can change the time, but doesn't allow a specific time‚ so using ~gsettings~ as follows you can do it.
+
+#+begin_src sh
+
+  gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 420
+
+  gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 420
+
+#+end_src
+
+*** Set Default App by Command Line
+Edit this file ~~/.config/mimeapps.list~ or ~~/.local/share/applications/mimeapps.list~
+
+#+begin_src conf
+
+  [Default Applications]
+  image/pdf=evince-viewer.desktop
+
+#+end_src
+
+Here's sample file content:
+
+#+begin_src conf
+
+  [Default Applications]
+  x-scheme-handler/http=firefox.desktop
+  x-scheme-handler/https=firefox.desktop
+  x-scheme-handler/ftp=firefox.desktop
+  x-scheme-handler/chrome=firefox.desktop
+  text/html=firefox.desktop
+  application/x-extension-htm=firefox.desktop
+  application/x-extension-html=firefox.desktop
+  application/x-extension-shtml=firefox.desktop
+  application/xhtml+xml=firefox.desktop
+  application/x-extension-xhtml=firefox.desktop
+  application/x-extension-xht=firefox.desktop
+  image/jpeg=gthumb.desktop
+  image/svg+xml=inkscape.desktop
+  video/mp4=vlc.desktop
+  video/quicktime=vlc.desktop
+  video/mpeg=vlc.desktop
+  image/png=gthumb.desktop
+  application/epub+zip=userapp-fbreader-K2ECYW.desktop
+  application/vnd.ms-htmlhelp=xchm.desktop
+  image/bmp=gpicview.desktop
+  image/gif=eog.desktop
+  image/jpg=gpicview.desktop
+  image/tiff=gpicview.desktop
+  image/x-bmp=gpicview.desktop
+
+#+end_src
+
+Xah file:
+
+#+begin_src conf
+
+  [Default Applications]
+  x-scheme-handler/http=firefox.desktop
+  x-scheme-handler/https=firefox.desktop
+  x-scheme-handler/ftp=firefox.desktop
+  x-scheme-handler/chrome=firefox.desktop
+  text/html=firefox.desktop
+  application/x-extension-htm=firefox.desktop
+  application/x-extension-html=firefox.desktop
+  application/x-extension-shtml=firefox.desktop
+  application/xhtml+xml=firefox.desktop
+  application/x-extension-xhtml=firefox.desktop
+  application/x-extension-xht=firefox.desktop
+  image/jpeg=gthumb.desktop
+  image/svg+xml=inkscape.desktop
+  video/mp4=vlc.desktop
+  video/quicktime=totem.desktop
+  video/mpeg=vlc.desktop
+  image/png=gthumb.desktop
+  application/epub+zip=userapp-fbreader-K2ECYW.desktop
+  application/vnd.ms-htmlhelp=xchm.desktop
+  image/bmp=gpicview.desktop
+  image/gif=gpicview.desktop
+  image/jpg=gpicview.desktop
+  image/tiff=gpicview.desktop
+  image/x-bmp=gpicview.desktop
+  image/x-pcx=gpicview.desktop
+  image/x-tga=gpicview.desktop
+  image/x-portable-pixmap=gpicview.desktop
+  image/x-portable-bitmap=gpicview.desktop
+  image/x-targa=gpicview.desktop
+  image/x-portable-greymap=gpicview.desktop
+  application/pcx=gpicview.desktop
+  image/svg-xml=gpicview.desktop
+  application/javascript=userapp-emacsclient-L5CAYW.desktop
+  text/css=userapp-emacsclient-5AMIYW.desktop
+  text/plain=gedit.desktop
+  video/x-matroska=vlc.desktop
+  x-scheme-handler/mailto=thunderbird.desktop
+  message/rfc822=thunderbird.desktop
+  application/x-extension-eml=thunderbird.desktop
+  x-scheme-handler/news=thunderbird.desktop
+  x-scheme-handler/feed=thunderbird.desktop
+  application/rss+xml=thunderbird.desktop
+  application/x-extension-rss=thunderbird.desktop
+  video/x-msvideo=parole.desktop
+  application/vnd.rn-realmedia=vlc.desktop
+  video/x-ms-wmv=vlc.desktop
+  video/webm=totem.desktop
+  audio/mpeg=vlc.desktop
+  audio/midi=vlc.desktop
+  audio/x-riff=gimp.desktop
+  audio/ac3=vlc.desktop
+  audio/ogg=vlc.desktop
+  application/vnd.apple.mpegurl=vlc.desktop
+
+  [Added Associations]
+  x-scheme-handler/http=exo-web-browser.desktop;lxde-x-www-browser.desktop;firefox.desktop;
+  x-scheme-handler/https=exo-web-browser.desktop;lxde-x-www-browser.desktop;firefox.desktop;
+  x-scheme-handler/file=exo-file-manager.desktop
+  x-scheme-handler/trash=exo-file-manager.desktop
+  image/jpeg=gthumb.desktop;feh.desktop;gpicview.desktop;eog.desktop;shotwell-viewer.desktop;firefox.desktop;
+  image/svg+xml=inkscape.desktop;eog.desktop;
+  video/mp4=vlc.desktop;parole.desktop;totem.desktop;
+  video/quicktime=vlc.desktop;totem.desktop;
+  video/mpeg=vlc.desktop;
+  image/png=gimp.desktop;gthumb.desktop;gpicview.desktop;eog.desktop;
+  application/epub+zip=userapp-fbreader-K2ECYW.desktop;
+  application/vnd.ms-htmlhelp=userapp-fbreader-GGEGYW.desktop;xchm.desktop;
+  application/javascript=userapp-emacsclient-L5CAYW.desktop;
+  text/css=userapp-emacsclient-5AMIYW.desktop;
+  text/plain=userapp-emacsclient-LFUCYW.desktop;userapp-drracket-I9TD6X.desktop;gedit.desktop;
+  video/x-matroska=vlc.desktop;
+  x-scheme-handler/mailto=thunderbird.desktop;
+  message/rfc822=thunderbird.desktop;
+  application/x-extension-eml=thunderbird.desktop;
+  x-scheme-handler/news=thunderbird.desktop;
+  x-scheme-handler/feed=thunderbird.desktop;
+  application/rss+xml=thunderbird.desktop;
+  application/x-extension-rss=thunderbird.desktop;
+  video/x-msvideo=vlc.desktop;parole.desktop;
+  application/vnd.rn-realmedia=vlc.desktop;
+  video/x-ms-wmv=vlc.desktop;
+  image/gif=gpicview.desktop;eog.desktop;firefox.desktop;gthumb.desktop;
+  video/webm=vlc.desktop;totem.desktop;
+  audio/mpeg=vlc.desktop;
+  audio/midi=vlc.desktop;
+  audio/x-riff=firefox.desktop;eog.desktop;gthumb-import.desktop;gimp.desktop;
+  audio/ac3=vlc.desktop;
+  audio/ogg=vlc.desktop;
+  text/html=firefox.desktop;google-chrome.desktop;lxde-x-www-browser.desktop;
+  application/vnd.apple.mpegurl=vlc.desktop;
+  x-scheme-handler/ftp=lxde-x-www-browser.desktop;firefox.desktop;
+  x-scheme-handler/chrome=lxde-x-www-browser.desktop;firefox.desktop;
+  application/x-extension-htm=lxde-x-www-browser.desktop;firefox.desktop;
+  application/x-extension-html=lxde-x-www-browser.desktop;firefox.desktop;
+  application/x-extension-shtml=lxde-x-www-browser.desktop;firefox.desktop;
+  application/xhtml+xml=lxde-x-www-browser.desktop;firefox.desktop;
+  application/x-extension-xhtml=lxde-x-www-browser.desktop;firefox.desktop;
+  application/x-extension-xht=lxde-x-www-browser.desktop;firefox.desktop;
+  application/pdf=evince.desktop;
+
+#+end_src
+
+*** Disable the '<Super>p' bind associated by default with 'switch-monitor'
+First verify that the command is associated
+
+#+begin_src sh
+
+  gsettings list-recursively | grep "<Super>p"
+  # or
+  gsettings get org.gnome.mutter.keybindings switch-monitor
+
+#+end_src
+
+To disable <Super>p and keep XF86Display:
+
+#+begin_src sh
+
+  gsettings set org.gnome.mutter.keybindings switch-monitor "['XF86Display']"
+
+#+end_src
+
+To disable all related shortcut keys:
+
+#+begin_src sh
+
+  gsettings set org.gnome.mutter.keybindings switch-monitor "['']"
+
+#+end_src
+
+To reset to the defaults:
+
+#+begin_src sh
+
+  gsettings reset org.gnome.mutter.keybindings switch-monitor
+
+#+end_src
+
+*** How to bind any key to execute commands?
+*Overview of Linux Key Programing (Xah)*
+In Linux, there are 2 steps to create keyboard shortcuts:
+
+- Action :: a shell command that does something, for example, switch/close window, simulate key press, mouse click, launch app, open file, empty trash.
+- Bind Key :: Make a key press run a shell command/script.
+
+*RF*
+If you are using X11, you can use ~xbindkeys~ and ~xvkbd~. On Wayland you can use similar applications like ~gsettings~ and ~input-remapper~.
+
+First, create the custom command in ~gsettings~ and assign it an unlikely shorcuts. Then, assign this shortcut to a key in ~input-remapper~.
+
+For example, set the middle mouse button to open a terminal:
+
+1. go to *Settings* -> *Keyboard* -> *Keyboard Shortcuts* -> *Custom Shortcuts* (can also be done via CLI ~gsettings set org.gnome.settings-daemon.plugins.media-keys custom-key '["<Super><Shift><Alt>semicolon", "gnome-terminal"]'~)
+2. go to *input-remmaper*
+3. select *Device* (e.g. mouse name)
+4. select *Change Key*
+5. press mouse button (e.g. =Button MIDDLE=)
+6. type the shortcut (e.g. ~Super_L + Shift_L + Alt_L + KEY_SEMICOLON~)
+7. press *Apply* and that's it
+
+*** Disable Automatic Updates
+Disable updates when I shut down the machine?
+
+Show applications -> software -> update preferences -> Automatic Updates
+
+*** Set X11 as the default session in Debian
+*GPT-4o mini*
+
+1. Edit the GDM Configuration:
+
+#+begin_src sh
+
+  sudo nano /etc/gdm3/daemon.conf
+
+#+end_src
+
+
+2. Uncomment the Wayland Line:
+
+#+begin_src sh
+
+  #WaylandEnable=false
+
+#+end_src
+
+3. Save and Exit
+
+4.  Reboot your system for the changes to take effect
+
+*Note*: can also be done by restart the GDM service using the following command but sometimes it doesn't work
+
+#+begin_src sh
+
+  sudo systemctl restart gdm3
+
+#+end_src
+
+*** Simulate keystrokes (ydotool)
+**** Universal Method
+*Deepseek/GPT-4o mini*
+
+This is useful for settings keys to switch/run apps for example.
+
+*NOTE*: ~ydotool~ works well for remapping simple keys although it has some flaws (such as latency), but the real problem is that it conflicts with other programs like ~input-remapper~ which is more powerful and has the ability to remap keys to different input devices and a good GUI. So sometimes it's better to only use the ~input-remapper~ program.
+
+Simulate Key Presses =Alt+Tab= (switch to last window), =Super+Number= (switch to app pinned in dock)
+
+Use ~ydotool~ or ~wtype~ to mimic keyboard shortcuts:
+
+*Note*: requires apps to be pinned in the dock/panel.
+
+#+begin_src sh
+
+  # Install ydotool (if not installed)
+  sudo apt install ydotool
+
+  # Switch to Firefox (if pinned in dock, e.g., Super+1)
+  ydotool key Super+1
+
+  # Switch to last active window (Alt+Tab)
+  ydotool key Alt+Tab
+
+#+end_src
+
+**** Fix ydotool uinput device permission issue
+
+#+begin_src sh
+
+  ydotool key Super+2
+  # ydotool: terminate called after throwing an instance of
+  # 'std::runtime_error'
+  # what():  failed to open uinput device
+  # [1]    3802 IOT instruction  ydotool key Super+2
+
+#+end_src
+
+1. Add your user to the ~input~ group
+
+First, check if your user is part of the input group.
+
+#+begin_src sh
+
+  groups $USER
+
+#+end_src
+
+If ~input~ is not listed, you can add your user to the ~input~ group with the following command:
+
+#+begin_src sh
+
+  sudo usermod -aG input $USER
+
+#+end_src
+
+2. Load the uinput Module
+
+Make sure that the ~uinput~ kernel module is loaded.
+
+#+begin_src sh
+
+  lsmod | grep uinput
+
+#+end_src
+
+If it’s not listed, you can load it with:
+
+#+begin_src sh
+
+  sudo modprobe uinput
+
+#+end_src
+
+To make it persistent across reboots:
+
+#+begin_src sh
+
+  echo "uinput" | sudo tee -a /etc/modules
+
+#+end_src
+
+3. Check/Set correct permissions for ~uinput~
+
+The ~/dev/uinput~ device should be accessible by your user. Check its permissions:
+
+#+begin_src sh
+
+  ls -l /dev/uinput
+
+#+end_src
+
+If it does not exist, loading the ~uinput~ module as mentioned above should create it.
+
+If permissions are restrictive, create a ~udev~ rule to fix them:
+
+#+begin_src sh
+
+  echo 'KERNEL=="uinput", GROUP="input", MODE="0660"' | sudo tee /etc/udev/rules.d/99-uinput.rules
+
+#+end_src
+
+Then reload udev rules:
+
+#+begin_src sh
+
+  sudo udevadm control --reload-rules
+  sudo udevadm trigger
+
+#+end_src
+
+Log out and back in (or reboot) for changes to apply.
+
+4. Alternative: Run ~ydotool~ as root (temporary workaround)
+
+(Not ideal for security, but helps verify if it’s a permissions issue.)
+
+#+begin_src sh
+
+  sudo ydotool key Super+2
+
+#+end_src
+
+5. iIf you're running ~ydotoold~ in the background, restart it:
+
+*Note*: to use the ~ydotoold~ daemon you need to install it as a separate package.
+
+#+begin_src sh
+
+  pkill ydotoold
+  ydotoold &
+
+#+end_src
+
+*** Set the (compose + ') key combination
+First, set the compose key using gnome settings, and then set the composition =compose + '= using ~input-remapper~.
+
+1. go to *Settings*
+2. select *keyboard*
+3. *Special Character Entry*
+4. click *Compose Key*
+5. toggle *Compose Key* and select the key you want to use as compose key (e.g. =Right Alt=)
+6. go to *Input Remapper*
+7. press *Change Key*
+8. type the key you set in the 5 step (=Right Alt=)
+9. fill in the box the combination for example (e.g. ~Multi_key + KEY_APOSTROPHE~ or ~ISO_Level3_Shift + KEY_APOSTROPHE~)
+10. press *Apply*
+
+*Note*: stopped working when other key =Compose= combinations were tried
+
+*Note*: to type de *ñ* key you need to do this: type =Compose= -> =BackSpace= -> =Shift= -> =`= -> =n=.
+
+*Note*: with this composition, it only works to accentuate vowels, so to type the key =ñ= we need to configure the following macro, and to type the key =ñ= we must hold down the key =AltGr= and press the key =n= twice.
+
+=Multi key + n=   -> ~key(Multi_key).key(BackSpace).key(Shift_L).key(grave).key(n)~
+
+*** How to show, move, and edit sticky keys icons on panel bar
+**** Moving the position of the sticky icons extension on the panel bar
+Hi, is there any way to move the position of the sticky icons to the left of the top bar?
+
+I've tried several ways, including the TopBar Organizer extension. It organizes all the icons, such as Accessibility, dateMenu, clipboardIndicator, ... but the sticky keys don't appear. I tried another extension and, again, the only icon that doesn't appear is the sticky key.
+
+By the way, I looked for another extension that shows Sticky keys and none appeared. I don't know how someone can use the Sticky keys without seeing when they made a mistake and left a Sticky key locked. Your extension is perfect, but the fact that the icons are stuck on the right has made my neck hurt from turning my head every time I need to check the sticky keys.
+
+Thanks.
+
+Hello @ , Thank you for reporting.
+
+I agree currently display is hard-coded to rightBox.
+
+There are tree possible 6 positions I could find: {left,center,right} x {first,last}
+
+#+begin_src javascript
+
+  // display position on top main panel
+  const box = 2; //1 left, 2 center, else right
+  const pos = 0; //0 first, 99 last if no other ext put higher number
+
+#+end_src
+
+I have put changes into pull request
+
+Add preferences #17 . Seems to me box=1,pos=99 is what you are looking for. If you want to try it.
+
+My side I will try, write preference dialogue to allow user customize that without editing extension files.
+
+If you are look for quick fix and no trouble editing the current installed extension code directly.
+1. Open ~~/.local/share/gnome-shell/extensions/keyboard_modifiers_status@sneetsher/extension.js~, change the following lines:
+2. ~Main.panel._rightBox.insert_child_at_index(button, 0);~ to  ~Main.panel._leftBox.insert_child_at_index(button, 99);~
+3. ~Main.panel._rightBox.remove_child(button);~ to ~Main.panel._leftBox.remove_child(button);~
+4. Logout and login again
+
+**** Moving the position of the sticky icons via script
+Prefrences are accessible through CLI to using ~gsettings~ or if you prefer a wrapper ~./scripts/gset~ from this repo. Example:
+
+#+begin_src sh
+
+  ## at left within menu corner, last position
+  ./scripts/gset set panel-side LEFT
+  ./scripts/gset set indicator-order -1
+
+  ## at center with date, first position
+  ./scripts/gset set panel-side CENTER
+  ./scripts/gset set indicator-order 0
+
+  ## list all, reset all to default
+  ./scripts/gset
+  ./scripts/gset reset-recursively
+
+#+end_src
+
+*Note*: to set this up as a task to run every time your computer restarts, create a cron entry: ~crontab -e~ and then
+
+#+begin_src sh
+
+  @reboot /home/user/.local/bin/gset panel-side LEFT
+  @reboot /home/user/.local/bin/gset indicator-order -1
+
+#+end_src
+
+Script ~gset~:
+
+#+begin_src sh
+
+  #!/bin/bash
+  schema=~/.local/share/gnome-shell/extensions/keyboard_modifiers_status@sneetsher/schemas/
+  id=org.gnome.shell.extensions.keyboard-modifiers-status
+
+
+
+  if [ $1 ];  then
+      set -x
+      gsettings --schemadir ${schema} $1 ${id} $2 $3;
+  else
+      set -x
+      gsettings --schemadir ${schema} list-recursively ${id};
+  fi
+
+#+end_src
+
+**** Edit the sticky key number icon
+When using a keyboard with an LED on the "Num lock" key (e.g. EPOMAKER CIDOO), pressing the "Num lock" key activates this LED, causing the icon to appear in the top bar, which is annoying. Since it is difficult to disable this behavior, a possible solution is to place a thin space ( ) (*Unicode*: U+2009 *Description*: Thin Space *Html*: &#8201;) in the "Num lock" symbol in the Gnome extension file, this way, it is not noticeable.
+
+#+begin_src sh
+
+  ~/.local/share/gnome-shell/extensions/keyboard_modifiers_status@sneetsher
+
+#+end_src
+
+#+begin_src javascript
+
+  // Change this line
+  const mod_sym = "⇧⇬⋀⌥①◆⌘⎇";
+  // to this
+  const mod_sym = "⇧⇬⋀⌥ ◆⌘⎇";
+
+#+end_src
+
+**** Show sticky key on panel bar
+Displaying sticky key icons in the panel bar is extremely useful because it allows you to monitor which sticky keys are pressed or locked.
+
+There is a gnome extension called *Keyboard Modifiers Status* that is perfect.
+
+Another option is *xkbwatch*, which comes from the *x11-xkb-utils* package, but it's not very attractive. It opens a separate window and displays lights, not symbols.
+
+*** Disable automatic updates for GNOME extensions
+I don't know if they work:
+
+#+begin_src sh
+
+  gsettings set org.gnome.software allow-updates false
+
+#+end_src
+
+Others methods to disable a specific GNOME extension:
+
+Change the folder name: Rename the folder to something new. For example, add a suffix like ~.disabled~:
+
+#+begin_src sh
+
+  mv keyboard-modifiers-status@some.author keyboard-modifiers-status@some.author.disabled
+
+#+end_src
+
+This extension patches GNOME Shell to entirely disable updates of user-installed extensions.
+
+ Disable extension updates by Sebastian Wiesner
+
+ https://extensions.gnome.org/extension/6424/disable-extension-updates/
+
+** Mouse
+*** Mouse Dwell, Hover Auto-Click
+**** Brief
+[[http://xahlee.info/linux/linux_mouse_hover_click.html][Xah]]
+
+What is Mouse Dwell, Hover Auto-Click?
+
+When the mouse pointer stops moving, it does a click automatically. (after a delay)
+
+**** Via terminal
+*Deepseek*
+
+To list the options of Dwell, Hover Auto-Click:
+
+#+begin_src sh
+
+  gsettings list-keys org.gnome.desktop.a11y.mouse
+
+#+end_src
+
+Turn on hover click:
+
+#+begin_src sh
+
+  gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled true
+
+#+end_src
+
+To configure ~dwell-time~ which is the delay:
+
+#+begin_src sh
+
+  gsettings set org.gnome.desktop.a11y.mouse dwell-time 1.0
+
+#+end_src
+
+To configure ~dwell-threshold~ which is the pixels movement allowed:
+
+#+begin_src sh
+
+  gsettings set org.gnome.desktop.a11y.mouse dwell-threshold 1
+
+#+end_src
+
+To stop hover-click:
+
+#+begin_src sh
+
+  gsettings set org.gnome.desktop.a11y.mouse dwell-click-enabled false
+
+#+end_src
+
+To get a value:
+
+#+begin_src sh
+
+  gsettings get org.gnome.desktop.a11y.mouse click-type-window-visible
+
+#+end_src
+
+**** Via gnome Settings
+*Deepseek*
+
+1. Settings
+2. Accessibility
+3. Pointing & Clicking
+4. Click Assist
+5. Hover Click
+
+*Note*: to adjust *Double-Click Delay*:
+
+#+begin_src sh
+
+  gsettings set org.gnome.desktop.peripherals.mouse double-click 400
+
+#+end_src
+
+**** Disable pointer animation when Hoover-click is enabled
+This is an annoying animation of a circle as a stopwatch indicating the duration of time before clicking when Hoover-click (dwell) is on.
+
+1. Settings
+2. Accessibility
+3. Seeing
+4. Enable Animations
+
+*Note*: this works for both enabling and disabling Hoover-click (dwell).
+
+*** Swap Mouse Buttons
+ Here's how to swap mouse buttons on Linux, by command line or GUI.
+
+*Terminal*
+
+ #+begin_src sh
+
+   gsettings set org.gnome.desktop.peripherals.mouse left-handed true
+
+ #+end_src
+
+ *GUI*
+
+ 1. Settings
+ 2. Mouse & Touchpad
+ 3. General
+ 4. Primary Button
+ 5. Right
+
+*** Set Mouse Single-Click to Open File
+To set mouse single-click to open file, it should be in your file manager preference.
+
+1. Preferences
+2. Action to Open Items
+3. Single click
+
+*** How to find the X11 mouse button number?
+type ~xev~ in terminal, then click the button to see its number.
+
+To exit ~xev~, just close its window.
+
+** Firefox
+*** Set Backspace Key to Go Back To Previous Page
+This page shows you how to set =Backspace ⌫= key to go back to previous page.
+
+In the URL bar, type ~about:config~
+
+Then, set ~browser.backspace_action~ to ~0~.
+
+| /VALUE/ | /MEANING/                                       |
+|-------+-----------------------------------------------|
+|     0 | ⌫ = goto previous visited site/page.         |
+|     1 | ⌫ = scroll up a page, and S-⌫ = scroll down |
+|     2 | Don't do anything special (default)           |
+
+*** Set Accelerated Mouse Wheel Scroll Speed
+[[http://xahlee.info/mswin/Firefox_mouse_wheel_scroll_speed.html][Xah]]
+
+In the URL bar, type ~about:config~, press =Enter=.
+
+- set ~mousewheel.acceleration.start~ to 2. (default is -1)
+- set ~mousewheel.acceleration.factor~ to 20. (default is 10)
+
+The change is immediate. You don't need to restart Firefox. This works in macOS and Linux too.
+
+*** Set Mouse Autoscroll
+[[http://xahlee.info/linux/linux_firefox_autoscroll.html][Xah]]
+
+To turn on autoscroll:
+
+1. In the URL bar, type ~about:config~, press =Enter=.
+2. In the search box, type “autoscroll”.
+3. Double click to toggle ~general.autoScroll~ to ~true~.
+
+*** Set emacs as firefox devtools.editor.keymap
+In the Editor Preferences section of the developer tools settings, you can choose to use Vim, Emacs, or Sublime Text key bindings instead.
+
+To select these, visit ~about:config~, select the setting ~devtools.editor.keymap~, and assign “vim” or “emacs”, or “sublime” to that setting. If you do this, the selected bindings will be used for all the developer tools that use the source editor. You sometimes need to reopen the editor for the change to take effect.
+
+** Chrome
+*** Restore Last Session
+Google Chrome restores your previous pages on crash.
+
+Make sure you turn it on. Click on the wench icon on top right to go to options, then in “Basics” tab, “On startup”, choose “Reopen the pages that were open last”.
+
+Google Chrome restore bar, shown when your last session crashed.
+
+To restore session on demand, install extension FreshStart at [https://chrome.google.com/extensions/detail/nmidkjogcjnnlfimjcedenagjfacpobb 2010-12-29] . Once installed, click the icon on the upper right to use it.
