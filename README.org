@@ -13,7 +13,7 @@
 #+html: <span><img alt="Inkscape" src="https://img.shields.io/badge/inkscape-white?style=flat&logo=inkscape&logoColor=black"></span>
 
 * Overview
-Configuration files and summaries highlighting what I consider the most essential topics for studying the fundamentals of computing and web development.
+A collection of personal configuration files for Emacs, Debian, keyboard, as well as summary files highlighting the most essential topics for studying the fundamentals of computing and web development.
 
 All the information collected and compressed here is completely free and accessible. It has been gathered from the internet through various means, such as documentation, books, articles, websites, etc., with appropriate references provided at the end of each file.
 
@@ -56,12 +56,18 @@ A simple and basic summary of elementary mathematical concepts. One of the advan
 ** [[file:tempel/][Templates]]
 Set of templates for both text and programming languages. Made possible by the amazing [[https://github.com/minad/tempel][Tempel]] package. Creating them is tedious at first, but once created they are incredibly useful. Simply type the initials plus the spacebar and voilà! For example:
 
+To write ~console.log~, type the initials: =c= + =o=, and then the spacebar =SPC=
+
 #+begin_src javascript
 
-  // type the initials: c + o then the spacebar and it becomes ->
   console.log()
 
-  // or for a comment template: c + o + m + SPC ->
+#+end_src
+
+or for a comment template: =c= + =o= + =m= + =SPC=
+
+#+begin_src javascript
+
   //=============================================================
   //
   //=============================================================
